@@ -99,7 +99,7 @@ export function runCombat(playerStats, skills, enemies) {
     hp: e.hp,
     maxHp: e.hp,
     statuses: {},
-    cooldownTimer: 0,
+    cooldownTimer: 1.0 / (e.attackSpeed || 1.0),
   }));
 
   const player = {

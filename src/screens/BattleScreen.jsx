@@ -7,11 +7,12 @@ import './BattleScreen.css';
 
 export default function BattleScreen() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
-  const { dispatch: playerDispatch } = usePlayer();
+  const { state: playerState, dispatch: playerDispatch } = usePlayer();
   const canvasRef = useRef(null);
   const [visibleLog, setVisibleLog] = useState([]);
   const [showLoot, setShowLoot] = useState(false);
   const [hoveredLoot, setHoveredLoot] = useState(null);
+  const [bagFullMsg, setBagFullMsg] = useState(false);
 
   const { combatLog, combatResult, pendingLoot } = gameState;
 
@@ -37,15 +38,54 @@ export default function BattleScreen() {
     return () => clearInterval(interval);
   }, [combatLog, combatResult]);
 
-  // Canvas drawing
+  // Canvas drawing — redraws on each new log entry to reflect live HP changes
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    drawBattleScene(ctx, canvas.width, canvas.height, combatResult);
-  }, [combatResult]);
+
+    // Derive HP ratios from the most recent relevant log entries
+    let playerHpRatio = 1;
+    let enemyHpRatio = 1;
+    let flashPlayer = false;
+    let flashEnemy = false;
+
+    for (let i = visibleLog.length - 1; i >= 0; i--) {
+      const entry = visibleLog[i];
+      if (!flashEnemy && (entry.type === 'damage' || entry.type === 'crit' || entry.type === 'echo' || entry.type === 'totem' || entry.type === 'cull' || entry.type === 'status')) {
+        // Parse HP from text like "(42/150 HP)" or set 0 if "[KILLED]"
+        const hpMatch = entry.text?.match(/\((\d+)\/(\d+) HP\)/);
+        if (hpMatch) {
+          enemyHpRatio = parseInt(hpMatch[1]) / parseInt(hpMatch[2]);
+        } else if (entry.text?.includes('[KILLED]') || entry.text?.includes('CULLS')) {
+          enemyHpRatio = 0;
+        }
+        flashEnemy = true;
+      }
+      if (!flashPlayer && entry.type === 'enemy_attack') {
+        const hpMatch = entry.text?.match(/\((\d+)\/(\d+) HP\)/);
+        if (hpMatch) {
+          playerHpRatio = parseInt(hpMatch[1]) / parseInt(hpMatch[2]);
+        }
+        flashPlayer = true;
+      }
+      if (flashEnemy && flashPlayer) break;
+    }
+
+    // Override ratios on final result
+    if (combatResult === 'defeat') playerHpRatio = 0;
+    if (combatResult === 'victory') enemyHpRatio = 0;
+
+    drawBattleScene(ctx, canvas.width, canvas.height, combatResult, playerHpRatio, enemyHpRatio);
+  }, [visibleLog.length, combatResult]);
 
   const handlePickupItem = (item) => {
+    const nextState = { ...playerState, inventory: [...playerState.inventory, item] };
+    if (playerState.inventory.length >= 20) {
+      setBagFullMsg(true);
+      setTimeout(() => setBagFullMsg(false), 2500);
+      return;
+    }
     playerDispatch({ type: 'ADD_TO_INVENTORY', item });
     gameDispatch({ type: 'SET_PENDING_LOOT', loot: pendingLoot.filter(i => i.id !== item.id) });
   };
@@ -70,6 +110,8 @@ export default function BattleScreen() {
         {combatResult === 'defeat' && <span className="result-defeat">💀 DEFEAT</span>}
         {combatResult === 'timeout' && <span className="result-timeout">⏱ TIMEOUT</span>}
       </div>
+
+      {bagFullMsg && <div className="bag-full-toast">🎒 Bag is full! Salvage an item first.</div>}
 
       <CombatLog entries={visibleLog} />
 
@@ -109,7 +151,7 @@ export default function BattleScreen() {
   );
 }
 
-function drawBattleScene(ctx, w, h, result) {
+function drawBattleScene(ctx, w, h, result, playerHpRatio = 1, enemyHpRatio = 1) {
   ctx.clearRect(0, 0, w, h);
 
   // Background
@@ -124,16 +166,34 @@ function drawBattleScene(ctx, w, h, result) {
   ctx.fillRect(0, h - 30, w, 30);
 
   // Player sprite (left side)
-  drawCharacter(ctx, w * 0.2, h - 50, '#4a9eff', result === 'defeat' ? 0.4 : 1.0, '🧙');
+  const playerOpacity = result === 'defeat' ? 0.4 : Math.max(0.2, playerHpRatio);
+  drawCharacter(ctx, w * 0.2, h - 50, '#4a9eff', playerOpacity, '🧙');
+  drawHpBar(ctx, w * 0.2, h - 80, 80, playerHpRatio, '#4a9eff');
 
   // Enemy sprite (right side)
-  drawCharacter(ctx, w * 0.8, h - 50, '#ff4a4a', result === 'victory' ? 0.2 : 1.0, '💀');
+  const enemyOpacity = result === 'victory' ? 0.2 : Math.max(0.2, enemyHpRatio);
+  drawCharacter(ctx, w * 0.8, h - 50, '#ff4a4a', enemyOpacity, '💀');
+  drawHpBar(ctx, w * 0.8, h - 80, 80, enemyHpRatio, '#ff4a4a');
 
   // VS text in center
+  ctx.globalAlpha = 1;
   ctx.fillStyle = '#c4a3ff';
   ctx.font = 'bold 24px monospace';
   ctx.textAlign = 'center';
   ctx.fillText('⚔️', w / 2, h / 2);
+}
+
+function drawHpBar(ctx, cx, y, barWidth, ratio, color) {
+  const x = cx - barWidth / 2;
+  const barH = 6;
+  ctx.globalAlpha = 0.8;
+  // Background
+  ctx.fillStyle = '#333';
+  ctx.fillRect(x, y, barWidth, barH);
+  // Fill
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, Math.max(0, barWidth * Math.min(1, ratio)), barH);
+  ctx.globalAlpha = 1;
 }
 
 function drawCharacter(ctx, x, y, color, opacity, emoji) {

@@ -1,6 +1,10 @@
 // ZodiacSystem.js — Placeholder for future zodiac/passive tree implementation
 export const ZODIAC_NODES = [];
 
+export function computeZodiacBonuses(allocatedNodes) {
+  return applyZodiacBonuses(allocatedNodes);
+}
+
 export function applyZodiacBonuses(allocatedNodes) {
   const bonuses = {};
   allocatedNodes.forEach(nodeId => {

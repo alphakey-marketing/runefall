@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import { getBaseStats, calculatePlayerStats } from '../utils/StatsCalculator.js';
+import { computeZodiacBonuses } from '../engine/ZodiacSystem.js';
 
 const PlayerContext = createContext(null);
 
@@ -54,13 +55,18 @@ function playerReducer(state, action) {
       return { ...state, equippedGear, inventory };
     }
     case 'ADD_TO_INVENTORY': {
-      if (state.inventory.length >= 20) return state;
-      return { ...state, inventory: [...state.inventory, action.item] };
+      if (state.inventory.length >= 20) return { ...state, _bagFull: true };
+      return { ...state, inventory: [...state.inventory, action.item], _bagFull: false };
     }
     case 'SALVAGE_ITEM': {
       const dustGain = action.item.gearScore + 5;
+      const equippedGear = { ...state.equippedGear };
+      Object.keys(equippedGear).forEach(slot => {
+        if (equippedGear[slot]?.id === action.item.id) equippedGear[slot] = null;
+      });
       return {
         ...state,
+        equippedGear,
         inventory: state.inventory.filter(i => i.id !== action.item.id),
         runeDust: state.runeDust + dustGain,
       };
@@ -68,10 +74,10 @@ function playerReducer(state, action) {
     case 'ADD_XP': {
       let { xp, level, zodiacPoints } = state;
       xp += action.amount;
-      const xpReq = Math.floor(100 * Math.pow(level, 1.5));
-      if (xp >= xpReq) {
-        level++;
+      while (xp >= Math.floor(100 * Math.pow(level, 1.5))) {
+        const xpReq = Math.floor(100 * Math.pow(level, 1.5));
         xp -= xpReq;
+        level++;
         zodiacPoints++;
       }
       return { ...state, xp, level, zodiacPoints };
@@ -86,7 +92,8 @@ function playerReducer(state, action) {
 export function PlayerProvider({ children }) {
   const [state, dispatch] = useReducer(playerReducer, initialState);
 
-  const playerStats = calculatePlayerStats(state.baseStats, state.equippedGear);
+  const zodiacBonuses = computeZodiacBonuses(state.allocatedNodes);
+  const playerStats = calculatePlayerStats(state.baseStats, state.equippedGear, zodiacBonuses);
 
   return (
     <PlayerContext.Provider value={{ state, dispatch, playerStats }}>

@@ -3,12 +3,19 @@ import { rollLootTier, calcGearScore } from '../utils/FormulaHelpers.js';
 
 const GEAR_SLOTS = ['weapon', 'helmet', 'chest', 'gloves', 'boots'];
 
-const AFFIX_COUNT = { normal: 0, magic: 2, rare: 4, legendary: 3 };
+function rollAffixCount(rarity) {
+  switch (rarity) {
+    case 'magic': return Math.random() < 0.5 ? 1 : 2;
+    case 'rare': return 3 + Math.floor(Math.random() * 3); // 3, 4, or 5
+    case 'legendary': return 3;
+    default: return 0;
+  }
+}
 
 export function generateItem(tierOverride = null, slotOverride = null, luck = 0) {
   const slot = slotOverride || GEAR_SLOTS[Math.floor(Math.random() * GEAR_SLOTS.length)];
   const rarity = tierOverride || rollLootTier(luck);
-  const affixCount = AFFIX_COUNT[rarity] || 0;
+  const affixCount = rollAffixCount(rarity);
 
   const eligibleAffixes = affixPool.filter(a => a.tiers.includes(rarity));
   const selectedAffixes = [];

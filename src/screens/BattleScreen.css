@@ -3,6 +3,17 @@
   padding-bottom: 80px;
 }
 
+.bag-full-toast {
+  background: #3a2020;
+  border: 1px solid #aa4444;
+  color: #ffaaaa;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
 .battle-canvas {
   width: 100%;
   max-height: 180px;
