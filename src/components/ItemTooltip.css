@@ -1,0 +1,54 @@
+.item-tooltip {
+  background: #1a1a2e;
+  border: 1px solid #4a3f8a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  min-width: 200px;
+  font-size: 13px;
+}
+
+.tooltip-name {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.tooltip-rarity {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.tooltip-slot {
+  color: #888;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.tooltip-score {
+  color: #c4a3ff;
+  margin-bottom: 8px;
+}
+
+.tooltip-affixes {
+  margin-bottom: 8px;
+}
+
+.tooltip-affix {
+  color: #7ec8e3;
+  font-size: 12px;
+  padding: 2px 0;
+}
+
+.tooltip-compare {
+  border-top: 1px solid #2a2a4a;
+  padding-top: 6px;
+  color: #aaa;
+  font-size: 11px;
+}
+
+.compare-title {
+  margin-bottom: 2px;
+}
+
+.delta-pos { color: #00ff88; }
+.delta-neg { color: #ff4444; }

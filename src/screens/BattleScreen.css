@@ -1,0 +1,122 @@
+.battle-screen {
+  padding: 16px;
+  padding-bottom: 80px;
+}
+
+.bag-full-toast {
+  background: #3a2020;
+  border: 1px solid #aa4444;
+  color: #ffaaaa;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.battle-canvas {
+  width: 100%;
+  max-height: 180px;
+  border-radius: 8px;
+  border: 1px solid #2a2a4a;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.battle-result-label {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.result-victory { color: #00ff88; }
+.result-defeat { color: #ff4444; }
+.result-timeout { color: #ffaa44; }
+
+.loot-panel {
+  background: #16213e;
+  border: 1px solid #4a3f8a;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.loot-panel h3 {
+  color: #c4a3ff;
+  margin: 0 0 10px;
+}
+
+.loot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.loot-item {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.loot-name {
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.rarity-normal { color: #aaa; }
+.rarity-magic { color: #4fc3f7; }
+.rarity-rare { color: #ffd700; }
+.rarity-legendary { color: #ff9800; }
+
+.loot-gs {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.loot-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.loot-actions button {
+  flex: 1;
+  padding: 4px;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.loot-actions button:first-child {
+  background: #1a3a1a;
+  border: 1px solid #3a8a3a;
+  color: #7ec87e;
+}
+
+.loot-actions button:last-child {
+  background: #3a1a1a;
+  border: 1px solid #8a3a3a;
+  color: #e87878;
+}
+
+.return-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  background: #16213e;
+  border: 1px solid #4a3f8a;
+  color: #c4a3ff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tooltip-float {
+  position: fixed;
+  bottom: 100px;
+  right: 16px;
+  z-index: 150;
+}

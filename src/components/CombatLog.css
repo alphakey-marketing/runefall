@@ -1,0 +1,26 @@
+.combat-log {
+  background: #0d0d1a;
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  padding: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.log-entry {
+  padding: 2px 4px;
+  border-bottom: 1px solid #1a1a2e;
+}
+
+.log-normal { color: #ddd; }
+.log-crit { color: #ffd700; font-weight: bold; }
+.log-kill { color: #ff4444; font-weight: bold; }
+.log-defeat { color: #ff0000; font-weight: bold; font-size: 14px; }
+.log-victory { color: #00ff88; font-weight: bold; font-size: 14px; }
+.log-status { color: #00ddff; }
+.log-enemy { color: #ff8888; }
+.log-echo { color: #bb88ff; }
+.log-totem { color: #88ffbb; }
+.log-no-mana { color: #888; font-style: italic; }
