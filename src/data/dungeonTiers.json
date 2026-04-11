@@ -1,0 +1,62 @@
+[
+  {
+    "tier": 1,
+    "name": "Tier 1 — Forgotten Crypt",
+    "rooms": [
+      { "type": "combat", "enemies": ["skeleton_warrior", "plague_rat", "plague_rat"] },
+      { "type": "combat", "enemies": ["skeleton_warrior", "bone_archer", "skeleton_warrior"] },
+      { "type": "boss", "enemies": ["stone_guardian"] }
+    ],
+    "modifiers": [],
+    "lootMultiplier": 1.0,
+    "xpMultiplier": 1.0
+  },
+  {
+    "tier": 2,
+    "name": "Tier 2 — Ember Ruins",
+    "rooms": [
+      { "type": "combat", "enemies": ["fire_imp", "fire_imp", "plague_rat"] },
+      { "type": "combat", "enemies": ["fire_imp", "corrupted_mage"] },
+      { "type": "boss", "enemies": ["fire_imp", "fire_imp", "stone_guardian"] }
+    ],
+    "modifiers": ["Monsters deal 20% increased damage"],
+    "lootMultiplier": 1.3,
+    "xpMultiplier": 1.2
+  },
+  {
+    "tier": 3,
+    "name": "Tier 3 — Frozen Wastes",
+    "rooms": [
+      { "type": "combat", "enemies": ["ice_golem", "plague_rat", "venom_spider"] },
+      { "type": "combat", "enemies": ["ice_golem", "bone_archer", "bone_archer"] },
+      { "type": "boss", "enemies": ["ice_golem", "ice_golem"] }
+    ],
+    "modifiers": ["Monsters have 40% increased HP", "All monsters apply Chill on hit"],
+    "lootMultiplier": 1.6,
+    "xpMultiplier": 1.5
+  },
+  {
+    "tier": 4,
+    "name": "Tier 4 — Storm Peaks",
+    "rooms": [
+      { "type": "combat", "enemies": ["thunder_beast", "shadow_wraith", "bone_archer"] },
+      { "type": "combat", "enemies": ["thunder_beast", "thunder_beast", "corrupted_mage"] },
+      { "type": "boss", "enemies": ["thunder_beast", "shadow_wraith", "shadow_wraith"] }
+    ],
+    "modifiers": ["All monsters apply Shock on hit", "Monsters have 60% increased HP"],
+    "lootMultiplier": 2.0,
+    "xpMultiplier": 1.8
+  },
+  {
+    "tier": 5,
+    "name": "Tier 5 — Plagued Depths",
+    "rooms": [
+      { "type": "combat", "enemies": ["venom_spider", "venom_spider", "plague_rat", "plague_rat"] },
+      { "type": "combat", "enemies": ["shadow_wraith", "venom_spider", "corrupted_mage"] },
+      { "type": "boss", "enemies": ["stone_guardian", "shadow_wraith", "venom_spider"] }
+    ],
+    "modifiers": ["Monsters have 80% increased HP", "+100% item quantity", "Monsters explode on death"],
+    "lootMultiplier": 2.5,
+    "xpMultiplier": 2.0
+  }
+]
