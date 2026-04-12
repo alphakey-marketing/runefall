@@ -156,3 +156,11 @@
   margin-bottom: 16px;
   font-size: 15px;
 }
+
+.no-loot-msg {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 12px;
+  margin-top: 8px;
+}

@@ -3,14 +3,14 @@ export function xpRequired(level) {
   return Math.floor(100 * Math.pow(level, 1.5));
 }
 
-// Monster HP scaling by tier
+// Monster HP scaling by tier — 10% per tier keeps endgame challenging without being impossible
 export function monsterHp(baseHp, tier) {
-  return Math.floor(baseHp * Math.pow(1.15, tier - 1));
+  return Math.floor(baseHp * Math.pow(1.10, tier - 1));
 }
 
-// Monster damage scaling by tier
+// Monster damage scaling by tier — 7% per tier, gentler than HP so players can survive longer
 export function monsterDamage(baseDmg, tier) {
-  return Math.floor(baseDmg * Math.pow(1.12, tier - 1));
+  return Math.floor(baseDmg * Math.pow(1.07, tier - 1));
 }
 
 // Loot drop tier roll

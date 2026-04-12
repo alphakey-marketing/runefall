@@ -7,6 +7,7 @@ function getLogClass(entry) {
     case 'kill': return 'log-kill';
     case 'defeat': return 'log-defeat';
     case 'victory': return 'log-victory';
+    case 'room_clear': return 'log-room-clear';
     case 'status_applied': return 'log-status';
     case 'enemy_attack': return 'log-enemy';
     case 'echo': return 'log-echo';

@@ -36,19 +36,37 @@ export default function DungeonScreen() {
       return;
     }
 
-    const allEnemies = [];
-    tierData.rooms.forEach(room => {
-      room.enemies.forEach(mId => {
-        const m = scaledMonster(mId, tierData.tier);
-        if (m) allEnemies.push(m);
-      });
-    });
+    // Dispatch RESET_COMBAT before starting to clear any stale result from a previous run
+    gameDispatch({ type: 'RESET_COMBAT' });
 
-    const result = runCombat(playerStats, skills, allEnemies);
+    // Process rooms sequentially, carrying HP between rooms
+    let combinedLog = [];
+    let playerHpRemaining = playerStats.maxHp || 200;
+    let finalResult = 'victory';
 
-    gameDispatch({ type: 'SET_COMBAT_RESULT', result: result.result, log: result.log });
+    for (const room of tierData.rooms) {
+      const enemies = room.enemies
+        .map(mId => scaledMonster(mId, tierData.tier))
+        .filter(Boolean);
 
-    if (result.result === 'victory') {
+      if (enemies.length === 0) continue;
+
+      const roomResult = runCombat(playerStats, skills, enemies, playerHpRemaining);
+      combinedLog = [...combinedLog, ...roomResult.log];
+      playerHpRemaining = roomResult.playerHpRemaining ?? 0;
+
+      if (roomResult.result !== 'victory') {
+        finalResult = roomResult.result;
+        break;
+      }
+
+      // Brief separator between rooms
+      combinedLog.push({ type: 'room_clear', text: `— Room cleared! HP remaining: ${Math.ceil(playerHpRemaining)} —` });
+    }
+
+    gameDispatch({ type: 'SET_COMBAT_RESULT', result: finalResult, log: combinedLog });
+
+    if (finalResult === 'victory') {
       const loot = generateDungeonLoot(tierData, tierData.rooms, playerStats.luck || 0);
       gameDispatch({ type: 'SET_PENDING_LOOT', loot });
       const nextTier = tierData.tier + 1;

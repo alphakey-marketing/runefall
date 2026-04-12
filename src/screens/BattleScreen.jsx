@@ -41,7 +41,7 @@ export default function BattleScreen() {
 
     return () => {
       clearInterval(interval);
-      setShowDeathScreen(false);
+      // Note: do NOT reset showDeathScreen here — it would clear the overlay before it renders
     };
   }, [combatLog, combatResult]);
 
@@ -103,6 +103,7 @@ export default function BattleScreen() {
   };
 
   const handleReturnToDungeon = () => {
+    gameDispatch({ type: 'RESET_COMBAT' });
     gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' });
     gameDispatch({ type: 'CLEAR_PENDING_LOOT' });
     setShowLoot(false);
@@ -144,6 +145,10 @@ export default function BattleScreen() {
         </div>
       )}
 
+      {showLoot && pendingLoot.length === 0 && (
+        <div className="no-loot-msg">Nothing dropped this run.</div>
+      )}
+
       {showLoot && pendingLoot.length > 0 && (
         <div className="loot-panel">
           <h3>Loot Drops!</h3>
@@ -177,8 +182,7 @@ export default function BattleScreen() {
         <button className="return-btn" onClick={handleReturnToDungeon}>
           Return to Dungeon
         </button>
-      )}
-    </div>
+      )}    </div>
   );
 }
 

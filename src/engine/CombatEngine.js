@@ -58,7 +58,7 @@ function rollCrit(playerStats, hitCounter = 0) {
   return Math.random() * 100 < (playerStats.critChance || 5);
 }
 
-export function runCombat(playerStats, skills, enemies) {
+export function runCombat(playerStats, skills, enemies, playerCurrentHp = null) {
   const log = [];
   let tick = 0;
 
@@ -72,7 +72,7 @@ export function runCombat(playerStats, skills, enemies) {
   }));
 
   const player = {
-    hp: playerStats.maxHp || 200,
+    hp: playerCurrentHp !== null ? Math.min(playerCurrentHp, playerStats.maxHp || 200) : (playerStats.maxHp || 200),
     maxHp: playerStats.maxHp || 200,
     mana: playerStats.maxMana || 100,
     maxMana: playerStats.maxMana || 100,
@@ -221,20 +221,21 @@ export function runCombat(playerStats, skills, enemies) {
 
     tickStatuses(player, log, 'Player');
 
+    // Bug 3 fix: also catch death caused by player DoT (status tick after enemy attacks)
     if (player.hp <= 0) {
       log.push({ type: 'defeat', text: `DEFEAT — The player has fallen!` });
-      return { result: 'defeat', log, ticks: tick };
+      return { result: 'defeat', log, ticks: tick, playerHpRemaining: 0 };
     }
 
     const remainingEnemies = enemyStates.filter(e => e.hp > 0);
     if (remainingEnemies.length === 0) {
       log.push({ type: 'victory', text: `VICTORY — All enemies defeated in ${tick} ticks!` });
-      return { result: 'victory', log, ticks: tick };
+      return { result: 'victory', log, ticks: tick, playerHpRemaining: player.hp };
     }
   }
 
   log.push({ type: 'timeout', text: 'Combat timed out after maximum ticks.' });
-  return { result: 'timeout', log, ticks: tick };
+  return { result: 'timeout', log, ticks: tick, playerHpRemaining: player.hp };
 }
 
 function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillIndex, isEcho = false) {
