@@ -3,6 +3,8 @@ import { usePlayer } from '../context/PlayerContext.jsx';
 import affixPool from '../data/affixPool.json';
 import './CraftingScreen.css';
 
+const MAX_AFFIX_ROLL_ATTEMPTS = 20;
+
 function rollAffix(rarity) {
   const eligible = affixPool.filter(a => a.tiers.includes(rarity));
   if (eligible.length === 0) return null;
@@ -35,7 +37,7 @@ export default function CraftingScreen() {
     let attempts = 0;
     while (!newAffix || existing.includes(newAffix.id?.split('_')[0])) {
       newAffix = rollAffix('rare');
-      if (++attempts > 20) break;
+      if (++attempts > MAX_AFFIX_ROLL_ATTEMPTS) break;
     }
     if (!newAffix) { flash('Failed to find new affix'); return; }
     affixes.splice(removeIdx, 1, newAffix);
@@ -54,7 +56,7 @@ export default function CraftingScreen() {
     let attempts = 0;
     while (!newAffix || existing.includes(newAffix.id?.split('_')[0])) {
       newAffix = rollAffix(selectedItem.rarity === 'rare' ? 'rare' : 'magic');
-      if (++attempts > 20) break;
+      if (++attempts > MAX_AFFIX_ROLL_ATTEMPTS) break;
     }
     if (!newAffix) { flash('No new affixes available'); return; }
     const affixes = [...(selectedItem.affixes || []), newAffix];

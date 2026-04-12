@@ -1,6 +1,7 @@
 // StatusEngine.js — Status effect management and elemental interactions
 
 const STATUS_DURATIONS = { burn: 4, chill: 3, shock: 3, bleed: 5, poison: 6 };
+const MAX_STATUS_STACKS = 5;
 
 export function applyStatus(entity, status, duration) {
   if (!entity.statuses) entity.statuses = {};
@@ -8,7 +9,7 @@ export function applyStatus(entity, status, duration) {
   if (!entity.statuses[status]) {
     entity.statuses[status] = { stacks: 1, duration: dur };
   } else {
-    entity.statuses[status].stacks = Math.min(entity.statuses[status].stacks + 1, 5);
+    entity.statuses[status].stacks = Math.min(entity.statuses[status].stacks + 1, MAX_STATUS_STACKS);
     entity.statuses[status].duration = dur;
   }
 }

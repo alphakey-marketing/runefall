@@ -53,7 +53,9 @@ export default function SimulatorScreen() {
     const encoded = btoa(JSON.stringify(buildData));
     setExportStr(encoded);
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(encoded).catch(() => {});
+      navigator.clipboard.writeText(encoded).catch(() => {
+        alert('Could not copy to clipboard automatically. Please copy the code manually.');
+      });
     }
   };
 
