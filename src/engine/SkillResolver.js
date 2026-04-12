@@ -23,6 +23,9 @@ export function resolveSkill(skillRune, links = []) {
     penetration: 0,
     manaLeech: 0,
     triggerOnKill: false,
+    triggerOnHit: false,
+    triggerOnLowHp: false,
+    triggerOnFullMana: false,
   };
 
   links.forEach(link => {
@@ -57,6 +60,18 @@ export function resolveSkill(skillRune, links = []) {
         break;
       case 'triggerOnKill':
         resolved.triggerOnKill = true;
+        break;
+      case 'triggerOnHit':
+        resolved.triggerOnHit = true;
+        break;
+      case 'triggerOnLowHp':
+        resolved.triggerOnLowHp = true;
+        break;
+      case 'triggerOnFullMana':
+        resolved.triggerOnFullMana = true;
+        break;
+      case 'cooldown_reduction':
+        resolved.cooldown *= (1 - (link.value || 0.25));
         break;
       case 'manaLeech':
         resolved.manaLeech = link.value;

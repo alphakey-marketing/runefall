@@ -43,6 +43,7 @@ export function getBaseStats() {
     lightningDamageBonus: 0,
     physicalDamageBonus: 0,
     poisonDamageBonus: 0,
+    chaosDamageBonus: 0,
     spellDamageBonus: 0,
     meleeDamageBonus: 0,
     rangedDamageBonus: 0,

@@ -1,0 +1,1638 @@
+{
+  "constellations": [
+    {
+      "id": "ember",
+      "name": "Ember",
+      "theme": "Fire Damage",
+      "color": "#ff6622",
+      "keystoneId": "ember_keystone"
+    },
+    {
+      "id": "glacier",
+      "name": "Glacier",
+      "theme": "Ice / Freeze",
+      "color": "#44aaff",
+      "keystoneId": "glacier_keystone"
+    },
+    {
+      "id": "tempest",
+      "name": "Tempest",
+      "theme": "Lightning",
+      "color": "#ffe033",
+      "keystoneId": "tempest_keystone"
+    },
+    {
+      "id": "crimson",
+      "name": "Crimson",
+      "theme": "Bleed / Physical",
+      "color": "#cc2222",
+      "keystoneId": "crimson_keystone"
+    },
+    {
+      "id": "plague",
+      "name": "Plague",
+      "theme": "Poison",
+      "color": "#55cc44",
+      "keystoneId": "plague_keystone"
+    },
+    {
+      "id": "bastion",
+      "name": "Bastion",
+      "theme": "Defense / HP",
+      "color": "#aaaaaa",
+      "keystoneId": "bastion_keystone"
+    },
+    {
+      "id": "venom",
+      "name": "Venom",
+      "theme": "Chaos",
+      "color": "#8833cc",
+      "keystoneId": "venom_keystone"
+    },
+    {
+      "id": "gale",
+      "name": "Gale",
+      "theme": "Speed / Cooldown",
+      "color": "#44ddff",
+      "keystoneId": "gale_keystone"
+    },
+    {
+      "id": "void_con",
+      "name": "Void",
+      "theme": "Mana / Spell",
+      "color": "#5566bb",
+      "keystoneId": "void_con_keystone"
+    },
+    {
+      "id": "iron",
+      "name": "Iron",
+      "theme": "Melee",
+      "color": "#cc9944",
+      "keystoneId": "iron_keystone"
+    },
+    {
+      "id": "wisp",
+      "name": "Wisp",
+      "theme": "Summon / Totem",
+      "color": "#88ffaa",
+      "keystoneId": "wisp_keystone"
+    },
+    {
+      "id": "omen",
+      "name": "Omen",
+      "theme": "Luck / Crit",
+      "color": "#ffcc00",
+      "keystoneId": "omen_keystone"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "origin",
+      "constellation": null,
+      "type": "origin",
+      "name": "Origin",
+      "description": "Starting node",
+      "bonuses": {},
+      "x": 600,
+      "y": 400,
+      "connections": [
+        "ember_gateway",
+        "glacier_gateway",
+        "tempest_gateway",
+        "crimson_gateway",
+        "plague_gateway",
+        "bastion_gateway",
+        "venom_gateway",
+        "gale_gateway",
+        "void_con_gateway",
+        "iron_gateway",
+        "wisp_gateway",
+        "omen_gateway"
+      ]
+    },
+    {
+      "id": "ember_gateway",
+      "constellation": "ember",
+      "type": "gateway",
+      "name": "+5% Fire Damage",
+      "description": "",
+      "bonuses": {
+        "fireDamageBonus": 5
+      },
+      "x": 600,
+      "y": 318,
+      "connections": [
+        "origin",
+        "ember_m1"
+      ]
+    },
+    {
+      "id": "ember_m1",
+      "constellation": "ember",
+      "type": "minor",
+      "name": "+5% Fire Damage",
+      "description": "",
+      "bonuses": {
+        "fireDamageBonus": 5
+      },
+      "x": 600,
+      "y": 290,
+      "connections": [
+        "ember_gateway",
+        "ember_m2"
+      ]
+    },
+    {
+      "id": "ember_m2",
+      "constellation": "ember",
+      "type": "minor",
+      "name": "+5% Fire Damage",
+      "description": "",
+      "bonuses": {
+        "fireDamageBonus": 5
+      },
+      "x": 600,
+      "y": 262,
+      "connections": [
+        "ember_m1",
+        "ember_m3"
+      ]
+    },
+    {
+      "id": "ember_m3",
+      "constellation": "ember",
+      "type": "minor",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 600,
+      "y": 234,
+      "connections": [
+        "ember_m2",
+        "ember_m4"
+      ]
+    },
+    {
+      "id": "ember_m4",
+      "constellation": "ember",
+      "type": "minor",
+      "name": "+5% Fire Damage",
+      "description": "",
+      "bonuses": {
+        "fireDamageBonus": 5
+      },
+      "x": 600,
+      "y": 206,
+      "connections": [
+        "ember_m3",
+        "ember_m5"
+      ]
+    },
+    {
+      "id": "ember_m5",
+      "constellation": "ember",
+      "type": "minor",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 600,
+      "y": 186,
+      "connections": [
+        "ember_m4",
+        "ember_m6"
+      ]
+    },
+    {
+      "id": "ember_m6",
+      "constellation": "ember",
+      "type": "minor",
+      "name": "+2% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 2
+      },
+      "x": 600,
+      "y": 172,
+      "connections": [
+        "ember_m5",
+        "ember_keystone"
+      ]
+    },
+    {
+      "id": "ember_keystone",
+      "constellation": "ember",
+      "type": "keystone",
+      "name": "Conflagration",
+      "description": "Burn stacks deal 200% increased damage",
+      "bonuses": {
+        "conflagration": true
+      },
+      "x": 600,
+      "y": 153,
+      "connections": [
+        "ember_m6"
+      ]
+    },
+    {
+      "id": "glacier_gateway",
+      "constellation": "glacier",
+      "type": "gateway",
+      "name": "+5% Ice Damage",
+      "description": "",
+      "bonuses": {
+        "iceDamageBonus": 5
+      },
+      "x": 641,
+      "y": 329,
+      "connections": [
+        "origin",
+        "glacier_m1"
+      ]
+    },
+    {
+      "id": "glacier_m1",
+      "constellation": "glacier",
+      "type": "minor",
+      "name": "+5% Ice Damage",
+      "description": "",
+      "bonuses": {
+        "iceDamageBonus": 5
+      },
+      "x": 655,
+      "y": 305,
+      "connections": [
+        "glacier_gateway",
+        "glacier_m2"
+      ]
+    },
+    {
+      "id": "glacier_m2",
+      "constellation": "glacier",
+      "type": "minor",
+      "name": "+5% Ice Damage",
+      "description": "",
+      "bonuses": {
+        "iceDamageBonus": 5
+      },
+      "x": 669,
+      "y": 280,
+      "connections": [
+        "glacier_m1",
+        "glacier_m3"
+      ]
+    },
+    {
+      "id": "glacier_m3",
+      "constellation": "glacier",
+      "type": "minor",
+      "name": "+15 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 15
+      },
+      "x": 683,
+      "y": 256,
+      "connections": [
+        "glacier_m2",
+        "glacier_m4"
+      ]
+    },
+    {
+      "id": "glacier_m4",
+      "constellation": "glacier",
+      "type": "minor",
+      "name": "+5% Ice Damage",
+      "description": "",
+      "bonuses": {
+        "iceDamageBonus": 5
+      },
+      "x": 697,
+      "y": 232,
+      "connections": [
+        "glacier_m3",
+        "glacier_m5"
+      ]
+    },
+    {
+      "id": "glacier_m5",
+      "constellation": "glacier",
+      "type": "minor",
+      "name": "+15 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 15
+      },
+      "x": 707,
+      "y": 215,
+      "connections": [
+        "glacier_m4",
+        "glacier_m6"
+      ]
+    },
+    {
+      "id": "glacier_m6",
+      "constellation": "glacier",
+      "type": "minor",
+      "name": "+1 Mana Regen",
+      "description": "",
+      "bonuses": {
+        "manaRegen": 1
+      },
+      "x": 714,
+      "y": 203,
+      "connections": [
+        "glacier_m5",
+        "glacier_keystone"
+      ]
+    },
+    {
+      "id": "glacier_keystone",
+      "constellation": "glacier",
+      "type": "keystone",
+      "name": "Shatter",
+      "description": "Frozen enemies explode for AoE damage",
+      "bonuses": {
+        "shatter": true
+      },
+      "x": 724,
+      "y": 186,
+      "connections": [
+        "glacier_m6"
+      ]
+    },
+    {
+      "id": "tempest_gateway",
+      "constellation": "tempest",
+      "type": "gateway",
+      "name": "+5% Lightning Damage",
+      "description": "",
+      "bonuses": {
+        "lightningDamageBonus": 5
+      },
+      "x": 671,
+      "y": 359,
+      "connections": [
+        "origin",
+        "tempest_m1"
+      ]
+    },
+    {
+      "id": "tempest_m1",
+      "constellation": "tempest",
+      "type": "minor",
+      "name": "+5% Lightning Damage",
+      "description": "",
+      "bonuses": {
+        "lightningDamageBonus": 5
+      },
+      "x": 695,
+      "y": 345,
+      "connections": [
+        "tempest_gateway",
+        "tempest_m2"
+      ]
+    },
+    {
+      "id": "tempest_m2",
+      "constellation": "tempest",
+      "type": "minor",
+      "name": "+3% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 3
+      },
+      "x": 720,
+      "y": 331,
+      "connections": [
+        "tempest_m1",
+        "tempest_m3"
+      ]
+    },
+    {
+      "id": "tempest_m3",
+      "constellation": "tempest",
+      "type": "minor",
+      "name": "+5% Lightning Damage",
+      "description": "",
+      "bonuses": {
+        "lightningDamageBonus": 5
+      },
+      "x": 744,
+      "y": 317,
+      "connections": [
+        "tempest_m2",
+        "tempest_m4"
+      ]
+    },
+    {
+      "id": "tempest_m4",
+      "constellation": "tempest",
+      "type": "minor",
+      "name": "+3% Attack Speed",
+      "description": "",
+      "bonuses": {
+        "attackSpeedBonus": 3
+      },
+      "x": 768,
+      "y": 303,
+      "connections": [
+        "tempest_m3",
+        "tempest_m5"
+      ]
+    },
+    {
+      "id": "tempest_m5",
+      "constellation": "tempest",
+      "type": "minor",
+      "name": "+5% Lightning Damage",
+      "description": "",
+      "bonuses": {
+        "lightningDamageBonus": 5
+      },
+      "x": 785,
+      "y": 293,
+      "connections": [
+        "tempest_m4",
+        "tempest_m6"
+      ]
+    },
+    {
+      "id": "tempest_m6",
+      "constellation": "tempest",
+      "type": "minor",
+      "name": "+3% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 3
+      },
+      "x": 797,
+      "y": 286,
+      "connections": [
+        "tempest_m5",
+        "tempest_keystone"
+      ]
+    },
+    {
+      "id": "tempest_keystone",
+      "constellation": "tempest",
+      "type": "keystone",
+      "name": "Overcharge",
+      "description": "Shock increases all damage taken by 40%",
+      "bonuses": {
+        "overcharge": true
+      },
+      "x": 814,
+      "y": 277,
+      "connections": [
+        "tempest_m6"
+      ]
+    },
+    {
+      "id": "crimson_gateway",
+      "constellation": "crimson",
+      "type": "gateway",
+      "name": "+5% Physical Damage",
+      "description": "",
+      "bonuses": {
+        "physicalDamageBonus": 5
+      },
+      "x": 682,
+      "y": 400,
+      "connections": [
+        "origin",
+        "crimson_m1"
+      ]
+    },
+    {
+      "id": "crimson_m1",
+      "constellation": "crimson",
+      "type": "minor",
+      "name": "+5% Physical Damage",
+      "description": "",
+      "bonuses": {
+        "physicalDamageBonus": 5
+      },
+      "x": 710,
+      "y": 400,
+      "connections": [
+        "crimson_gateway",
+        "crimson_m2"
+      ]
+    },
+    {
+      "id": "crimson_m2",
+      "constellation": "crimson",
+      "type": "minor",
+      "name": "+10 Armor",
+      "description": "",
+      "bonuses": {
+        "armor": 10
+      },
+      "x": 738,
+      "y": 400,
+      "connections": [
+        "crimson_m1",
+        "crimson_m3"
+      ]
+    },
+    {
+      "id": "crimson_m3",
+      "constellation": "crimson",
+      "type": "minor",
+      "name": "+5% Physical Damage",
+      "description": "",
+      "bonuses": {
+        "physicalDamageBonus": 5
+      },
+      "x": 766,
+      "y": 400,
+      "connections": [
+        "crimson_m2",
+        "crimson_m4"
+      ]
+    },
+    {
+      "id": "crimson_m4",
+      "constellation": "crimson",
+      "type": "minor",
+      "name": "+10 Armor",
+      "description": "",
+      "bonuses": {
+        "armor": 10
+      },
+      "x": 794,
+      "y": 400,
+      "connections": [
+        "crimson_m3",
+        "crimson_m5"
+      ]
+    },
+    {
+      "id": "crimson_m5",
+      "constellation": "crimson",
+      "type": "minor",
+      "name": "+5% Physical Damage",
+      "description": "",
+      "bonuses": {
+        "physicalDamageBonus": 5
+      },
+      "x": 814,
+      "y": 400,
+      "connections": [
+        "crimson_m4",
+        "crimson_m6"
+      ]
+    },
+    {
+      "id": "crimson_m6",
+      "constellation": "crimson",
+      "type": "minor",
+      "name": "+2 HP Regen",
+      "description": "",
+      "bonuses": {
+        "hpRegen": 2
+      },
+      "x": 828,
+      "y": 400,
+      "connections": [
+        "crimson_m5",
+        "crimson_keystone"
+      ]
+    },
+    {
+      "id": "crimson_keystone",
+      "constellation": "crimson",
+      "type": "keystone",
+      "name": "Hemorrhage",
+      "description": "Bleed stacks burst for bonus damage on skill cast",
+      "bonuses": {
+        "hemorrhage": true
+      },
+      "x": 847,
+      "y": 400,
+      "connections": [
+        "crimson_m6"
+      ]
+    },
+    {
+      "id": "plague_gateway",
+      "constellation": "plague",
+      "type": "gateway",
+      "name": "+5% Poison Damage",
+      "description": "",
+      "bonuses": {
+        "poisonDamageBonus": 5
+      },
+      "x": 671,
+      "y": 441,
+      "connections": [
+        "origin",
+        "plague_m1"
+      ]
+    },
+    {
+      "id": "plague_m1",
+      "constellation": "plague",
+      "type": "minor",
+      "name": "+5% Poison Damage",
+      "description": "",
+      "bonuses": {
+        "poisonDamageBonus": 5
+      },
+      "x": 695,
+      "y": 455,
+      "connections": [
+        "plague_gateway",
+        "plague_m2"
+      ]
+    },
+    {
+      "id": "plague_m2",
+      "constellation": "plague",
+      "type": "minor",
+      "name": "+3% Attack Speed",
+      "description": "",
+      "bonuses": {
+        "attackSpeedBonus": 3
+      },
+      "x": 720,
+      "y": 469,
+      "connections": [
+        "plague_m1",
+        "plague_m3"
+      ]
+    },
+    {
+      "id": "plague_m3",
+      "constellation": "plague",
+      "type": "minor",
+      "name": "+5% Poison Damage",
+      "description": "",
+      "bonuses": {
+        "poisonDamageBonus": 5
+      },
+      "x": 744,
+      "y": 483,
+      "connections": [
+        "plague_m2",
+        "plague_m4"
+      ]
+    },
+    {
+      "id": "plague_m4",
+      "constellation": "plague",
+      "type": "minor",
+      "name": "+15 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 15
+      },
+      "x": 768,
+      "y": 497,
+      "connections": [
+        "plague_m3",
+        "plague_m5"
+      ]
+    },
+    {
+      "id": "plague_m5",
+      "constellation": "plague",
+      "type": "minor",
+      "name": "+5% Poison Damage",
+      "description": "",
+      "bonuses": {
+        "poisonDamageBonus": 5
+      },
+      "x": 785,
+      "y": 507,
+      "connections": [
+        "plague_m4",
+        "plague_m6"
+      ]
+    },
+    {
+      "id": "plague_m6",
+      "constellation": "plague",
+      "type": "minor",
+      "name": "+3% Attack Speed",
+      "description": "",
+      "bonuses": {
+        "attackSpeedBonus": 3
+      },
+      "x": 797,
+      "y": 514,
+      "connections": [
+        "plague_m5",
+        "plague_keystone"
+      ]
+    },
+    {
+      "id": "plague_keystone",
+      "constellation": "plague",
+      "type": "keystone",
+      "name": "Pandemic",
+      "description": "Poison spreads to nearby enemies on kill",
+      "bonuses": {
+        "pandemic": true
+      },
+      "x": 814,
+      "y": 524,
+      "connections": [
+        "plague_m6"
+      ]
+    },
+    {
+      "id": "bastion_gateway",
+      "constellation": "bastion",
+      "type": "gateway",
+      "name": "+20 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 20
+      },
+      "x": 641,
+      "y": 471,
+      "connections": [
+        "origin",
+        "bastion_m1"
+      ]
+    },
+    {
+      "id": "bastion_m1",
+      "constellation": "bastion",
+      "type": "minor",
+      "name": "+20 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 20
+      },
+      "x": 655,
+      "y": 495,
+      "connections": [
+        "bastion_gateway",
+        "bastion_m2"
+      ]
+    },
+    {
+      "id": "bastion_m2",
+      "constellation": "bastion",
+      "type": "minor",
+      "name": "+8 Armor",
+      "description": "",
+      "bonuses": {
+        "armor": 8
+      },
+      "x": 669,
+      "y": 520,
+      "connections": [
+        "bastion_m1",
+        "bastion_m3"
+      ]
+    },
+    {
+      "id": "bastion_m3",
+      "constellation": "bastion",
+      "type": "minor",
+      "name": "+20 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 20
+      },
+      "x": 683,
+      "y": 544,
+      "connections": [
+        "bastion_m2",
+        "bastion_m4"
+      ]
+    },
+    {
+      "id": "bastion_m4",
+      "constellation": "bastion",
+      "type": "minor",
+      "name": "+8 Armor",
+      "description": "",
+      "bonuses": {
+        "armor": 8
+      },
+      "x": 697,
+      "y": 568,
+      "connections": [
+        "bastion_m3",
+        "bastion_m5"
+      ]
+    },
+    {
+      "id": "bastion_m5",
+      "constellation": "bastion",
+      "type": "minor",
+      "name": "+20 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 20
+      },
+      "x": 707,
+      "y": 585,
+      "connections": [
+        "bastion_m4",
+        "bastion_m6"
+      ]
+    },
+    {
+      "id": "bastion_m6",
+      "constellation": "bastion",
+      "type": "minor",
+      "name": "+3 HP Regen",
+      "description": "",
+      "bonuses": {
+        "hpRegen": 3
+      },
+      "x": 714,
+      "y": 597,
+      "connections": [
+        "bastion_m5",
+        "bastion_keystone"
+      ]
+    },
+    {
+      "id": "bastion_keystone",
+      "constellation": "bastion",
+      "type": "keystone",
+      "name": "Iron Will",
+      "description": "20% of damage taken converted to mana",
+      "bonuses": {
+        "ironWill": true
+      },
+      "x": 724,
+      "y": 614,
+      "connections": [
+        "bastion_m6"
+      ]
+    },
+    {
+      "id": "venom_gateway",
+      "constellation": "venom",
+      "type": "gateway",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 600,
+      "y": 482,
+      "connections": [
+        "origin",
+        "venom_m1"
+      ]
+    },
+    {
+      "id": "venom_m1",
+      "constellation": "venom",
+      "type": "minor",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 600,
+      "y": 510,
+      "connections": [
+        "venom_gateway",
+        "venom_m2"
+      ]
+    },
+    {
+      "id": "venom_m2",
+      "constellation": "venom",
+      "type": "minor",
+      "name": "+3% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 3
+      },
+      "x": 600,
+      "y": 538,
+      "connections": [
+        "venom_m1",
+        "venom_m3"
+      ]
+    },
+    {
+      "id": "venom_m3",
+      "constellation": "venom",
+      "type": "minor",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 600,
+      "y": 566,
+      "connections": [
+        "venom_m2",
+        "venom_m4"
+      ]
+    },
+    {
+      "id": "venom_m4",
+      "constellation": "venom",
+      "type": "minor",
+      "name": "+15 Max Mana",
+      "description": "",
+      "bonuses": {
+        "maxMana": 15
+      },
+      "x": 600,
+      "y": 594,
+      "connections": [
+        "venom_m3",
+        "venom_m5"
+      ]
+    },
+    {
+      "id": "venom_m5",
+      "constellation": "venom",
+      "type": "minor",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 600,
+      "y": 614,
+      "connections": [
+        "venom_m4",
+        "venom_m6"
+      ]
+    },
+    {
+      "id": "venom_m6",
+      "constellation": "venom",
+      "type": "minor",
+      "name": "+3% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 3
+      },
+      "x": 600,
+      "y": 628,
+      "connections": [
+        "venom_m5",
+        "venom_keystone"
+      ]
+    },
+    {
+      "id": "venom_keystone",
+      "constellation": "venom",
+      "type": "keystone",
+      "name": "Wither",
+      "description": "Enemies lose 2% max HP/sec per chaos stack",
+      "bonuses": {
+        "wither": true
+      },
+      "x": 600,
+      "y": 647,
+      "connections": [
+        "venom_m6"
+      ]
+    },
+    {
+      "id": "gale_gateway",
+      "constellation": "gale",
+      "type": "gateway",
+      "name": "+4% Attack Speed",
+      "description": "",
+      "bonuses": {
+        "attackSpeedBonus": 4
+      },
+      "x": 559,
+      "y": 471,
+      "connections": [
+        "origin",
+        "gale_m1"
+      ]
+    },
+    {
+      "id": "gale_m1",
+      "constellation": "gale",
+      "type": "minor",
+      "name": "+4% Attack Speed",
+      "description": "",
+      "bonuses": {
+        "attackSpeedBonus": 4
+      },
+      "x": 545,
+      "y": 495,
+      "connections": [
+        "gale_gateway",
+        "gale_m2"
+      ]
+    },
+    {
+      "id": "gale_m2",
+      "constellation": "gale",
+      "type": "minor",
+      "name": "+4% Cooldown Reduction",
+      "description": "",
+      "bonuses": {
+        "cooldownReduction": 4
+      },
+      "x": 531,
+      "y": 520,
+      "connections": [
+        "gale_m1",
+        "gale_m3"
+      ]
+    },
+    {
+      "id": "gale_m3",
+      "constellation": "gale",
+      "type": "minor",
+      "name": "+4% Attack Speed",
+      "description": "",
+      "bonuses": {
+        "attackSpeedBonus": 4
+      },
+      "x": 517,
+      "y": 544,
+      "connections": [
+        "gale_m2",
+        "gale_m4"
+      ]
+    },
+    {
+      "id": "gale_m4",
+      "constellation": "gale",
+      "type": "minor",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 503,
+      "y": 568,
+      "connections": [
+        "gale_m3",
+        "gale_m5"
+      ]
+    },
+    {
+      "id": "gale_m5",
+      "constellation": "gale",
+      "type": "minor",
+      "name": "+4% Attack Speed",
+      "description": "",
+      "bonuses": {
+        "attackSpeedBonus": 4
+      },
+      "x": 493,
+      "y": 585,
+      "connections": [
+        "gale_m4",
+        "gale_m6"
+      ]
+    },
+    {
+      "id": "gale_m6",
+      "constellation": "gale",
+      "type": "minor",
+      "name": "+4% Cooldown Reduction",
+      "description": "",
+      "bonuses": {
+        "cooldownReduction": 4
+      },
+      "x": 486,
+      "y": 597,
+      "connections": [
+        "gale_m5",
+        "gale_keystone"
+      ]
+    },
+    {
+      "id": "gale_keystone",
+      "constellation": "gale",
+      "type": "keystone",
+      "name": "Windstep",
+      "description": "Skills with cooldown under 1s fire twice per tick",
+      "bonuses": {
+        "windstep": true
+      },
+      "x": 477,
+      "y": 614,
+      "connections": [
+        "gale_m6"
+      ]
+    },
+    {
+      "id": "void_con_gateway",
+      "constellation": "void_con",
+      "type": "gateway",
+      "name": "+15 Max Mana",
+      "description": "",
+      "bonuses": {
+        "maxMana": 15
+      },
+      "x": 529,
+      "y": 441,
+      "connections": [
+        "origin",
+        "void_con_m1"
+      ]
+    },
+    {
+      "id": "void_con_m1",
+      "constellation": "void_con",
+      "type": "minor",
+      "name": "+15 Max Mana",
+      "description": "",
+      "bonuses": {
+        "maxMana": 15
+      },
+      "x": 505,
+      "y": 455,
+      "connections": [
+        "void_con_gateway",
+        "void_con_m2"
+      ]
+    },
+    {
+      "id": "void_con_m2",
+      "constellation": "void_con",
+      "type": "minor",
+      "name": "+6% Spell Damage",
+      "description": "",
+      "bonuses": {
+        "spellDamageBonus": 6
+      },
+      "x": 480,
+      "y": 469,
+      "connections": [
+        "void_con_m1",
+        "void_con_m3"
+      ]
+    },
+    {
+      "id": "void_con_m3",
+      "constellation": "void_con",
+      "type": "minor",
+      "name": "+15 Max Mana",
+      "description": "",
+      "bonuses": {
+        "maxMana": 15
+      },
+      "x": 456,
+      "y": 483,
+      "connections": [
+        "void_con_m2",
+        "void_con_m4"
+      ]
+    },
+    {
+      "id": "void_con_m4",
+      "constellation": "void_con",
+      "type": "minor",
+      "name": "+2 Mana Regen",
+      "description": "",
+      "bonuses": {
+        "manaRegen": 2
+      },
+      "x": 432,
+      "y": 497,
+      "connections": [
+        "void_con_m3",
+        "void_con_m5"
+      ]
+    },
+    {
+      "id": "void_con_m5",
+      "constellation": "void_con",
+      "type": "minor",
+      "name": "+15 Max Mana",
+      "description": "",
+      "bonuses": {
+        "maxMana": 15
+      },
+      "x": 415,
+      "y": 507,
+      "connections": [
+        "void_con_m4",
+        "void_con_m6"
+      ]
+    },
+    {
+      "id": "void_con_m6",
+      "constellation": "void_con",
+      "type": "minor",
+      "name": "+6% Spell Damage",
+      "description": "",
+      "bonuses": {
+        "spellDamageBonus": 6
+      },
+      "x": 403,
+      "y": 514,
+      "connections": [
+        "void_con_m5",
+        "void_con_keystone"
+      ]
+    },
+    {
+      "id": "void_con_keystone",
+      "constellation": "void_con",
+      "type": "keystone",
+      "name": "Blood Mage",
+      "description": "Skills cost HP; gain damage equal to HP spent",
+      "bonuses": {
+        "bloodMage": true
+      },
+      "x": 386,
+      "y": 524,
+      "connections": [
+        "void_con_m6"
+      ]
+    },
+    {
+      "id": "iron_gateway",
+      "constellation": "iron",
+      "type": "gateway",
+      "name": "+6% Melee Damage",
+      "description": "",
+      "bonuses": {
+        "meleeDamageBonus": 6
+      },
+      "x": 518,
+      "y": 400,
+      "connections": [
+        "origin",
+        "iron_m1"
+      ]
+    },
+    {
+      "id": "iron_m1",
+      "constellation": "iron",
+      "type": "minor",
+      "name": "+6% Melee Damage",
+      "description": "",
+      "bonuses": {
+        "meleeDamageBonus": 6
+      },
+      "x": 490,
+      "y": 400,
+      "connections": [
+        "iron_gateway",
+        "iron_m2"
+      ]
+    },
+    {
+      "id": "iron_m2",
+      "constellation": "iron",
+      "type": "minor",
+      "name": "+8 Armor",
+      "description": "",
+      "bonuses": {
+        "armor": 8
+      },
+      "x": 462,
+      "y": 400,
+      "connections": [
+        "iron_m1",
+        "iron_m3"
+      ]
+    },
+    {
+      "id": "iron_m3",
+      "constellation": "iron",
+      "type": "minor",
+      "name": "+6% Melee Damage",
+      "description": "",
+      "bonuses": {
+        "meleeDamageBonus": 6
+      },
+      "x": 434,
+      "y": 400,
+      "connections": [
+        "iron_m2",
+        "iron_m4"
+      ]
+    },
+    {
+      "id": "iron_m4",
+      "constellation": "iron",
+      "type": "minor",
+      "name": "+15 Max HP",
+      "description": "",
+      "bonuses": {
+        "maxHp": 15
+      },
+      "x": 406,
+      "y": 400,
+      "connections": [
+        "iron_m3",
+        "iron_m5"
+      ]
+    },
+    {
+      "id": "iron_m5",
+      "constellation": "iron",
+      "type": "minor",
+      "name": "+6% Melee Damage",
+      "description": "",
+      "bonuses": {
+        "meleeDamageBonus": 6
+      },
+      "x": 386,
+      "y": 400,
+      "connections": [
+        "iron_m4",
+        "iron_m6"
+      ]
+    },
+    {
+      "id": "iron_m6",
+      "constellation": "iron",
+      "type": "minor",
+      "name": "+8 Armor",
+      "description": "",
+      "bonuses": {
+        "armor": 8
+      },
+      "x": 372,
+      "y": 400,
+      "connections": [
+        "iron_m5",
+        "iron_keystone"
+      ]
+    },
+    {
+      "id": "iron_keystone",
+      "constellation": "iron",
+      "type": "keystone",
+      "name": "Blademaster",
+      "description": "Melee skills have no mana cost; +50% melee damage",
+      "bonuses": {
+        "blademaster": true
+      },
+      "x": 353,
+      "y": 400,
+      "connections": [
+        "iron_m6"
+      ]
+    },
+    {
+      "id": "wisp_gateway",
+      "constellation": "wisp",
+      "type": "gateway",
+      "name": "+5% Skill Effect",
+      "description": "",
+      "bonuses": {
+        "skillEffect": 5
+      },
+      "x": 529,
+      "y": 359,
+      "connections": [
+        "origin",
+        "wisp_m1"
+      ]
+    },
+    {
+      "id": "wisp_m1",
+      "constellation": "wisp",
+      "type": "minor",
+      "name": "+5% Skill Effect",
+      "description": "",
+      "bonuses": {
+        "skillEffect": 5
+      },
+      "x": 505,
+      "y": 345,
+      "connections": [
+        "wisp_gateway",
+        "wisp_m2"
+      ]
+    },
+    {
+      "id": "wisp_m2",
+      "constellation": "wisp",
+      "type": "minor",
+      "name": "+10 Max Mana",
+      "description": "",
+      "bonuses": {
+        "maxMana": 10
+      },
+      "x": 480,
+      "y": 331,
+      "connections": [
+        "wisp_m1",
+        "wisp_m3"
+      ]
+    },
+    {
+      "id": "wisp_m3",
+      "constellation": "wisp",
+      "type": "minor",
+      "name": "+5% Skill Effect",
+      "description": "",
+      "bonuses": {
+        "skillEffect": 5
+      },
+      "x": 456,
+      "y": 317,
+      "connections": [
+        "wisp_m2",
+        "wisp_m4"
+      ]
+    },
+    {
+      "id": "wisp_m4",
+      "constellation": "wisp",
+      "type": "minor",
+      "name": "+3% All Damage",
+      "description": "",
+      "bonuses": {
+        "allDamageBonus": 3
+      },
+      "x": 432,
+      "y": 303,
+      "connections": [
+        "wisp_m3",
+        "wisp_m5"
+      ]
+    },
+    {
+      "id": "wisp_m5",
+      "constellation": "wisp",
+      "type": "minor",
+      "name": "+5% Skill Effect",
+      "description": "",
+      "bonuses": {
+        "skillEffect": 5
+      },
+      "x": 415,
+      "y": 293,
+      "connections": [
+        "wisp_m4",
+        "wisp_m6"
+      ]
+    },
+    {
+      "id": "wisp_m6",
+      "constellation": "wisp",
+      "type": "minor",
+      "name": "+10 Max Mana",
+      "description": "",
+      "bonuses": {
+        "maxMana": 10
+      },
+      "x": 403,
+      "y": 286,
+      "connections": [
+        "wisp_m5",
+        "wisp_keystone"
+      ]
+    },
+    {
+      "id": "wisp_keystone",
+      "constellation": "wisp",
+      "type": "keystone",
+      "name": "Necromancer's Mark",
+      "description": "On-kill triggers also summon a shadow minion",
+      "bonuses": {
+        "necromancersMark": true
+      },
+      "x": 386,
+      "y": 277,
+      "connections": [
+        "wisp_m6"
+      ]
+    },
+    {
+      "id": "omen_gateway",
+      "constellation": "omen",
+      "type": "gateway",
+      "name": "+4% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 4
+      },
+      "x": 559,
+      "y": 329,
+      "connections": [
+        "origin",
+        "omen_m1"
+      ]
+    },
+    {
+      "id": "omen_m1",
+      "constellation": "omen",
+      "type": "minor",
+      "name": "+4% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 4
+      },
+      "x": 545,
+      "y": 305,
+      "connections": [
+        "omen_gateway",
+        "omen_m2"
+      ]
+    },
+    {
+      "id": "omen_m2",
+      "constellation": "omen",
+      "type": "minor",
+      "name": "+20% Crit Multiplier",
+      "description": "",
+      "bonuses": {
+        "critMultiplier": 20
+      },
+      "x": 531,
+      "y": 280,
+      "connections": [
+        "omen_m1",
+        "omen_m3"
+      ]
+    },
+    {
+      "id": "omen_m3",
+      "constellation": "omen",
+      "type": "minor",
+      "name": "+4% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 4
+      },
+      "x": 517,
+      "y": 256,
+      "connections": [
+        "omen_m2",
+        "omen_m4"
+      ]
+    },
+    {
+      "id": "omen_m4",
+      "constellation": "omen",
+      "type": "minor",
+      "name": "+10% Item Rarity",
+      "description": "",
+      "bonuses": {
+        "itemRarity": 10
+      },
+      "x": 503,
+      "y": 232,
+      "connections": [
+        "omen_m3",
+        "omen_m5"
+      ]
+    },
+    {
+      "id": "omen_m5",
+      "constellation": "omen",
+      "type": "minor",
+      "name": "+4% Crit Chance",
+      "description": "",
+      "bonuses": {
+        "critChance": 4
+      },
+      "x": 493,
+      "y": 215,
+      "connections": [
+        "omen_m4",
+        "omen_m6"
+      ]
+    },
+    {
+      "id": "omen_m6",
+      "constellation": "omen",
+      "type": "minor",
+      "name": "+20% Crit Multiplier",
+      "description": "",
+      "bonuses": {
+        "critMultiplier": 20
+      },
+      "x": 486,
+      "y": 203,
+      "connections": [
+        "omen_m5",
+        "omen_keystone"
+      ]
+    },
+    {
+      "id": "omen_keystone",
+      "constellation": "omen",
+      "type": "keystone",
+      "name": "Fortune's Edge",
+      "description": "Crit guaranteed every 5th hit; +200% crit damage",
+      "bonuses": {
+        "fortunesEdge": true
+      },
+      "x": 476,
+      "y": 186,
+      "connections": [
+        "omen_m6"
+      ]
+    }
+  ]
+}

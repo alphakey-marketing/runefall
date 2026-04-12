@@ -3,23 +3,64 @@
     "tier": 1,
     "name": "Tier 1 — Forgotten Crypt",
     "rooms": [
-      { "type": "combat", "enemies": ["skeleton_warrior", "plague_rat", "plague_rat"] },
-      { "type": "combat", "enemies": ["skeleton_warrior", "bone_archer", "skeleton_warrior"] },
-      { "type": "boss", "enemies": ["stone_guardian"] }
+      {
+        "type": "combat",
+        "enemies": [
+          "skeleton_warrior",
+          "plague_rat",
+          "plague_rat"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "skeleton_warrior",
+          "bone_archer",
+          "skeleton_warrior"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "stone_guardian"
+        ]
+      }
     ],
     "modifiers": [],
-    "lootMultiplier": 1.0,
-    "xpMultiplier": 1.0
+    "lootMultiplier": 1,
+    "xpMultiplier": 1
   },
   {
     "tier": 2,
     "name": "Tier 2 — Ember Ruins",
     "rooms": [
-      { "type": "combat", "enemies": ["fire_imp", "fire_imp", "plague_rat"] },
-      { "type": "combat", "enemies": ["fire_imp", "corrupted_mage"] },
-      { "type": "boss", "enemies": ["fire_imp", "fire_imp", "stone_guardian"] }
+      {
+        "type": "combat",
+        "enemies": [
+          "fire_imp",
+          "fire_imp",
+          "plague_rat"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "fire_imp",
+          "corrupted_mage"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "fire_imp",
+          "fire_imp",
+          "stone_guardian"
+        ]
+      }
     ],
-    "modifiers": ["Monsters deal 20% increased damage"],
+    "modifiers": [
+      "Monsters deal 20% increased damage"
+    ],
     "lootMultiplier": 1.3,
     "xpMultiplier": 1.2
   },
@@ -27,11 +68,34 @@
     "tier": 3,
     "name": "Tier 3 — Frozen Wastes",
     "rooms": [
-      { "type": "combat", "enemies": ["ice_golem", "plague_rat", "venom_spider"] },
-      { "type": "combat", "enemies": ["ice_golem", "bone_archer", "bone_archer"] },
-      { "type": "boss", "enemies": ["ice_golem", "ice_golem"] }
+      {
+        "type": "combat",
+        "enemies": [
+          "ice_golem",
+          "plague_rat",
+          "venom_spider"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "ice_golem",
+          "bone_archer",
+          "bone_archer"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "ice_golem",
+          "ice_golem"
+        ]
+      }
     ],
-    "modifiers": ["Monsters have 40% increased HP", "All monsters apply Chill on hit"],
+    "modifiers": [
+      "Monsters have 40% increased HP",
+      "All monsters apply Chill on hit"
+    ],
     "lootMultiplier": 1.6,
     "xpMultiplier": 1.5
   },
@@ -39,24 +103,654 @@
     "tier": 4,
     "name": "Tier 4 — Storm Peaks",
     "rooms": [
-      { "type": "combat", "enemies": ["thunder_beast", "shadow_wraith", "bone_archer"] },
-      { "type": "combat", "enemies": ["thunder_beast", "thunder_beast", "corrupted_mage"] },
-      { "type": "boss", "enemies": ["thunder_beast", "shadow_wraith", "shadow_wraith"] }
+      {
+        "type": "combat",
+        "enemies": [
+          "thunder_beast",
+          "shadow_wraith",
+          "bone_archer"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "thunder_beast",
+          "thunder_beast",
+          "corrupted_mage"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "thunder_beast",
+          "shadow_wraith",
+          "shadow_wraith"
+        ]
+      }
     ],
-    "modifiers": ["All monsters apply Shock on hit", "Monsters have 60% increased HP"],
-    "lootMultiplier": 2.0,
+    "modifiers": [
+      "All monsters apply Shock on hit",
+      "Monsters have 60% increased HP"
+    ],
+    "lootMultiplier": 2,
     "xpMultiplier": 1.8
   },
   {
     "tier": 5,
     "name": "Tier 5 — Plagued Depths",
     "rooms": [
-      { "type": "combat", "enemies": ["venom_spider", "venom_spider", "plague_rat", "plague_rat"] },
-      { "type": "combat", "enemies": ["shadow_wraith", "venom_spider", "corrupted_mage"] },
-      { "type": "boss", "enemies": ["stone_guardian", "shadow_wraith", "venom_spider"] }
+      {
+        "type": "combat",
+        "enemies": [
+          "venom_spider",
+          "venom_spider",
+          "plague_rat",
+          "plague_rat"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "shadow_wraith",
+          "venom_spider",
+          "corrupted_mage"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "stone_guardian",
+          "shadow_wraith",
+          "venom_spider"
+        ]
+      }
     ],
-    "modifiers": ["Monsters have 80% increased HP", "+100% item quantity", "Monsters explode on death"],
+    "modifiers": [
+      "Monsters have 80% increased HP",
+      "+100% item quantity",
+      "Monsters explode on death"
+    ],
     "lootMultiplier": 2.5,
-    "xpMultiplier": 2.0
+    "xpMultiplier": 2
+  },
+  {
+    "tier": 6,
+    "name": "Tier 6 — Crimson Bloodfields",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "blood_fiend",
+          "bone_archer",
+          "skeleton_warrior"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "blood_fiend",
+          "blood_fiend",
+          "plague_rat"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "stone_guardian",
+          "blood_fiend"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 40% increased HP",
+      "All monsters apply Bleed on hit"
+    ],
+    "lootMultiplier": 2.8,
+    "xpMultiplier": 2.2
+  },
+  {
+    "tier": 7,
+    "name": "Tier 7 — Frost Catacombs",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "frost_specter",
+          "ice_golem",
+          "bone_archer"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "frost_specter",
+          "frost_specter",
+          "corrupted_mage"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "ice_golem",
+          "frost_specter",
+          "frost_specter"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 60% increased HP",
+      "All monsters apply Chill on hit",
+      "+20% monster damage"
+    ],
+    "lootMultiplier": 3.2,
+    "xpMultiplier": 2.5
+  },
+  {
+    "tier": 8,
+    "name": "Tier 8 — Infernal Halls",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "inferno_golem",
+          "fire_imp",
+          "fire_imp"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "inferno_golem",
+          "corrupted_mage",
+          "shadow_wraith"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "inferno_golem",
+          "inferno_golem"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters deal 40% increased damage",
+      "All monsters apply Burn on hit",
+      "Elite monsters present"
+    ],
+    "lootMultiplier": 3.6,
+    "xpMultiplier": 2.8
+  },
+  {
+    "tier": 9,
+    "name": "Tier 9 — Venom Pits",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "venom_spider",
+          "venom_spider",
+          "plague_rat",
+          "blood_fiend"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "venom_spider",
+          "corrupted_mage",
+          "shadow_wraith"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "stone_guardian",
+          "venom_spider",
+          "venom_spider",
+          "plague_rat"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 100% increased HP",
+      "All monsters apply Poison on hit",
+      "+50% item quantity"
+    ],
+    "lootMultiplier": 4,
+    "xpMultiplier": 3
+  },
+  {
+    "tier": 10,
+    "name": "Tier 10 — Storm Sanctum",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "thunder_beast",
+          "thunder_beast",
+          "shadow_wraith"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "thunder_beast",
+          "frost_specter",
+          "corrupted_mage",
+          "bone_archer"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "thunder_beast"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 120% increased HP",
+      "All monsters apply Shock on hit",
+      "Boss is an Elite"
+    ],
+    "lootMultiplier": 4.5,
+    "xpMultiplier": 3.2
+  },
+  {
+    "tier": 11,
+    "name": "Tier 11 — Chaos Rifts",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "void_herald",
+          "shadow_wraith",
+          "corrupted_mage"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "blood_fiend",
+          "inferno_golem",
+          "venom_spider"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "void_herald",
+          "elite_champion"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters deal 60% increased damage",
+      "+150% item quantity",
+      "Elite monsters present"
+    ],
+    "lootMultiplier": 5,
+    "xpMultiplier": 3.5
+  },
+  {
+    "tier": 12,
+    "name": "Tier 12 — Shattered Fortress",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "bone_archer",
+          "bone_archer",
+          "shadow_wraith"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "inferno_golem",
+          "frost_specter",
+          "thunder_beast"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "inferno_golem",
+          "frost_specter"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 150% increased HP",
+      "Monsters deal 70% increased damage",
+      "All monsters have Enrage at 30% HP"
+    ],
+    "lootMultiplier": 5.5,
+    "xpMultiplier": 3.8
+  },
+  {
+    "tier": 13,
+    "name": "Tier 13 — Abyssal Depths",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "void_herald",
+          "void_herald",
+          "shadow_wraith"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "inferno_golem",
+          "blood_fiend"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "void_herald",
+          "void_herald"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 180% increased HP",
+      "+200% item quantity",
+      "Chaos damage cannot be resisted"
+    ],
+    "lootMultiplier": 6,
+    "xpMultiplier": 4
+  },
+  {
+    "tier": 14,
+    "name": "Tier 14 — Necropolis",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "skeleton_warrior",
+          "skeleton_warrior",
+          "bone_archer",
+          "bone_archer"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "blood_fiend",
+          "shadow_wraith"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "elite_champion"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 200% increased HP",
+      "Monsters deal 80% increased damage",
+      "All monsters regenerate 2% HP/sec"
+    ],
+    "lootMultiplier": 6.5,
+    "xpMultiplier": 4.3
+  },
+  {
+    "tier": 15,
+    "name": "Tier 15 — Crimson Throne",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "blood_fiend",
+          "blood_fiend",
+          "inferno_golem"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "void_herald",
+          "frost_specter",
+          "thunder_beast"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "void_herald"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 250% increased HP",
+      "Monsters deal 100% increased damage",
+      "+300% item quantity",
+      "All elites have double life"
+    ],
+    "lootMultiplier": 7,
+    "xpMultiplier": 4.6
+  },
+  {
+    "tier": 16,
+    "name": "Tier 16 — Void Sanctum",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "void_herald",
+          "void_herald",
+          "void_herald",
+          "shadow_wraith"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "inferno_golem"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "void_herald",
+          "void_herald",
+          "void_herald"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 300% increased HP",
+      "Monsters deal 120% increased damage",
+      "Monsters immune to Chill",
+      "+300% item quantity"
+    ],
+    "lootMultiplier": 7.5,
+    "xpMultiplier": 5
+  },
+  {
+    "tier": 17,
+    "name": "Tier 17 — Infernal Citadel",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "inferno_golem",
+          "inferno_golem",
+          "elite_champion",
+          "fire_imp"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "corrupted_mage",
+          "corrupted_mage"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "inferno_golem",
+          "inferno_golem",
+          "inferno_golem"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 350% increased HP",
+      "Monsters deal 140% increased damage",
+      "Monsters immune to Freeze",
+      "+350% item quantity"
+    ],
+    "lootMultiplier": 8,
+    "xpMultiplier": 5.4
+  },
+  {
+    "tier": 18,
+    "name": "Tier 18 — Glacial Spire",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "frost_specter",
+          "frost_specter",
+          "ice_golem",
+          "elite_champion"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "frost_specter",
+          "void_herald"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "frost_specter",
+          "ice_golem"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 400% increased HP",
+      "Monsters deal 160% increased damage",
+      "All monsters apply Chill on hit",
+      "Monsters immune to Burn"
+    ],
+    "lootMultiplier": 8.5,
+    "xpMultiplier": 5.8
+  },
+  {
+    "tier": 19,
+    "name": "Tier 19 — Plane of Chaos",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "void_herald",
+          "void_herald",
+          "elite_champion",
+          "elite_champion"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "void_herald",
+          "inferno_golem"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "void_herald",
+          "void_herald"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 450% increased HP",
+      "Monsters deal 180% increased damage",
+      "+400% item quantity",
+      "All elemental resistances at max"
+    ],
+    "lootMultiplier": 9,
+    "xpMultiplier": 6.2
+  },
+  {
+    "tier": 20,
+    "name": "Tier 20 — Runefall Endgame",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "void_herald",
+          "void_herald",
+          "inferno_golem"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "elite_champion",
+          "void_herald"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "elite_champion",
+          "elite_champion",
+          "void_herald",
+          "void_herald",
+          "inferno_golem"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 500% increased HP",
+      "+300% HP, monsters immune to Freeze",
+      "Monsters deal 200% increased damage",
+      "+500% item quantity",
+      "All status effects deal 50% reduced damage"
+    ],
+    "lootMultiplier": 10,
+    "xpMultiplier": 7
   }
 ]

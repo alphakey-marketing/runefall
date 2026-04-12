@@ -1,0 +1,260 @@
+.simulator-screen {
+  padding: 12px 16px 80px;
+  background: #0d0d1a;
+  min-height: 100vh;
+}
+
+.sim-title {
+  color: #c4a3ff;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.sim-layout {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sim-left {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sim-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sim-section {
+  background: #16213e;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.sim-section h3 {
+  color: #c4a3ff;
+  font-size: 13px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.sim-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.sim-field label {
+  color: #888;
+  font-size: 12px;
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.sim-field input[type="number"] {
+  background: #0d0d1a;
+  border: 1px solid #2a2a4a;
+  color: #e0e0e0;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  width: 80px;
+}
+
+.sim-resists {
+  margin-top: 8px;
+}
+
+.resist-label {
+  color: #666;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.sim-field.resist {
+  margin-bottom: 4px;
+}
+
+.sim-field.resist label {
+  width: 60px;
+  text-transform: capitalize;
+}
+
+.sim-field.resist input[type="range"] {
+  flex: 1;
+  accent-color: #c4a3ff;
+}
+
+.sim-field.resist span {
+  color: #c4a3ff;
+  font-size: 11px;
+  width: 35px;
+  text-align: right;
+}
+
+.sim-stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sim-stat {
+  color: #888;
+  font-size: 12px;
+}
+
+.sim-run-btn {
+  background: linear-gradient(to bottom, #4a3f8a, #2a2060);
+  border: 2px solid #c4a3ff;
+  color: #c4a3ff;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  width: 100%;
+}
+
+.sim-run-btn:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #5a4f9a, #3a3070);
+}
+
+.sim-run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sim-result {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.sim-result.result-victory {
+  border-color: #4a8a4a;
+  background: #1a2a1a;
+}
+
+.sim-result.result-defeat {
+  border-color: #8a3a3a;
+  background: #2a1a1a;
+}
+
+.sim-result.result-timeout {
+  border-color: #8a7a3a;
+  background: #2a2a1a;
+}
+
+.sim-result-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.result-victory .sim-result-title { color: #7ec87e; }
+.result-defeat .sim-result-title { color: #e87878; }
+.result-timeout .sim-result-title { color: #e8c878; }
+
+.sim-result-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #888;
+}
+
+.sim-log-container {
+  flex: 1;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.sim-build-io {
+  display: flex;
+  gap: 16px;
+  background: #16213e;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.sim-export, .sim-import {
+  flex: 1;
+}
+
+.sim-export h3, .sim-import h3 {
+  color: #c4a3ff;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.sim-btn {
+  background: #1a1a2e;
+  border: 1px solid #4a3f8a;
+  color: #c4a3ff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.sim-btn:hover {
+  background: #2a2a4a;
+}
+
+.sim-code {
+  width: 100%;
+  background: #0d0d1a;
+  border: 1px solid #2a2a4a;
+  color: #888;
+  border-radius: 4px;
+  padding: 6px;
+  font-size: 11px;
+  font-family: monospace;
+  resize: vertical;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.sim-import-preview {
+  background: #1a2a1a;
+  border: 1px solid #3a5a3a;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  color: #7ec87e;
+}
+
+.sim-import-preview p {
+  margin-bottom: 4px;
+}
+
+.sim-import-note {
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .sim-layout {
+    flex-direction: column;
+  }
+  .sim-left {
+    width: 100%;
+  }
+  .sim-build-io {
+    flex-direction: column;
+  }
+}
