@@ -1,7 +1,7 @@
 [
   {
     "tier": 1,
-    "name": "Tier 1 — Forgotten Crypt",
+    "name": "Tier 1 \u2014 Forgotten Crypt",
     "rooms": [
       {
         "type": "combat",
@@ -32,7 +32,7 @@
   },
   {
     "tier": 2,
-    "name": "Tier 2 — Ember Ruins",
+    "name": "Tier 2 \u2014 Ember Ruins",
     "rooms": [
       {
         "type": "combat",
@@ -66,7 +66,7 @@
   },
   {
     "tier": 3,
-    "name": "Tier 3 — Frozen Wastes",
+    "name": "Tier 3 \u2014 Frozen Wastes",
     "rooms": [
       {
         "type": "combat",
@@ -101,7 +101,7 @@
   },
   {
     "tier": 4,
-    "name": "Tier 4 — Storm Peaks",
+    "name": "Tier 4 \u2014 Storm Peaks",
     "rooms": [
       {
         "type": "combat",
@@ -137,7 +137,7 @@
   },
   {
     "tier": 5,
-    "name": "Tier 5 — Plagued Depths",
+    "name": "Tier 5 \u2014 Plagued Depths",
     "rooms": [
       {
         "type": "combat",
@@ -175,7 +175,7 @@
   },
   {
     "tier": 6,
-    "name": "Tier 6 — Crimson Bloodfields",
+    "name": "Tier 6 \u2014 Crimson Bloodfields",
     "rooms": [
       {
         "type": "combat",
@@ -210,7 +210,7 @@
   },
   {
     "tier": 7,
-    "name": "Tier 7 — Frost Catacombs",
+    "name": "Tier 7 \u2014 Frost Catacombs",
     "rooms": [
       {
         "type": "combat",
@@ -247,7 +247,7 @@
   },
   {
     "tier": 8,
-    "name": "Tier 8 — Infernal Halls",
+    "name": "Tier 8 \u2014 Infernal Halls",
     "rooms": [
       {
         "type": "combat",
@@ -283,7 +283,7 @@
   },
   {
     "tier": 9,
-    "name": "Tier 9 — Venom Pits",
+    "name": "Tier 9 \u2014 Venom Pits",
     "rooms": [
       {
         "type": "combat",
@@ -322,7 +322,7 @@
   },
   {
     "tier": 10,
-    "name": "Tier 10 — Storm Sanctum",
+    "name": "Tier 10 \u2014 Storm Sanctum",
     "rooms": [
       {
         "type": "combat",
@@ -359,7 +359,7 @@
   },
   {
     "tier": 11,
-    "name": "Tier 11 — Chaos Rifts",
+    "name": "Tier 11 \u2014 Chaos Rifts",
     "rooms": [
       {
         "type": "combat",
@@ -395,7 +395,7 @@
   },
   {
     "tier": 12,
-    "name": "Tier 12 — Shattered Fortress",
+    "name": "Tier 12 \u2014 Shattered Fortress",
     "rooms": [
       {
         "type": "combat",
@@ -433,7 +433,7 @@
   },
   {
     "tier": 13,
-    "name": "Tier 13 — Abyssal Depths",
+    "name": "Tier 13 \u2014 Abyssal Depths",
     "rooms": [
       {
         "type": "combat",
@@ -470,7 +470,7 @@
   },
   {
     "tier": 14,
-    "name": "Tier 14 — Necropolis",
+    "name": "Tier 14 \u2014 Necropolis",
     "rooms": [
       {
         "type": "combat",
@@ -508,7 +508,7 @@
   },
   {
     "tier": 15,
-    "name": "Tier 15 — Crimson Throne",
+    "name": "Tier 15 \u2014 Crimson Throne",
     "rooms": [
       {
         "type": "combat",
@@ -548,7 +548,7 @@
   },
   {
     "tier": 16,
-    "name": "Tier 16 — Void Sanctum",
+    "name": "Tier 16 \u2014 Void Sanctum",
     "rooms": [
       {
         "type": "combat",
@@ -588,7 +588,7 @@
   },
   {
     "tier": 17,
-    "name": "Tier 17 — Infernal Citadel",
+    "name": "Tier 17 \u2014 Infernal Citadel",
     "rooms": [
       {
         "type": "combat",
@@ -629,7 +629,7 @@
   },
   {
     "tier": 18,
-    "name": "Tier 18 — Glacial Spire",
+    "name": "Tier 18 \u2014 Glacial Spire",
     "rooms": [
       {
         "type": "combat",
@@ -670,7 +670,7 @@
   },
   {
     "tier": 19,
-    "name": "Tier 19 — Plane of Chaos",
+    "name": "Tier 19 \u2014 Plane of Chaos",
     "rooms": [
       {
         "type": "combat",
@@ -711,7 +711,7 @@
   },
   {
     "tier": 20,
-    "name": "Tier 20 — Runefall Endgame",
+    "name": "Tier 20 \u2014 Runefall Endgame",
     "rooms": [
       {
         "type": "combat",
@@ -745,7 +745,7 @@
     ],
     "modifiers": [
       "Monsters have 500% increased HP",
-      "+300% HP, monsters immune to Freeze",
+      "Monsters are immune to Freeze",
       "Monsters deal 200% increased damage",
       "+500% item quantity",
       "All status effects deal 50% reduced damage"
