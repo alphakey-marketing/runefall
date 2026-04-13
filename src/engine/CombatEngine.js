@@ -3,6 +3,14 @@ import { applyStatus, tickStatuses, checkInteractions, isFrozen, getAttackSpeedM
 
 const MAX_TICKS = 200;
 
+// fortunesEdge: every 5th hit is guaranteed crit at +200% bonus crit multiplier
+// Base crit multiplier is 150% (1.5×). +200% bonus means 150 + 200 = 350% = 3.5× total.
+const FORTUNES_EDGE_CRIT_MULT = 3.5;
+
+// necromancersMark: on-kill, spectral minion deals this % of the dead enemy's maxHP to all remaining
+const NECROMANCERS_MARK_DMG_PCT = 0.15;
+const NECROMANCERS_MARK_FALLBACK_HP = 20;
+
 function applyElementBonus(damage, element, playerStats) {
   const bonusMap = {
     fire: playerStats.fireDamageBonus || 0,
@@ -48,8 +56,8 @@ function calcFinalDamage(baseDamage, skill, playerStats, enemy, isCrit = false, 
   }
 
   if (isCrit) {
-    // fortunesEdge every-5th-hit uses 300% (base 150 + 200 bonus = 300%) multiplier
-    const critMult = isFortuneCrit ? 3.0 : (playerStats.critMultiplier || 150) / 100;
+    // fortunesEdge every-5th-hit uses FORTUNES_EDGE_CRIT_MULT (3.5×) instead of normal critMultiplier
+    const critMult = isFortuneCrit ? FORTUNES_EDGE_CRIT_MULT : (playerStats.critMultiplier || 150) / 100;
     dmg = dmg * critMult;
   }
 
@@ -181,7 +189,7 @@ export function runCombat(playerStats, skills, enemies, playerCurrentHp = null) 
       if (playerStats.necromancersMark) {
         const remaining = enemyStates.filter(en => en.hp > 0);
         if (remaining.length > 0) {
-          const minionDmg = Math.max(1, Math.round((e.maxHp || 20) * 0.15));
+          const minionDmg = Math.max(1, Math.round((e.maxHp || NECROMANCERS_MARK_FALLBACK_HP) * NECROMANCERS_MARK_DMG_PCT));
           remaining.forEach(en => {
             en.hp = Math.max(0, en.hp - minionDmg);
             log.push({ type: 'damage', text: `Spectral Minion → ${en.name}: ${minionDmg} chaos damage [Necromancer's Mark]${en.hp <= 0 ? ' [KILLED]' : ` (${en.hp}/${en.maxHp} HP)`}`, damage: minionDmg, target: en.name });

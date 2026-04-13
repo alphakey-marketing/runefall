@@ -146,8 +146,19 @@ function playerReducer(state, action) {
     case 'ADD_RUNE_DUST':
       return { ...state, runeDust: state.runeDust + action.amount };
     case 'LOAD_SAVE': {
-      if (!action.savedState || typeof action.savedState !== 'object') return state;
-      return { ...initialState, ...action.savedState };
+      const s = action.savedState;
+      if (!s || typeof s !== 'object') return state;
+      // Validate required fields to guard against malformed saves
+      if (
+        typeof s.level !== 'number' ||
+        typeof s.xp !== 'number' ||
+        typeof s.runeDust !== 'number' ||
+        !Array.isArray(s.skillSlots) ||
+        !Array.isArray(s.allocatedNodes) ||
+        typeof s.equippedGear !== 'object' ||
+        !Array.isArray(s.inventory)
+      ) return state;
+      return { ...initialState, ...s };
     }
     default:
       return state;
