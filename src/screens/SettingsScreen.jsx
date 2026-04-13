@@ -11,7 +11,7 @@ export default function SettingsScreen() {
 
   const handleToggleSound = () => {
     gameDispatch({ type: 'TOGGLE_SOUND' });
-    AudioManager.setMuted(gameState.soundEnabled);
+    AudioManager.setMuted(!gameState.soundEnabled);
   };
 
   const handleSetSpeed = (speed) => {
