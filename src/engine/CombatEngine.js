@@ -24,11 +24,16 @@ function applyTypeBonus(damage, type, playerStats) {
   return damage * (1 + (typeMap[type] || 0) / 100);
 }
 
-function calcFinalDamage(baseDamage, skill, playerStats, enemy, isCrit = false) {
+function calcFinalDamage(baseDamage, skill, playerStats, enemy, isCrit = false, isFortuneCrit = false) {
   const allBonus = (playerStats.allDamageBonus || 0) / 100;
   let dmg = baseDamage * (1 + allBonus);
   dmg = applyElementBonus(dmg, skill.element, playerStats);
   dmg = applyTypeBonus(dmg, skill.type, playerStats);
+
+  // blademaster: melee skills deal +50% damage
+  if (playerStats.blademaster && skill.type === 'melee') {
+    dmg = dmg * 1.5;
+  }
 
   dmg = dmg * getShockDamageMult(enemy, playerStats);
 
@@ -43,7 +48,8 @@ function calcFinalDamage(baseDamage, skill, playerStats, enemy, isCrit = false) 
   }
 
   if (isCrit) {
-    const critMult = (playerStats.critMultiplier || 150) / 100;
+    // fortunesEdge every-5th-hit uses 300% (base 150 + 200 bonus = 300%) multiplier
+    const critMult = isFortuneCrit ? 3.0 : (playerStats.critMultiplier || 150) / 100;
     dmg = dmg * critMult;
   }
 
@@ -56,6 +62,10 @@ function calcFinalDamage(baseDamage, skill, playerStats, enemy, isCrit = false) 
 function rollCrit(playerStats, hitCounter = 0) {
   if (playerStats.fortunesEdge && hitCounter > 0 && hitCounter % 5 === 0) return true;
   return Math.random() * 100 < (playerStats.critChance || 5);
+}
+
+function isFortunesEdgeHit(playerStats, hitCounter) {
+  return playerStats.fortunesEdge && hitCounter > 0 && hitCounter % 5 === 0;
 }
 
 export function runCombat(playerStats, skills, enemies, playerCurrentHp = null) {
@@ -167,6 +177,18 @@ export function runCombat(playerStats, skills, enemies, playerCurrentHp = null) 
         });
       }
 
+      // necromancersMark: on-kill, summon a spectral minion that strikes all remaining enemies
+      if (playerStats.necromancersMark) {
+        const remaining = enemyStates.filter(en => en.hp > 0);
+        if (remaining.length > 0) {
+          const minionDmg = Math.max(1, Math.round((e.maxHp || 20) * 0.15));
+          remaining.forEach(en => {
+            en.hp = Math.max(0, en.hp - minionDmg);
+            log.push({ type: 'damage', text: `Spectral Minion → ${en.name}: ${minionDmg} chaos damage [Necromancer's Mark]${en.hp <= 0 ? ' [KILLED]' : ` (${en.hp}/${en.maxHp} HP)`}`, damage: minionDmg, target: en.name });
+          });
+        }
+      }
+
       const remaining = enemyStates.filter(en => en.hp > 0);
       if (remaining.length > 0) {
         skills.forEach((skill, i) => {
@@ -265,9 +287,10 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
       }
 
       hitCounters[skillIndex] = (hitCounters[skillIndex] || 0) + 1;
-      const isCrit = rollCrit(playerStats, hitCounters[skillIndex]);
+      const fortuneCrit = isFortunesEdgeHit(playerStats, hitCounters[skillIndex]);
+      const isCrit = fortuneCrit || rollCrit(playerStats, hitCounters[skillIndex]);
       const rawDmg = Math.round(skill.damage * dmgMult);
-      const finalDmg = calcFinalDamage(rawDmg, skill, playerStats, target, isCrit);
+      const finalDmg = calcFinalDamage(rawDmg, skill, playerStats, target, isCrit, fortuneCrit);
       target.hp = Math.max(0, target.hp - finalDmg);
 
       if (skill.manaLeech) {
@@ -276,7 +299,7 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
 
       const multiLabel = castCount > 1 ? ` (cast ${cast + 1})` : '';
       const critLabel = isCrit ? ' CRITICAL HIT!' : '';
-      const fortuneLabel = playerStats.fortunesEdge && isCrit ? " [Fortune's Edge]" : '';
+      const fortuneLabel = fortuneCrit ? " [Fortune's Edge]" : '';
       log.push({
         type: isCrit ? 'crit' : 'damage',
         text: `${skill.name}${castLabel}${multiLabel} → ${target.name}: ${finalDmg} ${skill.element} damage${critLabel}${fortuneLabel}${target.hp <= 0 ? ' [KILLED]' : ` (${target.hp}/${target.maxHp} HP)`}`,
@@ -290,13 +313,28 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
       });
 
       checkInteractions(target, log, target.name, playerStats);
+
+      // triggerOnHit: 30% chance to fire a bonus shot on every hit
+      if (!isEcho && skill.triggerOnHit && Math.random() < 0.30) {
+        log.push({ type: 'trigger', text: `TRIGGER: On Hit — ${skill.name} bonus shot!` });
+        const bonusTarget = aliveTargets.find(t => t.hp > 0);
+        if (bonusTarget) {
+          const bonusDmg = calcFinalDamage(skill.damage, skill, playerStats, bonusTarget, false, false);
+          bonusTarget.hp = Math.max(0, bonusTarget.hp - bonusDmg);
+          log.push({
+            type: 'damage',
+            text: `${skill.name} [ON HIT] → ${bonusTarget.name}: ${bonusDmg} ${skill.element} damage${bonusTarget.hp <= 0 ? ' [KILLED]' : ` (${bonusTarget.hp}/${bonusTarget.maxHp} HP)`}`,
+            damage: bonusDmg, target: bonusTarget.name, skill: skill.name,
+          });
+        }
+      }
     });
   }
 
   if (!isEcho && skill.echoChance && Math.random() < skill.echoChance) {
     const echoTarget = aliveTargets.find(e => e.hp > 0);
     if (echoTarget) {
-      const echoDmg = calcFinalDamage(skill.damage, skill, playerStats, echoTarget, false);
+      const echoDmg = calcFinalDamage(skill.damage, skill, playerStats, echoTarget, false, false);
       echoTarget.hp = Math.max(0, echoTarget.hp - echoDmg);
       log.push({ type: 'echo', text: `ECHO! ${skill.name} fires again → ${echoTarget.name}: ${echoDmg} damage${echoTarget.hp <= 0 ? ' [KILLED]' : ''}`, damage: echoDmg });
     }
@@ -305,7 +343,7 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
   if (skill.hasTotem) {
     const totemTarget = aliveTargets.find(e => e.hp > 0);
     if (totemTarget) {
-      const totemDmg = calcFinalDamage(Math.round(skill.damage * (skill.totemDamageMultiplier || 0.5)), skill, playerStats, totemTarget, false);
+      const totemDmg = calcFinalDamage(Math.round(skill.damage * (skill.totemDamageMultiplier || 0.5)), skill, playerStats, totemTarget, false, false);
       totemTarget.hp = Math.max(0, totemTarget.hp - totemDmg);
       log.push({ type: 'totem', text: `TOTEM fires ${skill.name} → ${totemTarget.name}: ${totemDmg} damage`, damage: totemDmg });
     }

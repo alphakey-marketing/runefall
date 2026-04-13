@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useGame } from './context/GameContext.jsx';
 import { usePlayer } from './context/PlayerContext.jsx';
 import BottomNav from './components/BottomNav.jsx';
@@ -37,7 +37,35 @@ function XPBar({ xp, level }) {
 
 export default function App() {
   const { state: gameState } = useGame();
-  const { state: playerState } = usePlayer();
+  const { state: playerState, dispatch: playerDispatch } = usePlayer();
+  const importRef = useRef(null);
+
+  const handleExport = () => {
+    const json = JSON.stringify(playerState, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'runefall-save.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const savedState = JSON.parse(evt.target.result);
+        playerDispatch({ type: 'LOAD_SAVE', savedState });
+      } catch {
+        alert('Invalid save file.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   return (
     <div className="app">
@@ -47,6 +75,9 @@ export default function App() {
           <span className="header-level">Lv.{playerState.level}</span>
           <XPBar xp={playerState.xp} level={playerState.level} />
           <span className="header-dust">🔮 {playerState.runeDust}</span>
+          <button className="save-btn" onClick={handleExport} title="Export save">💾</button>
+          <button className="save-btn" onClick={() => importRef.current?.click()} title="Import save">📂</button>
+          <input ref={importRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
         </div>
       </header>
       <main className="app-main">

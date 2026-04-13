@@ -122,6 +122,8 @@ export default function CraftingScreen() {
     const filled = legendarySlots.filter(Boolean);
     if (filled.length < 3) { flash('Need 3 rare items'); return; }
     if (!filled.every(i => i.rarity === 'rare')) { flash('All 3 items must be Rare'); return; }
+    const slotTypes = [...new Set(filled.map(i => i.slot))];
+    if (slotTypes.length > 1) { flash(`All 3 items must be the same slot (found: ${slotTypes.join(', ')})`); return; }
     const itemIds = filled.map(i => i.id);
     const success = Math.random() < 0.25;
     if (success) {
@@ -249,7 +251,7 @@ export default function CraftingScreen() {
         </div>
         <button
           className="craft-btn legend-btn"
-          disabled={legendarySlots.filter(Boolean).length < 3}
+          disabled={legendarySlots.filter(Boolean).length < 3 || new Set(legendarySlots.filter(Boolean).map(i => i.slot)).size > 1}
           onClick={handleLegendaryCraft}
         >
           Craft Legendary (0 Dust)

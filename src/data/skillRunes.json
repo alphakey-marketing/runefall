@@ -9,6 +9,7 @@
     "baseCooldown": 1,
     "baseHits": 1,
     "statusEffect": "chill",
+    "unlockLevel": 1,
     "description": "Fires a frost-tipped projectile that chills enemies"
   },
   {
@@ -21,6 +22,7 @@
     "baseCooldown": 1.5,
     "baseHits": 3,
     "statusEffect": "burn",
+    "unlockLevel": 1,
     "description": "Launches an explosive fireball dealing AoE damage"
   },
   {
@@ -33,6 +35,7 @@
     "baseCooldown": 1.2,
     "baseHits": 1,
     "statusEffect": "bleed",
+    "unlockLevel": 1,
     "description": "A powerful ground strike that causes bleeding"
   },
   {
@@ -45,6 +48,7 @@
     "baseCooldown": 1,
     "baseHits": 3,
     "statusEffect": "shock",
+    "unlockLevel": 2,
     "description": "Lightning that chains between enemies"
   },
   {
@@ -57,6 +61,7 @@
     "baseCooldown": 1.5,
     "baseHits": 1,
     "statusEffect": null,
+    "unlockLevel": 3,
     "description": "High-damage piercing projectile"
   },
   {
@@ -69,6 +74,7 @@
     "baseCooldown": 2,
     "baseHits": 4,
     "statusEffect": "poison",
+    "unlockLevel": 4,
     "description": "AoE poison cloud around the player"
   },
   {
@@ -81,6 +87,7 @@
     "baseCooldown": 3,
     "baseHits": 1,
     "statusEffect": null,
+    "unlockLevel": 5,
     "description": "Teleport strike dealing double damage"
   },
   {
@@ -93,6 +100,7 @@
     "baseCooldown": 2.5,
     "baseHits": 5,
     "statusEffect": "chill",
+    "unlockLevel": 6,
     "description": "Persistent AoE ice zone"
   },
   {
@@ -105,6 +113,7 @@
     "baseCooldown": 1.2,
     "baseHits": 1,
     "statusEffect": null,
+    "unlockLevel": 7,
     "description": "A bolt of pure chaos energy that ignores resistances"
   },
   {
@@ -117,6 +126,7 @@
     "baseCooldown": 0.8,
     "baseHits": 2,
     "statusEffect": "bleed",
+    "unlockLevel": 8,
     "description": "Fast twin strikes that apply bleed"
   },
   {
@@ -129,6 +139,7 @@
     "baseCooldown": 0.7,
     "baseHits": 2,
     "statusEffect": null,
+    "unlockLevel": 10,
     "description": "Summons a wraith to attack enemies repeatedly"
   },
   {
@@ -141,6 +152,7 @@
     "baseCooldown": 1,
     "baseHits": 1,
     "statusEffect": "poison",
+    "unlockLevel": 12,
     "description": "A poisoned blade strike with stacking venom"
   }
 ]

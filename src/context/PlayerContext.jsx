@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import { getBaseStats, calculatePlayerStats } from '../utils/StatsCalculator.js';
-import { computeZodiacBonuses } from '../engine/ZodiacSystem.js';
+import { computeZodiacBonuses, isNodeAllocatable } from '../engine/ZodiacSystem.js';
 
 const PlayerContext = createContext(null);
 
@@ -90,6 +90,7 @@ function playerReducer(state, action) {
     case 'ALLOCATE_NODE': {
       if (state.zodiacPoints <= 0) return state;
       if (state.allocatedNodes.includes(action.nodeId)) return state;
+      if (!isNodeAllocatable(action.nodeId, state.allocatedNodes)) return state;
       return { ...state, allocatedNodes: [...state.allocatedNodes, action.nodeId], zodiacPoints: state.zodiacPoints - 1 };
     }
     case 'RESPEC_NODE': {
@@ -144,6 +145,10 @@ function playerReducer(state, action) {
     }
     case 'ADD_RUNE_DUST':
       return { ...state, runeDust: state.runeDust + action.amount };
+    case 'LOAD_SAVE': {
+      if (!action.savedState || typeof action.savedState !== 'object') return state;
+      return { ...initialState, ...action.savedState };
+    }
     default:
       return state;
   }

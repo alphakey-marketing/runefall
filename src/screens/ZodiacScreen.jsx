@@ -129,10 +129,10 @@ export default function ZodiacScreen() {
                   opacity={nodeState === 'locked' ? 0.4 : 1}
                 />
                 {isOrigin && (
-                  <text textAnchor="middle" dy="5" fontSize="12" fill="#ffd700">✦</text>
+                  <text textAnchor="middle" dy="5" fontSize="16" fill="#ffd700">✦</text>
                 )}
                 {isKeystone && nodeState === 'allocated' && (
-                  <text textAnchor="middle" dy="5" fontSize="10" fill="#fff">★</text>
+                  <text textAnchor="middle" dy="5" fontSize="14" fill="#fff">★</text>
                 )}
               </g>
             );
@@ -148,7 +148,7 @@ export default function ZodiacScreen() {
                 x={keystoneNode.x}
                 y={keystoneNode.y - 20}
                 textAnchor="middle"
-                fontSize="10"
+                fontSize="14"
                 fill={constellation.color}
                 opacity={0.7}
                 className="constellation-label"
