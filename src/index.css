@@ -9,3 +9,16 @@ html, body, #root {
   padding: 0;
   height: 100%;
 }
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  html { font-size: 14px; }
+}
+
+@supports (padding: max(0px)) {
+  .app { padding-bottom: env(safe-area-inset-bottom); }
+}

@@ -73,5 +73,24 @@ export function generateDungeonLoot(tier, rooms, luck = 0) {
     drops.push(generateItem(null, null, luck));
   }
 
+  // Tier 11+ guarantee one legendary
+  if ((tier.tier || 0) >= 11) {
+    drops.push(generateItem('legendary', null, luck));
+  }
+
   return drops;
+}
+
+const TIER_KEY_MODIFIERS = ['amplified', 'volatile', 'haunted', 'enriched', 'cursed', 'empowered', 'fractured'];
+
+export function maybeDropTierKey(tier) {
+  if (Math.random() > 0.30) return null;
+  const mod = TIER_KEY_MODIFIERS[Math.floor(Math.random() * TIER_KEY_MODIFIERS.length)];
+  return {
+    id: `key_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+    type: 'tierKey',
+    tier: tier + 1,
+    modifier: mod,
+    name: `Tier ${tier + 1} Key (${mod})`,
+  };
 }

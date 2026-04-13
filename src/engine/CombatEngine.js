@@ -43,6 +43,11 @@ function calcFinalDamage(baseDamage, skill, playerStats, enemy, isCrit = false, 
     dmg = dmg * 1.5;
   }
 
+  // hexblade: melee skills deal +30% chaos damage
+  if (playerStats.hexblade && skill.type === 'melee') {
+    dmg = dmg * 1.3;
+  }
+
   dmg = dmg * getShockDamageMult(enemy, playerStats);
 
   const resist = (enemy.resistances?.[skill.element] || 0) / 100;
@@ -282,7 +287,7 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
   const castCount = skill.multicast || 1;
   for (let cast = 0; cast < castCount; cast++) {
     const dmgMult = cast === 0 ? 1 : (skill.multicastDamageMultiplier || 0.6);
-    const hitTargets = aliveTargets.slice(0, skill.hits || 1);
+    const hitTargets = aliveTargets.slice(0, (skill.hits || 1) + (playerStats.runebound ? 1 : 0));
 
     hitTargets.forEach(target => {
       if (target.hp <= 0) return;
@@ -346,6 +351,17 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
       echoTarget.hp = Math.max(0, echoTarget.hp - echoDmg);
       log.push({ type: 'echo', text: `ECHO! ${skill.name} fires again → ${echoTarget.name}: ${echoDmg} damage${echoTarget.hp <= 0 ? ' [KILLED]' : ''}`, damage: echoDmg });
     }
+  }
+
+  // stormbringer: lightning skills chain to 2 additional targets
+  if (playerStats.stormbringer && skill.element === 'lightning' && !isEcho) {
+    const hitTargets = aliveTargets.slice(0, (skill.hits || 1) + (playerStats.runebound ? 1 : 0));
+    const chainTargets = aliveTargets.filter(t => t.hp > 0 && !hitTargets.includes(t)).slice(0, 2);
+    chainTargets.forEach(ct => {
+      const chainDmg = calcFinalDamage(Math.round(skill.damage * 0.5), skill, playerStats, ct, false, false);
+      ct.hp = Math.max(0, ct.hp - chainDmg);
+      log.push({ type: 'damage', text: `${skill.name} [CHAIN] → ${ct.name}: ${chainDmg} lightning damage [Stormbringer]${ct.hp <= 0 ? ' [KILLED]' : ` (${ct.hp}/${ct.maxHp} HP)`}`, damage: chainDmg, target: ct.name });
+    });
   }
 
   if (skill.hasTotem) {

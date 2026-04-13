@@ -95,3 +95,116 @@
 .enter-btn:not(:disabled):hover {
   background: #2a4a2a;
 }
+
+.dungeon-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.dungeon-tab-btn {
+  background: rgba(40, 30, 60, 0.6);
+  border: 1px solid #4a3a7a;
+  border-radius: 6px;
+  color: #888;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 40px;
+}
+
+.dungeon-tab-btn.active {
+  background: rgba(124, 92, 191, 0.3);
+  border-color: #7c5cbf;
+  color: #c4a3ff;
+}
+
+.challenges-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.challenge-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(124,92,191,0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.challenge-card.completed {
+  border-color: rgba(74, 200, 100, 0.4);
+  background: rgba(74, 200, 100, 0.05);
+}
+
+.challenge-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.challenge-name {
+  color: #e8d5ff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.challenge-reward {
+  color: #c4a3ff;
+  font-size: 12px;
+}
+
+.challenge-desc {
+  color: #9980cc;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.challenge-progress-bar {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  height: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.challenge-progress-fill {
+  background: #7c5cbf;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.challenge-progress-text {
+  position: absolute;
+  right: 0;
+  top: -16px;
+  font-size: 10px;
+  color: #888;
+}
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.record-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(124,92,191,0.15);
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #c4b0d8;
+  font-size: 14px;
+}
+
+.record-row strong {
+  color: #e8d5ff;
+}
+
+.tutorial { border-color: rgba(255, 215, 0, 0.3) !important; }
+.tutorial-done { color: #4ac864; font-size: 14px; }

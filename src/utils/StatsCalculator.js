@@ -1,5 +1,5 @@
 // Merges base player stats + equipped gear + zodiac bonuses into final playerStats
-export function calculatePlayerStats(baseStats, equippedGear, zodiacBonuses = {}) {
+export function calculatePlayerStats(baseStats, equippedGear, zodiacBonuses = {}, playerState = null) {
   const merged = { ...baseStats };
 
   // Apply gear affixes
@@ -22,6 +22,11 @@ export function calculatePlayerStats(baseStats, equippedGear, zodiacBonuses = {}
       merged[key] = val;
     }
   });
+
+  // Apply ascendancy flags
+  if (playerState?.ascendancy === 'runebound') merged.runebound = true;
+  if (playerState?.ascendancy === 'hexblade') merged.hexblade = true;
+  if (playerState?.ascendancy === 'stormbringer') merged.stormbringer = true;
 
   return merged;
 }

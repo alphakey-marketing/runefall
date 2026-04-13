@@ -1,0 +1,9 @@
+[
+  { "id": "amplified", "name": "Amplified", "effect": "enemyHp", "value": 1.5, "lootMultiplier": 2, "description": "+50% enemy HP, +100% item quantity" },
+  { "id": "volatile", "name": "Volatile", "effect": "explodeOnDeath", "value": 0.1, "description": "Enemies explode on death (10% max HP AoE)" },
+  { "id": "haunted", "name": "Haunted", "effect": "eliteEveryRoom", "value": true, "description": "Elite enemy in every room" },
+  { "id": "enriched", "name": "Enriched", "dustMultiplier": 3, "xpMultiplier": 0.8, "description": "+200% Rune Dust, -20% XP" },
+  { "id": "cursed", "name": "Cursed", "effect": "halfHp", "value": 0.5, "rarityMultiplier": 4, "description": "Player starts at 50% HP; +300% item rarity" },
+  { "id": "empowered", "name": "Empowered", "tierBonus": 2, "rewardMultiplier": 3, "description": "+2 Chaos Tier difficulty; +200% all rewards" },
+  { "id": "fractured", "name": "Fractured", "effect": "bossEveryRoom", "value": true, "description": "Bosses appear in every room" }
+]

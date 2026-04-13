@@ -95,3 +95,76 @@ body {
   border-radius: 3px;
   transition: width 0.3s ease;
 }
+
+.level-up-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 20, 0.85);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.level-up-popup {
+  background: linear-gradient(160deg, #0f0f2e, #1a1040);
+  border: 2px solid #c4a3ff;
+  border-radius: 14px;
+  padding: 28px 24px;
+  text-align: center;
+  max-width: 340px;
+  width: 90%;
+  box-shadow: 0 0 40px rgba(196, 163, 255, 0.3);
+  animation: popup-enter 0.3s ease-out;
+}
+
+@keyframes popup-enter {
+  from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.level-up-popup-icon { font-size: 48px; margin-bottom: 8px; }
+.level-up-popup-title { font-size: 24px; font-weight: 700; color: #c4a3ff; margin-bottom: 6px; }
+.level-up-popup-msg { font-size: 16px; color: #e8d5ff; margin-bottom: 4px; }
+.level-up-popup-sub { font-size: 13px; color: #9980cc; margin-bottom: 20px; }
+
+.level-up-popup-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.level-up-goto-zodiac {
+  background: rgba(124, 92, 191, 0.3);
+  border: 1px solid #7c5cbf;
+  color: #c4a3ff;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.2s;
+}
+
+.level-up-goto-zodiac:hover { background: rgba(124, 92, 191, 0.5); }
+
+.level-up-dismiss-btn {
+  background: rgba(40, 30, 60, 0.8);
+  border: 1px solid #4a3a7a;
+  color: #888;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: all 0.2s;
+}
+
+.level-up-dismiss-btn:hover { color: #c4a3ff; border-color: #7c5cbf; }
+
+@media (max-width: 480px) {
+  .app-header { padding: 6px 10px; }
+  .game-title { font-size: 14px; }
+  .header-level { font-size: 12px; }
+  .header-dust { font-size: 12px; }
+}

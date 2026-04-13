@@ -1,0 +1,108 @@
+.ascendancy-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 20, 0.92);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.ascendancy-modal {
+  background: linear-gradient(160deg, #0f0f2e, #1a1040);
+  border: 2px solid #7c5cbf;
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 700px;
+  width: 95%;
+  box-shadow: 0 0 60px rgba(124, 92, 191, 0.4);
+  animation: modal-enter 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.ascendancy-title {
+  text-align: center;
+  color: #c4a3ff;
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.ascendancy-subtitle {
+  text-align: center;
+  color: #9980cc;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.ascendancy-paths {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .ascendancy-paths { grid-template-columns: 1fr; }
+}
+
+.ascendancy-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ascendancy-card:hover {
+  border-color: var(--path-color);
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.ascendancy-icon { font-size: 36px; }
+
+.ascendancy-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--path-color);
+}
+
+.ascendancy-desc {
+  font-size: 13px;
+  color: #c4b0d8;
+  line-height: 1.5;
+}
+
+.ascendancy-bonus {
+  font-size: 12px;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.ascendancy-choose-btn {
+  background: rgba(124, 92, 191, 0.2);
+  border: 1px solid var(--path-color);
+  color: var(--path-color);
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  min-height: 44px;
+  transition: background 0.2s;
+}
+
+.ascendancy-choose-btn:hover {
+  background: rgba(124, 92, 191, 0.4);
+}

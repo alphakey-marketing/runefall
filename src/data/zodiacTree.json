@@ -1633,6 +1633,40 @@
       "connections": [
         "omen_m6"
       ]
+    },
+    {
+      "id": "soul_harvest_keystone",
+      "name": "Soul Harvest",
+      "type": "keystone",
+      "constellation": "crimson",
+      "x": 500,
+      "y": 120,
+      "connections": [
+        "crimson_keystone"
+      ],
+      "bonus": {
+        "type": "keystone",
+        "label": "Soul Harvest",
+        "description": "On enemy kill, heal 5% of your maximum HP"
+      },
+      "keystoneEffect": "soulHarvest"
+    },
+    {
+      "id": "void_walker_keystone",
+      "name": "Void Walker",
+      "type": "keystone",
+      "constellation": "void",
+      "x": 500,
+      "y": 380,
+      "connections": [
+        "tempest_keystone"
+      ],
+      "bonus": {
+        "type": "keystone",
+        "label": "Void Walker",
+        "description": "Chaos skills deal 40% more damage; you take 20% more damage from all sources"
+      },
+      "keystoneEffect": "voidWalker"
     }
   ]
 }

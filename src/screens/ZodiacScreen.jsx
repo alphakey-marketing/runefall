@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import { ZODIAC_NODES, ZODIAC_CONSTELLATIONS, isNodeAllocatable, isNodeRemovable } from '../engine/ZodiacSystem.js';
+import { AudioManager } from '../systems/AudioManager.js';
 import './ZodiacScreen.css';
 
 export default function ZodiacScreen() {
@@ -26,9 +27,14 @@ export default function ZodiacScreen() {
   };
 
   const handleNodeClick = (node) => {
-    const state = getNodeState(node);
-    if (state === 'allocatable' && zodiacPoints > 0) {
+    const nodeState = getNodeState(node);
+    if (nodeState === 'allocatable' && zodiacPoints > 0) {
       dispatch({ type: 'ALLOCATE_NODE', nodeId: node.id });
+      if (node.type === 'keystone') {
+        AudioManager.play('keystoneAlloc');
+      } else {
+        AudioManager.play('nodeAlloc');
+      }
     }
   };
 

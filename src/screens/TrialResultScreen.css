@@ -1,0 +1,71 @@
+.trial-result-screen {
+  padding: 24px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.trial-result-name {
+  color: #9980cc;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.trial-result-card {
+  background: rgba(255,255,255,0.04);
+  border: 2px solid var(--reward-color, #7c5cbf);
+  border-radius: 12px;
+  padding: 28px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+}
+
+.trial-reward-icon { font-size: 52px; margin-bottom: 8px; }
+
+.trial-reward-tier {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--reward-color);
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+
+.trial-damage-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #c4b0d8;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.trial-damage-info strong { color: #e8d5ff; }
+
+.trial-dust-reward {
+  font-size: 18px;
+  color: #c4a3ff;
+  margin-bottom: 8px;
+}
+
+.trial-skin-reward {
+  font-size: 14px;
+  color: #88eeff;
+  padding: 6px 12px;
+  background: rgba(136, 238, 255, 0.1);
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.claim-btn {
+  background: rgba(124, 92, 191, 0.3);
+  border: 1px solid #7c5cbf;
+  color: #c4a3ff;
+  border-radius: 8px;
+  padding: 14px 32px;
+  font-size: 16px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.2s;
+}
+
+.claim-btn:hover { background: rgba(124, 92, 191, 0.5); }

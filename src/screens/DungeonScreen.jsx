@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGame } from '../context/GameContext.jsx';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import { runCombat } from '../engine/CombatEngine.js';
@@ -6,6 +6,7 @@ import { buildSkillFromSlot } from '../engine/SkillResolver.js';
 import { generateDungeonLoot } from '../engine/LootSystem.js';
 import dungeonTiers from '../data/dungeonTiers.json';
 import monsterTemplates from '../data/monsterTemplates.json';
+import challengesData from '../data/challenges.json';
 import { monsterHp, monsterDamage } from '../utils/FormulaHelpers.js';
 import './DungeonScreen.css';
 
@@ -22,9 +23,51 @@ function scaledMonster(monsterId, tier) {
   };
 }
 
+function ChallengesTab({ challenges, completedChallenges }) {
+  return (
+    <div className="challenges-list">
+      {challengesData.map(ch => {
+        const prog = challenges.find(c => c.id === ch.id);
+        const isCompleted = completedChallenges.includes(ch.id);
+        const progress = prog?.progress || 0;
+        const pct = Math.min(100, Math.round((progress / ch.target) * 100));
+        return (
+          <div key={ch.id} className={`challenge-card ${isCompleted ? 'completed' : ''}`}>
+            <div className="challenge-header">
+              <span className="challenge-name">{isCompleted ? '✓ ' : ''}{ch.name}</span>
+              <span className="challenge-reward">+{ch.reward} dust</span>
+            </div>
+            <div className="challenge-desc">{ch.description}</div>
+            {!isCompleted && (
+              <div className="challenge-progress-bar">
+                <div className="challenge-progress-fill" style={{ width: `${pct}%` }} />
+                <span className="challenge-progress-text">{progress}/{ch.target}</span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function RecordsTab({ records }) {
+  return (
+    <div className="records-list">
+      <div className="record-row"><span>Highest Tier Cleared</span><strong>Tier {records.highestTier}</strong></div>
+      <div className="record-row"><span>Biggest Single Hit</span><strong>{records.mostDamageHit}</strong></div>
+      <div className="record-row"><span>Fastest Clear (ticks)</span><strong>{records.fastestClear ?? '—'}</strong></div>
+      <div className="record-row"><span>Total Enemies Slain</span><strong>{records.totalEnemiesSlain}</strong></div>
+      <div className="record-row"><span>Total Rune Dust Spent</span><strong>{records.totalRuneDustSpent}</strong></div>
+      <div className="record-row"><span>Favourite Skill</span><strong>{records.favouriteSkillRune ?? '—'}</strong></div>
+    </div>
+  );
+}
+
 export default function DungeonScreen() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
   const { state: playerState, dispatch: playerDispatch, playerStats } = usePlayer();
+  const [activeTab, setActiveTab] = useState('tiers');
 
   const handleEnterDungeon = (tierData) => {
     const skills = playerState.skillSlots
@@ -36,10 +79,8 @@ export default function DungeonScreen() {
       return;
     }
 
-    // Dispatch RESET_COMBAT before starting to clear any stale result from a previous run
     gameDispatch({ type: 'RESET_COMBAT' });
 
-    // Process rooms sequentially, carrying HP between rooms
     let combinedLog = [];
     let playerHpRemaining = playerStats.maxHp || 200;
     let finalResult = 'victory';
@@ -60,7 +101,6 @@ export default function DungeonScreen() {
         break;
       }
 
-      // Brief separator between rooms
       combinedLog.push({ type: 'room_clear', text: `— Room cleared! HP remaining: ${Math.ceil(playerHpRemaining)} —` });
     }
 
@@ -80,52 +120,100 @@ export default function DungeonScreen() {
       }, 0) * (tierData.xpMultiplier || 1));
 
       playerDispatch({ type: 'ADD_XP', amount: xpGain });
+
+      // Tutorial completion
+      if (tierData.isTutorial && !playerState.tutorialComplete) {
+        playerDispatch({ type: 'SET_TUTORIAL_COMPLETE' });
+        playerDispatch({ type: 'ADD_RUNE_DUST', amount: 100 });
+      }
+
+      // Complete "First Blood" challenge
+      if (!playerState.completedChallenges.includes(1)) {
+        playerDispatch({ type: 'COMPLETE_CHALLENGE', challengeId: 1 });
+      }
+
+      // Update records
+      playerDispatch({ type: 'UPDATE_RECORDS', highestTier: tierData.tier });
     }
 
     gameDispatch({ type: 'NAVIGATE', screen: 'battle' });
   };
 
+  const tabs = [
+    { id: 'tiers', label: '🗺️ Tiers' },
+    { id: 'challenges', label: '🏆 Challenges' },
+    { id: 'records', label: '📊 Records' },
+  ];
+
   return (
     <div className="dungeon-screen">
       <h2 className="screen-title">🗺️ Dungeon</h2>
-      <p className="dungeon-subtitle">Select a tier and enter the dungeon</p>
 
-      <div className="tier-list">
-        {dungeonTiers.map(tier => {
-          const unlocked = gameState.unlockedTiers.includes(tier.tier);
-          return (
-            <div key={tier.tier} className={`tier-card ${unlocked ? 'unlocked' : 'locked'}`}>
-              <div className="tier-header">
-                <span className="tier-number">Tier {tier.tier}</span>
-                {!unlocked && <span className="lock-icon">🔒</span>}
-              </div>
-              <div className="tier-name">{tier.name}</div>
-
-              {tier.modifiers.length > 0 && (
-                <div className="tier-modifiers">
-                  {tier.modifiers.map((mod, i) => (
-                    <div key={i} className="modifier-tag">{mod}</div>
-                  ))}
-                </div>
-              )}
-
-              <div className="tier-info">
-                <span>Rooms: {tier.rooms.length}</span>
-                <span>Loot: ×{tier.lootMultiplier}</span>
-                <span>XP: ×{tier.xpMultiplier}</span>
-              </div>
-
-              <button
-                className="enter-btn"
-                onClick={() => unlocked && handleEnterDungeon(tier)}
-                disabled={!unlocked}
-              >
-                {unlocked ? 'Enter Dungeon' : 'Locked'}
-              </button>
-            </div>
-          );
-        })}
+      <div className="dungeon-tabs">
+        {tabs.map(t => (
+          <button
+            key={t.id}
+            className={`dungeon-tab-btn ${activeTab === t.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
+
+      {activeTab === 'tiers' && (
+        <>
+          <p className="dungeon-subtitle">Select a tier and enter the dungeon</p>
+          <div className="tier-list">
+            {dungeonTiers.map(tier => {
+              const unlocked = gameState.unlockedTiers.includes(tier.tier);
+              return (
+                <div key={tier.tier} className={`tier-card ${unlocked ? 'unlocked' : 'locked'} ${tier.isTutorial ? 'tutorial' : ''}`}>
+                  <div className="tier-header">
+                    <span className="tier-number">{tier.isTutorial ? '⭐ Tutorial' : `Tier ${tier.tier}`}</span>
+                    {!unlocked && <span className="lock-icon">🔒</span>}
+                    {tier.isTutorial && unlocked && playerState.tutorialComplete && <span className="tutorial-done">✓</span>}
+                  </div>
+                  <div className="tier-name">{tier.name}</div>
+
+                  {tier.modifiers.length > 0 && (
+                    <div className="tier-modifiers">
+                      {tier.modifiers.map((mod, i) => (
+                        <div key={i} className="modifier-tag">{mod}</div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="tier-info">
+                    <span>Rooms: {tier.rooms.length}</span>
+                    <span>Loot: ×{tier.lootMultiplier}</span>
+                    <span>XP: ×{tier.xpMultiplier}</span>
+                  </div>
+
+                  <button
+                    className="enter-btn"
+                    onClick={() => unlocked && handleEnterDungeon(tier)}
+                    disabled={!unlocked}
+                  >
+                    {unlocked ? (tier.isTutorial ? 'Enter Tutorial' : 'Enter Dungeon') : 'Locked'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {activeTab === 'challenges' && (
+        <ChallengesTab
+          challenges={playerState.challenges}
+          completedChallenges={playerState.completedChallenges}
+        />
+      )}
+
+      {activeTab === 'records' && (
+        <RecordsTab records={playerState.records} />
+      )}
     </div>
   );
 }

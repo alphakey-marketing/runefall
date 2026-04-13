@@ -9,6 +9,10 @@ import BattleScreen from './screens/BattleScreen.jsx';
 import ZodiacScreen from './screens/ZodiacScreen.jsx';
 import CraftingScreen from './screens/CraftingScreen.jsx';
 import SimulatorScreen from './screens/SimulatorScreen.jsx';
+import SettingsScreen from './screens/SettingsScreen.jsx';
+import AscendancyModal from './screens/AscendancyModal.jsx';
+import TrialResultScreen from './screens/TrialResultScreen.jsx';
+import { decodeBuild } from './utils/BuildCodec.js';
 import './App.css';
 
 function ScreenRouter() {
@@ -21,6 +25,8 @@ function ScreenRouter() {
     case 'zodiac': return <ZodiacScreen />;
     case 'crafting': return <CraftingScreen />;
     case 'simulator': return <SimulatorScreen />;
+    case 'settings': return <SettingsScreen />;
+    case 'trialResult': return <TrialResultScreen />;
     default: return <BuildScreen />;
   }
 }
@@ -35,10 +41,45 @@ function XPBar({ xp, level }) {
   );
 }
 
+function LevelUpPopup() {
+  const { state: playerState, dispatch: playerDispatch } = usePlayer();
+  const { dispatch: gameDispatch } = useGame();
+
+  if (!playerState.levelUpPending) return null;
+
+  return (
+    <div className="level-up-popup-overlay" onClick={() => playerDispatch({ type: 'DISMISS_LEVEL_UP' })}>
+      <div className="level-up-popup" onClick={e => e.stopPropagation()}>
+        <div className="level-up-popup-icon">⬆️</div>
+        <div className="level-up-popup-title">LEVEL UP!</div>
+        <div className="level-up-popup-msg">You are now Level {playerState.level}!</div>
+        <div className="level-up-popup-sub">+1 Zodiac Point earned</div>
+        <div className="level-up-popup-btns">
+          <button className="level-up-goto-zodiac" onClick={() => { playerDispatch({ type: 'DISMISS_LEVEL_UP' }); gameDispatch({ type: 'NAVIGATE', screen: 'zodiac' }); }}>
+            Open Zodiac ⭐
+          </button>
+          <button className="level-up-dismiss-btn" onClick={() => playerDispatch({ type: 'DISMISS_LEVEL_UP' })}>
+            Dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { state: gameState } = useGame();
   const { state: playerState, dispatch: playerDispatch } = usePlayer();
   const importRef = useRef(null);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const buildCode = params.get('build');
+    if (buildCode) {
+      const decoded = decodeBuild(buildCode);
+      if (decoded) console.log('Imported build from URL:', decoded);
+    }
+  }, []);
 
   const handleExport = () => {
     const json = JSON.stringify(playerState, null, 2);
@@ -84,6 +125,8 @@ export default function App() {
         <ScreenRouter />
       </main>
       {gameState.currentScreen !== 'battle' && <BottomNav />}
+      <AscendancyModal />
+      <LevelUpPopup />
     </div>
   );
 }
