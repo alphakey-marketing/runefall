@@ -40,6 +40,8 @@ export default function BuildScreen() {
 
   useEffect(() => {
     const handler = (e) => {
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
       const num = parseInt(e.key);
       if (num >= 1 && num <= 5 && !picker) {
         setPicker({ type: 'skill', slotIndex: num - 1 });
