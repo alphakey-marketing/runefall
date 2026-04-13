@@ -30,10 +30,20 @@ export default function TrialResultScreen() {
     gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' });
   };
 
+  if (!trial) {
+    return (
+      <div className="trial-result-screen">
+        <h2 className="screen-title">⚔️ Trial Complete</h2>
+        <p style={{ color: '#9980cc', textAlign: 'center' }}>No trial data found.</p>
+        <button className="claim-btn" onClick={() => { gameDispatch({ type: 'RESET_TRIAL' }); gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' }); }}>Return</button>
+      </div>
+    );
+  }
+
   return (
     <div className="trial-result-screen">
       <h2 className="screen-title">⚔️ Trial Complete</h2>
-      {trial && <div className="trial-result-name">{trial.name}</div>}
+      <div className="trial-result-name">{trial.name}</div>
 
       <div className="trial-result-card" style={{ '--reward-color': reward.color }}>
         <div className="trial-reward-icon">{reward.icon}</div>
