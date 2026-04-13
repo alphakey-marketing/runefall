@@ -1,24 +1,28 @@
 # Game Design Document: Project RUNEFALL
-### Auto-Combat Dungeon Crawler â€” Revised Edition
+### Auto-Combat Dungeon Crawler — Revised Edition
 
-**Version:** 0.2 â€” Auto-Combat Revision  
-**Stack:** Vite + React (UI & Logic) + Canvas 2D (Battle Animation Layer)  
-**Platform:** Browser (Desktop + Mobile)  
-**Genre:** Auto-Combat RPG / Dungeon Crawler  
-**Tone:** Dark Fantasy â€” Rune-inscribed world where constellations grant power  
+**Version:** 0.3 — Optimized Milestone Revision
+**Stack:** Vite + React (UI & Logic) + Canvas 2D (Battle Animation Layer)
+**Platform:** Browser (Desktop + Mobile)
+**Genre:** Auto-Combat RPG / Dungeon Crawler
+**Tone:** Dark Fantasy — Rune-inscribed world where constellations grant power
 **Core Promise:** All depth is in *preparation*. Players win by building smart, not by playing fast.
 
 ---
 
 ## 1. Executive Summary
 
-RUNEFALL is a browser-based Auto-Combat Dungeon Crawler. Players assemble a build using a classless **Rune Linking system**, navigate a constellation-shaped **Zodiac Passive Tree**, and equip procedurally generated gear â€” then send their Runebound hunter into dungeons and watch their preparation play out automatically.
+RUNEFALL is a browser-based Auto-Combat Dungeon Crawler. Players assemble a build using a
+classless **Rune Linking system**, navigate a constellation-shaped **Zodiac Passive Tree**,
+and equip procedurally generated gear — then send their Runebound hunter into dungeons and
+watch their preparation play out automatically.
 
-There is no twitch skill required. Victory or defeat is determined entirely before combat begins. This creates a pure **theory-craft loop**: simulate â†’ observe â†’ adjust â†’ go deeper.
+There is no twitch skill required. Victory or defeat is determined entirely before combat
+begins. This creates a pure **theory-craft loop**: simulate → observe → adjust → go deeper.
 
 The core addictive loop:
 
-> **Build â†’ Enter Dungeon â†’ Watch Combat â†’ Loot â†’ Upgrade Build â†’ Enter Harder Dungeon â†’ Repeat**
+> **Build → Enter Dungeon → Watch Combat → Loot → Upgrade Build → Enter Harder Dungeon → Repeat**
 
 ---
 
@@ -36,213 +40,30 @@ The core addictive loop:
 
 ## 3. Combat Architecture (Auto-Combat Tick System)
 
-This is the most important design decision. Combat is a **deterministic tick simulation**, not a real-time physics engine.
+This is the most important design decision. Combat is a **deterministic tick simulation**,
+not a real-time physics engine.
 
 ### How It Works
 
 Every **500ms**, the game engine runs one "combat tick":
-
-```
 TICK LOOP (runs every 500ms via setInterval):
-  1. Player skills fire based on cooldown timers
-  2. Skill damage calculated: baseDamage Ã— runeModifiers Ã— zodiacBonuses Ã— gearStats
-  3. Status effects applied to enemies (Burn, Chill, Shock, Bleed, Poison)
-  4. Enemy attacks fire based on their attack speed
-  5. Player takes damage (mitigated by gear defense + Zodiac bonuses)
-  6. Status effects tick damage on both sides
-  7. Check win/lose condition (all enemies dead OR player HP = 0)
-  8. Emit combat event log entry â†’ React state â†’ renders in Battle Log UI
-```
-
-No collision detection. No pathfinding. No pixel positions. Combat is **pure math**, resolved as a formula, displayed as a log.
-
-### What the Player Sees
-
-A **battle animation panel** (Canvas 2D) shows:
-- Animated player sprite on the left
-- Enemy sprite(s) on the right
-- Skill effect animations flying between them (purely cosmetic)
-- HP bars depleting in real time
-- Floating damage numbers
-
-The animation is cosmetic â€” it plays back the combat log events as a visual story. The actual outcome was already computed when the player clicked "Enter Dungeon."
-
-### Why This Is Powerful
-
-- Combat balance is entirely about **number tuning** (spreadsheet work), not physics debugging
-- Deterministic outcomes mean players can **predict** their build's performance
-- The same system runs on mobile with zero performance issues
-
----
-
-## 4. Core Gameplay Systems
-
-### 4.1 Skill Rune System
-
-Each of the player's 5 skill slots holds a **Skill Rune** with up to 6 **Link Rune** sockets.
-
-**Skill Runes** define the base attack pattern:
-
-| Rune | Base Type | Base Behavior |
-|---|---|---|
-| Frost Arrow | Ranged / Ice | Fires projectile each tick; applies Chill |
-| Fireball | Spell / Fire | AoE burst damage; applies Burn |
-| Ground Slash | Melee / Physical | High single-target damage; applies Bleed |
-| Chain Lightning | Spell / Lightning | Hits 3 enemies; applies Shock |
-| Bone Spear | Ranged / Physical | High damage; pierces through enemies |
-| Poison Nova | Spell / Poison | AoE around player; stacking Poison |
-| Shadow Step | Melee / Physical | Double-damage burst; resets cooldown on kill |
-| Frozen Orb | Spell / Ice | Persistent AoE zone; slow tick damage |
-
-**Link Runes** are modifier objects that mutate the Skill Rune at calculation time:
-
-| Link | Effect |
-|---|---|
-| Fork | Skill hits 2 targets instead of 1 |
-| AoE Expand | Increases hit count in AoE skills by +2 targets |
-| Multicast | Skill fires twice per tick; 60% damage each |
-| More Damage | +45% flat damage multiplier |
-| Ignite Support | Adds Burn application to any skill |
-| Chill Support | Adds Chill application to any skill |
-| Echo | 30% chance to cast skill a second time for free |
-| Totem | Skill spawns a stationary totem that fires independently |
-| Trigger: On Kill | Linked skill auto-casts when an enemy dies |
-| Mana Leech | Restores mana equal to 3% of damage dealt |
-| Culling Strike | Instantly kills enemies below 15% HP |
-| Penetration | Ignores 25% of enemy elemental resistance |
-
-**Example Build â€” "Blizzard Overlord":**
-```
-Skill Slot 1: [Frost Arrow] â†’ [Multicast] â†’ [AoE Expand] â†’ [Chill Support]
-Skill Slot 2: [Frozen Orb] â†’ [More Damage] â†’ [Penetration]
-Skill Slot 3: [Chain Lightning] â†’ [Echo] â†’ [Trigger: On Kill â†’ Fireball]
-```
-
-### 4.2 Zodiac Passive Tree
-
-A constellation-shaped SVG node graph. Players earn **Zodiac Points** on level-up and spend them to traverse the tree.
-
-**Structure:**
-- 12 constellations, each with a distinct stat theme
-- Each constellation: 8â€“12 minor nodes + 1 Major Keystone at the center
-- Minor nodes: small incremental bonuses (+5% Fire Damage, +20 Max HP, +3% Attack Speed)
-- Keystones: build-defining modifiers that change *how* your skills behave
-
-**12 Constellations:**
-
-| # | Name | Theme | Keystone |
-|---|---|---|---|
-| 1 | Ember | Fire damage | *Conflagration* â€” Burn stacks deal 200% increased damage |
-| 2 | Glacier | Ice / Freeze | *Shatter* â€” Frozen enemies explode, dealing AoE damage |
-| 3 | Tempest | Lightning | *Overcharge* â€” Shock increases all damage taken by 40% |
-| 4 | Crimson | Bleed / Physical | *Hemorrhage* â€” Bleed stacks deal burst damage on skill cast |
-| 5 | Plague | Poison | *Pandemic* â€” Poison spreads to nearby enemies on kill |
-| 6 | Bastion | Defense / HP | *Iron Will* â€” 20% of damage taken is converted to mana |
-| 7 | Venom | Chaos damage | *Wither* â€” Enemies lose 2% max HP per second per Chaos stack |
-| 8 | Gale | Speed / Cooldown | *Windstep* â€” Skills with cooldown under 1s fire twice per tick |
-| 9 | Void | Mana / Spell | *Blood Mage* â€” Skills cost HP instead of mana; gain damage equal to HP spent |
-| 10 | Iron | Melee | *Blademaster* â€” Melee skills have no mana cost; +50% melee damage |
-| 11 | Wisp | Summon / Totem | *Necromancer's Mark* â€” On-kill Trigger Links also summon a shadow minion |
-| 12 | Omen | Luck / Crit | *Fortune's Edge* â€” Critical strikes guaranteed every 5th hit; +200% crit damage |
-
-### 4.3 Gear & Loot System
-
-Five gear slots: **Weapon, Helmet, Chest, Gloves, Boots.**
-
-**Gear Tiers:**
-
-| Tier | Color | Affixes | Drop Chance |
-|---|---|---|---|
-| Normal | White | 0 | 60% |
-| Magic | Blue | 1â€“2 random | 28% |
-| Rare | Yellow | 3â€“5 random | 10% |
-| Legendary | Orange | 1 unique fixed + 2 random | 2% |
-
-**Affix Pool (examples):**
-- +% increased [element] damage
-- +flat Max HP / Max Mana
-- +% attack speed (reduces skill cooldown)
-- +% cooldown reduction
-- +% critical strike chance / multiplier
-- Adds Xâ€“Y elemental damage to skills
-- +% skill rune effect magnitude
-- +% increased item rarity (more Rare drops)
-- Regenerate X HP per second
-
-**Gear Score:** Each item has a numeric Gear Score (sum of affix values). The UI shows the delta when hovering a new item over an equipped one, making upgrade decisions instant.
-
-### 4.4 Status Effects & Elemental System
-
-| Status | Element | Effect | Interaction |
-|---|---|---|---|
-| Burn | Fire | Tick damage over 4s | Burn + Bleed = Hemorrhage (burst on expiry) |
-| Chill | Ice | -30% enemy attack speed | Chill Ã— 3 stacks = Freeze (skip 2 turns) |
-| Shock | Lightning | +20% damage taken | Shock + Freeze = Shatter (AoE explosion) |
-| Bleed | Physical | Tick damage based on max HP | Bleed + Poison = Sepsis (double tick rate) |
-| Poison | Poison | Stacking tick damage | Poison + Burn = Plague (spreads on kill) |
-
-### 4.5 Dungeon & Zone System
-
-Dungeons are structured as **Chaos Tiers** (Tier 1â€“30+).
-
-Each dungeon run:
-1. Player selects a Tier
-2. Dungeon generates 3 rooms: **2 combat rooms + 1 boss room**
-3. Each combat room has a wave of monsters (count scales with Tier)
-4. Boss room has a single elite enemy with 3 special mechanics
-5. On clear: loot chest drops based on Tier, Tier Key to unlock next Tier
-
-**Dungeon Modifiers** (random, shown before entering):
-- "Monsters have 60% increased HP"
-- "All monsters apply Shock on hit"
-- "+200% item quantity, monsters explode on death"
-- "Elite monsters appear in combat rooms"
-
-Higher-modifier dungeons always drop more and better loot.
-
-### 4.6 Economy & Crafting
-
-**Rune Dust** â€” primary currency, salvaged from unwanted gear.
-
-| Action | Cost | Outcome |
-|---|---|---|
-| Reroll one affix on Rare gear | 50 Dust | Random new affix from pool |
-| Add affix to Magic gear | 30 Dust | Upgrades Magic â†’ Rare |
-| Corrupt item | 100 Dust | Random: powerful implicit OR lose all affixes |
-| Legendary recipe | 3Ã— same-slot Rares | Chance to craft a Legendary |
-| Upgrade Rune tier | 200 Dust | Rune level +1 (increases base damage) |
-
----
-
-## 5. UI Layout
-
-```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚  HEADER: Player Name | Level | EXP Bar | Gold | Rune Dust    â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚               â”‚                      â”‚                       â”‚
-â”‚  LEFT PANEL   â”‚   BATTLE PANEL       â”‚   RIGHT PANEL         â”‚
-â”‚               â”‚   (Canvas 2D)        â”‚                       â”‚
-â”‚  â€¢ Skill Rune â”‚                      â”‚  â€¢ Enemy Info         â”‚
-â”‚    slots 1â€“5  â”‚  [Player] âš”ï¸ [Enemy] â”‚  â€¢ Enemy HP bars      â”‚
-â”‚  â€¢ Link configâ”‚                      â”‚  â€¢ Status effects     â”‚
-â”‚    per skill  â”‚  Floating damage     â”‚  â€¢ Dungeon Modifiers  â”‚
-â”‚               â”‚  HP bars             â”‚                       â”‚
-â”‚               â”‚  Skill animations    â”‚                       â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚  COMBAT LOG: Frost Arrow â†’ 342 dmg | Burn applied | Enemy B died â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚  BOTTOM NAV: [Build] [Inventory] [Zodiac] [Dungeon] [Craft]  â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-```
-
+1. Player skills fire based on cooldown timers
+2. Skill damage calculated: baseDamage × runeModifiers × zodiacBonuses × gearStats
+3. Status effects applied to enemies (Burn, Chill, Shock, Bleed, Poison)
+4. Enemy attacks fire based on their attack speed
+5. Player takes damage (mitigated by gear defense + Zodiac bonuses)
+6. Status effects tick damage on both sides
+7. Check win/lose condition (all enemies dead OR player HP = 0)
+8. Emit combat event log entry → React state → renders in Battle Log UI
+9. 
 **Screens (React components):**
-- **Build Screen** â€” Rune slot manager, link configuration, active skill preview
-- **Inventory Screen** â€” 5 gear slots, item bag, tooltip comparison, salvage button
-- **Zodiac Screen** â€” SVG node graph, point counter, respec button
-- **Dungeon Screen** â€” Tier map, modifier preview, Enter button
-- **Crafting Bench** â€” Currency inputs, item slot, outcome preview
-- **Battle Screen** â€” Canvas animation panel + combat log + post-battle loot
+- **Build Screen** — Rune slot manager, link configuration, active skill preview
+- **Inventory Screen** — 5 gear slots, item bag, tooltip comparison, salvage button
+- **Zodiac Screen** — SVG node graph, point counter, respec button
+- **Dungeon Screen** — Tier map, modifier preview, Enter button, Hall of Records tab
+- **Crafting Bench** — Currency inputs, item slot, outcome preview
+- **Battle Screen** — Canvas animation panel + combat log + post-battle loot
+- **Settings Screen** — Sound, speed, color blind mode, reset save
 
 ---
 
@@ -250,12 +71,12 @@ Higher-modifier dungeons always drop more and better loot.
 
 ---
 
-### ðŸŸ¢ MILESTONE 1 â€” Combat Simulation Engine
-**Goal:** Combat resolves correctly as a tick simulation. No visuals yet â€” just logic.
+### 🟢 MILESTONE 1 — Combat Simulation Engine
+**Goal:** Combat resolves correctly as a tick simulation. No visuals yet — just logic.
 
 **Deliverables:**
-- [ ] `CombatEngine.js` â€” pure function: `runCombat(player, enemies) â†’ combatLog[]`
-- [ ] `combatTick()` â€” calculates one round: player skills fire, enemy attacks fire, statuses tick
+- [ ] `CombatEngine.js` — pure function: `runCombat(player, enemies) → combatLog[]`
+- [ ] `combatTick()` — calculates one round: player skills fire, enemy attacks fire, statuses tick
 - [ ] `playerStats` object: HP, mana, attackSpeed, skills[]
 - [ ] `Enemy` template: `{ name, hp, armor, attackDamage, attackSpeed, resistances }`
 - [ ] Hardcode 3 enemies and 1 skill to test the loop
@@ -263,111 +84,118 @@ Higher-modifier dungeons always drop more and better loot.
 - [ ] Win/lose detection with log entry
 - [ ] Unit test: same inputs always produce same outputs (deterministic)
 
-**Tech:** Pure JS module â€” no React, no Canvas yet  
-**Estimated time:** 3â€“5 days
+**Tech:** Pure JS module — no React, no Canvas yet
+**Estimated time:** 3–5 days
 
 ---
 
-### ðŸŸ¢ MILESTONE 2 â€” Skill Rune Data System
+### 🟢 MILESTONE 2 — Skill Rune Data System
 **Goal:** Skills and links are data objects. Linking runes changes damage output.
 
 **Deliverables:**
-- [ ] `skillRunes.json` â€” 8 skill runes with base stats
-- [ ] `linkRunes.json` â€” 12 link runes with modifier functions
-- [ ] `SkillResolver.js` â€” takes `(skillRune, links[])` â†’ returns resolved damage profile
-- [ ] Link modifier functions implemented as pure transforms: `(skill) => ({ ...skill, damage: skill.damage * 1.45 })`
-- [ ] Mana cost calculation: base cost Ã— each link's cost multiplier
-- [ ] Cooldown calculation: base cooldown Ã· attack speed stat
-- [ ] `buildSkillFromSlot(slot)` â†’ fully resolved skill ready for CombatEngine
+- [ ] `skillRunes.json` — 8 skill runes with base stats and `unlockLevel`
+- [ ] `linkRunes.json` — 12 link runes with modifier functions and `unlockLevel`
+- [ ] `SkillResolver.js` — takes `(skillRune, links[])` → returns resolved damage profile
+- [ ] Link modifier functions as pure transforms: `(skill) => ({ ...skill, damage: skill.damage * 1.45 })`
+- [ ] Mana cost calculation: base cost × each link's cost multiplier
+- [ ] Cooldown calculation: base cooldown ÷ attack speed stat
+- [ ] `buildSkillFromSlot(slot)` → fully resolved skill ready for CombatEngine
 
-**Tech:** Data files in `/src/data/`, resolver in `/src/systems/`  
-**Estimated time:** 4â€“6 days
+**Tech:** Data files in `/src/data/`, resolver in `/src/systems/`
+**Estimated time:** 4–6 days
 
 ---
 
-### ðŸŸ¢ MILESTONE 3 â€” React UI Shell + Build Screen
+### 🟢 MILESTONE 3 — React UI Shell + Build Screen
 **Goal:** Player can equip runes and see their resolved skill stats in a UI.
 
 **Deliverables:**
 - [ ] Vite + React project scaffolded
-- [ ] Bottom navigation bar: Build / Inventory / Zodiac / Dungeon / Craft
-- [ ] **Build Screen**: 5 skill slots, click slot â†’ open rune picker modal
-- [ ] Rune picker: lists all owned skill runes, select to equip
-- [ ] Link slot UI per skill: shows 1â€“6 sockets, click socket â†’ link rune picker
+- [ ] Bottom navigation bar: Build / Inventory / Zodiac / Dungeon / Craft / Settings
+- [ ] **Build Screen**: 5 skill slots, click slot → open rune picker modal
+- [ ] Rune picker: lists only unlocked runes filtered by `player.level >= rune.unlockLevel`
+- [ ] Locked runes shown greyed out with "Unlocks at Lv. X" label
+- [ ] Link slot UI per skill: shows 1–6 sockets, click socket → link rune picker
 - [ ] Live stat preview panel: shows resolved damage, mana cost, cooldown for each skill
 - [ ] Player stats panel: HP, mana, attack speed, total Gear Score
 - [ ] Global `playerState` context (React Context API)
 
-**Tech:** React + Vite, CSS Modules or Tailwind  
+**Tech:** React + Vite, CSS Modules
 **Estimated time:** 1 week
 
 ---
 
-### ðŸŸ¢ MILESTONE 4 â€” Loot System + Inventory Screen
+### 🟢 MILESTONE 4 — Loot System + Inventory Screen
 **Goal:** Items are generated with random affixes. Player equips gear and stats update.
 
 **Deliverables:**
-- [ ] `affixPool.json` â€” 20+ affixes with min/max ranges and stat keys
-- [ ] `generateItem(tier, slot)` â€” creates randomized item object
-- [ ] `ItemTooltip` React component â€” shows all affixes, Gear Score, and delta vs. equipped
+- [ ] `affixPool.json` — 20+ affixes with min/max ranges and stat keys
+- [ ] `generateItem(tier, slot)` — creates randomized item object
+- [ ] `ItemTooltip` React component — shows all affixes, Gear Score, and delta vs. equipped
 - [ ] **Inventory Screen**: 5 gear slots (equipped) + 20-slot bag
 - [ ] Equip/unequip items; `playerStats` recalculates immediately
-- [ ] Salvage button: removes item â†’ adds Rune Dust to currency
+- [ ] Salvage button: removes item → adds Rune Dust to currency
 - [ ] "Drop test" button (dev mode): generates random loot for testing
 - [ ] Item rarity color coding (White / Blue / Yellow / Orange)
 
-**Tech:** React state + context  
+**Tech:** React state + context
 **Estimated time:** 1 week
 
 ---
 
-### ðŸŸ¡ MILESTONE 5 â€” Dungeon Screen + First Playable Loop
-**Goal:** The complete game loop works end-to-end. Build â†’ Enter â†’ Fight â†’ Loot.
+### 🟡 MILESTONE 5 — Dungeon Screen + First Playable Loop
+**Goal:** The complete game loop works end-to-end. Build → Enter → Fight → Loot.
 
 **Deliverables:**
-- [ ] **Dungeon Screen**: Tier 1â€“5 selector, modifier preview panel, Enter button
+- [ ] **Dungeon Screen**: Tier 1–5 selector, modifier preview panel, Enter button
 - [ ] Dungeon generates 3 rooms (wave config from JSON)
 - [ ] Clicking Enter runs `CombatEngine` with current `playerStats` vs. room enemies
-- [ ] **Battle Screen**: displays combat log line by line with 300ms delay between entries (readable replay)
-- [ ] Simple Canvas panel: player sprite left, enemy sprite right, HP bars, floating numbers
+- [ ] **Battle Screen**: displays combat log line by line with 300ms delay between entries
+- [ ] Simple Canvas panel: player shape left, enemy shape right, HP bars, floating numbers
 - [ ] Post-battle loot screen: shows dropped items, click to pick up or salvage
-- [ ] Tier Key drop on dungeon clear â†’ unlocks next Tier
+- [ ] Tier Key drop on dungeon clear → unlocks next Tier
 - [ ] Player death screen with stats and retry button
-- [ ] XP awarded on clear â†’ feeds level system (next milestone)
+- [ ] XP awarded on clear → feeds level system (next milestone)
 
-**Tech:** Canvas 2D for battle animation; React for all surrounding UI  
-**Estimated time:** 10â€“14 days
+**Tech:** Canvas 2D for battle animation; React for all surrounding UI
+**Estimated time:** 10–14 days
 
 ---
 
-### ðŸŸ¡ MILESTONE 6 â€” Level System + Zodiac Tree
+### 🟡 MILESTONE 6 — Level System + Zodiac Tree
 **Goal:** Players level up, earn Zodiac Points, and navigate a visual passive node graph.
 
 **Deliverables:**
-- [ ] XP curve formula: `xpRequired(level) = 100 Ã— level^1.5`
+- [ ] XP curve: `xpRequired(level) = 100 × level^1.5`
+- [ ] XP rewards follow the XP-per-tier table in Section 4.5
 - [ ] Level-up popup with animation; awards 1 Zodiac Point per level
-- [ ] `zodiacTree.json` â€” define 3 full constellations (30 nodes + 3 Keystones)
+- [ ] `zodiacTree.json` — 3 full constellations (30 nodes + 3 Keystones) to start
 - [ ] **Zodiac Screen**: SVG-rendered node graph; nodes connected by lines
-- [ ] Click to allocate node (validates path requirements, deducts point)
-- [ ] Allocated nodes glow; locked nodes are dim
+- [ ] Click to allocate node (validates path requirements in reducer, deducts point)
+- [ ] Allocated nodes glow; locked nodes are dim; allocatable nodes pulse
 - [ ] Keystone nodes: larger icons with unique visual treatment
-- [ ] `zodiacBonuses` computed from all allocated nodes â†’ merged into `playerStats`
-- [ ] Respec cost: 50 Rune Dust per unallocated node
+- [ ] `zodiacBonuses` computed from all allocated nodes → merged into `playerStats`
+- [ ] Respec cost: 50 Rune Dust per node — validated in reducer, not only UI
 
-**Tech:** SVG node graph in React; position data stored in JSON  
+**Tech:** SVG node graph in React; position data stored in JSON
 **Estimated time:** 2 weeks
 
 ---
 
-### ðŸŸ¡ MILESTONE 7 â€” Status Effects + Elemental Interactions
+### 🟡 MILESTONE 7 — Status Effects + Elemental Interactions
 **Goal:** Status effects change combat meaningfully. Element combos create satisfying power spikes.
 
 **Deliverables:**
-- [ ] `StatusEngine.js` â€” manages active statuses per entity: apply, stack, tick, expire
-- [ ] All 5 statuses implemented: Burn, Chill/Freeze, Shock, Bleed, Poison
-- [ ] Freeze mechanic: enemy skips 1 tick (shown in combat log as "FROZEN â€” skipped turn")
-- [ ] Interaction matrix: 5 element combos trigger bonus effects
-- [ ] Combat log shows interactions: `"Shock + Freeze â†’ SHATTER for 892 damage!"`
+- [ ] `StatusEngine.js` — manages active statuses per entity: apply, stack, tick, expire
+- [ ] All 5 statuses: Burn, Chill/Freeze, Shock, Bleed, Poison
+- [ ] Freeze mechanic: enemy skips 1 tick (combat log: "FROZEN — skipped turn")
+- [ ] All 5 interaction combos implemented:
+  - Burn + Bleed → Hemorrhage (burst on expiry)
+  - Chill ×3 → Freeze (skip turns)
+  - Shock + Freeze → Shatter (AoE explosion)
+  - Bleed + Poison → Sepsis (double tick rate)
+  - Poison + Burn + *Pandemic* keystone → Plague (spreads on kill)
+- [ ] Combat log shows interactions: `"Shock + Freeze → SHATTER for 892 damage!"`
 - [ ] Monster resistances in template JSON: some enemies immune to certain elements
 - [ ] Resist-piercing mechanic via Penetration link rune
 
@@ -375,46 +203,597 @@ Higher-modifier dungeons always drop more and better loot.
 
 ---
 
-### ðŸŸ¡ MILESTONE 8 â€” Crafting Bench + Economy
+### 🟡 MILESTONE 8 — Crafting Bench + Economy
 **Goal:** Players can improve gear without pure RNG dependency.
 
 **Deliverables:**
-- [ ] **Crafting Bench Screen**: drag item into slot, select operation, preview outcome
-- [ ] Reroll affix: removes one random affix, adds new random from pool
-- [ ] Augment: adds one affix to a Magic item (max 2 affixes â†’ becomes Rare)
-- [ ] Corrupt: random outcome table (5 possible outcomes including bad ones)
-- [ ] Legendary recipe: combine 3 same-slot Rares (25% chance Legendary, 75% returns Magic)
-- [ ] Rune Upgrade: spend Dust to increase a skill rune's tier (+10% base damage per tier, max tier 5)
+- [ ] **Crafting Bench Screen**: select item from inventory, choose operation, preview outcome
+- [ ] Reroll affix: removes one random affix, adds new random from pool (Rare only)
+- [ ] Augment: adds one affix to a Magic item (max 2 affixes → becomes Rare)
+- [ ] Corrupt: 6-outcome random table (powerful implicit / nothing / lose affix / gain affix / reroll all / downgrade to Magic)
+- [ ] Legendary recipe: combine **3 same-slot Rares** (validated in UI and logic) — 25% Legendary, 75% returns Magic
+- [ ] Rune Upgrade: spend 200 Dust → rune tier +1 (+10% base damage, max tier 5)
 - [ ] Currency display updated after every transaction
 
 **Estimated time:** 1 week
 
 ---
 
-### ðŸŸ  MILESTONE 9 â€” Build Depth & All Systems Expanded
-**Goal:** Builds feel truly distinct. A Fire build plays completely differently from a Bleed build.
+### 🟠 MILESTONE 9A — Rune Library Complete
+**Goal:** All skill and link runes exist in data and fire correctly in combat.
 
 **Deliverables:**
-- [ ] Expand to 12 Skill Runes (all 5 elements + physical + chaos + summon)
-- [ ] Expand to 20 Link Runes (include all Trigger links)
-- [ ] Trigger Links fully implemented: `On Kill`, `On Hit`, `On Low HP`, `On Full Mana`
-- [ ] All 12 Zodiac constellations defined and rendered in the tree (120 minor + 12 Keystones)
-- [ ] All 12 Keystones implemented in `CombatEngine.js`
-- [ ] Legendary items: design 10 unique Legendary effects (e.g., "Fireball leaves a burning ground zone")
-- [ ] **Offline Build Planner**: simulate combat against a test dummy without entering a dungeon
-- [ ] Build import/export: serialize build to a shareable URL string
+- [ ] Expand to all 12 Skill Runes in `skillRunes.json` with correct `unlockLevel` values
+- [ ] Expand to all 20 Link Runes in `linkRunes.json` with correct `unlockLevel` values
+- [ ] Trigger Links fully implemented in `CombatEngine.js`:
+  - `On Kill` — fires linked skill when any enemy dies
+  - `On Hit` — fires linked skill on every hit landed
+  - `On Low HP` — fires linked skill when player drops below 30% HP
+  - `On Full Mana` — fires linked skill when mana reaches 100%
+- [ ] Build Screen filters runes by `player.level >= rune.unlockLevel`
+- [ ] Locked runes display "Unlocks at Lv. X" in the picker
 
-**Estimated time:** 4â€“5 weeks
+**Estimated time:** 1 week
 
 ---
 
-### ðŸŸ  MILESTONE 10 â€” Dungeon Depth & Monster Variety
+### 🟠 MILESTONE 9B — Full Zodiac Tree
+**Goal:** All 12 constellations are defined, rendered, and their keystones fire in combat.
+
+**Deliverables:**
+- [ ] All 12 constellations defined in `zodiacTree.json` (120 minor nodes + 12 Keystones)
+- [ ] All 12 Keystones implemented in `CombatEngine.js`:
+  - Conflagration, Shatter, Overcharge, Hemorrhage, Pandemic
+  - Iron Will, Wither, Windstep, Blood Mage, Blademaster
+  - Necromancer's Mark, Fortune's Edge
+- [ ] Full tree renders correctly in the SVG Zodiac Screen
+- [ ] Ascendancy node slots reserved in the tree (visible but locked, labelled "Ascendancy")
+
+**Estimated time:** 2 weeks
+
+---
+
+### 🟠 MILESTONE 9C — Legendary Items + Offline Build Planner
+**Goal:** The build space feels complete. Players can theory-craft without entering a dungeon.
+
+**Deliverables:**
+- [ ] 10 unique Legendary item effects designed and implemented (e.g., "Fireball leaves a
+  burning ground zone", "Frost Arrow pierces and chills all enemies in path")
+- [ ] Legendary affixes added to `affixPool.json` under `"tiers": ["legendary"]`
+- [ ] **Offline Build Planner** tab inside Build Screen: simulate combat against a configurable
+  test dummy (set dummy HP, armor, resistances) without entering a dungeon
+- [ ] Planner output: full simulated combat log + total damage + estimated clear time
+
+**Estimated time:** 1–2 weeks
+
+---
+
+### 🟠 MILESTONE 10 — Dungeon Depth & Monster Variety
 **Goal:** High-tier dungeons feel genuinely dangerous and mechanically distinct.
 
 **Deliverables:**
-- [ ] Expand to 20 Chaos Tiers (Tiers 1â€“10 tutorial curve, 11â€“20 endgame)
-- [ ] 15 monster templates: 3 archetypes Ã— 5 element variants (Fire Golem, Ice Golem, etc.)
+- [ ] Expand to 20 Chaos Tiers (Tiers 1–10 tutorial curve, 11–20 endgame)
+- [ ] 15 monster templates: 3 archetypes × 5 element variants (Fire Golem, Ice Golem, etc.)
 - [ ] Elite monsters: appear in Tier 8+, have 1 special mechanic (shield phase, summon adds, enrage)
 - [ ] Boss designs: one unique boss per 5 tiers with 2-phase fight logic
-- [ ] Full dungeon modifier pool: 20 modifiers balanced for fun, not frustration
-- [ ] Monster scaling formula: `m
+- [ ] Full dungeon modifier pool: 20 modifiers balanced for engagement, not frustration
+- [ ] Monster scaling formula: `monsterHP(tier) = baseHP × (1 + 0.12 × tier)`
+- [ ] Monster damage scaling: `monsterDamage(tier) = baseDamage × (1 + 0.10 × tier)`
+
+**Estimated time:** 2 weeks
+
+---
+
+### 🔵 MILESTONE 11 — Onboarding + Save System + Settings
+**Goal:** New players understand the loop in 3 minutes. Returning players never lose progress.
+
+**Deliverables:**
+
+**Starter Kit**
+- [ ] `initialState` ships with: Frost Arrow in Slot 1, More Damage link in Socket 1,
+  Iron Sword in Weapon slot, 50 Rune Dust
+- [ ] Intro dungeon auto-presented on first load: **Runefall Gate (Tier 0)** — 1 combat
+  room + 1 boss room with reduced HP
+- [ ] On Tier 0 clear: award 100 XP, 100 Rune Dust, and a random Magic-tier item
+  matching the player's equipped weapon element (not a fixed fire reward)
+- [ ] Tier 0 completion flag stored in `playerState.tutorialComplete`; never shown again
+
+**Tutorial Tooltip System**
+- [ ] `TutorialManager.jsx` — in-memory seen-flag object (no localStorage)
+- [ ] Build Screen first visit: tooltip on Skill Slot 1
+- [ ] Dungeon Screen first visit: tooltip on Enter button
+- [ ] Zodiac Screen first visit with unspent points: tooltip on nearest allocatable node
+- [ ] First death: tooltip on retry button
+- [ ] All tooltips dismissible; never reappear in the same session
+
+**Save System**
+- [ ] `LOAD_SAVE` action in `PlayerContext.jsx` — replaces entire state
+- [ ] Export button in Header → downloads `runefall-save.json` as a blob
+- [ ] Import button in Header → file picker, reads `.json`, dispatches `LOAD_SAVE`
+- [ ] Save file includes: skills, gear, zodiac nodes, records, completed challenges,
+  `tutorialComplete` flag
+
+**Settings Screen**
+- [ ] Settings tab added to bottom nav (⚙️)
+- [ ] Sound: On / Off toggle (wired up fully in M15)
+- [ ] Combat Speed: 0.5× / 1× / 2× selector (syncs with in-battle toggle)
+- [ ] Color Blind Mode: replaces element color coding with shape icons
+  (◆ fire, ● ice, ▲ lightning, ■ physical, ✦ poison)
+- [ ] Reset Save: wipes `playerState` to `initialState` with a confirmation prompt
+
+**Estimated time:** 5–7 days
+
+---
+
+### 🔵 MILESTONE 12 — Visual Combat Layer (Canvas 2D)
+**Goal:** Battle feels alive. The player watches their build play out as a visual story.
+
+**Deliverables:**
+
+**Sprite System**
+- [ ] v1 sprites use **geometric shapes** — player = glowing rune circle, enemies shaped
+  by archetype (humanoid = upright rectangle, beast = low wide shape, elemental = orb)
+- [ ] `SpriteRenderer.js` — draws entity at correct canvas position; handles idle pulse animation
+- [ ] Player sprite: left 25% of canvas. Enemy sprites: right 25–75%, stacked vertically
+
+**Skill Animations**
+- [ ] `SkillAnimator.js` — maps each element to a visual:
+
+| Element | Animation |
+|---|---|
+| Ice | Blue projectile arc |
+| Fire | Orange expanding burst |
+| Lightning | Yellow zigzag line |
+| Physical | White slash arc |
+| Poison | Green cloud expand |
+| Chaos | Purple distortion ring |
+
+- [ ] Animations are cosmetic — replay already-computed combat log
+- [ ] Each animation lasts 300ms; queued sequentially
+
+**Floating Damage Numbers**
+- [ ] Damage number spawns at enemy position, floats up 40px, fades over 600ms
+- [ ] Crits: larger font, gold color, `!` suffix
+- [ ] Status ticks: smaller font, element color
+
+**HP Bar Animations**
+- [ ] CSS `transition: width 400ms ease-out` on all HP bars (not canvas-drawn)
+- [ ] Player bar top-left; enemy bars above each sprite
+- [ ] Bar flashes red on hit
+
+**Status Effect Icons**
+- [ ] Row of icons beneath each entity: 🔥 ❄️ ⚡ 🩸 ☠️ 🧊
+- [ ] Stack count badge on each icon
+
+**Combat Speed Toggle**
+- [ ] `0.5×` `1×` `2×` buttons visible during battle
+- [ ] Adjusts tick interval: `500ms / multiplier`
+- [ ] Syncs with Settings Screen selector
+
+> **Note:** Full pixel art sprites are a post-v1 enhancement. Geometric shapes ship first
+> to protect the timeline while keeping all animation logic intact.
+
+**Estimated time:** 2–3 weeks
+
+---
+
+### 🔵 MILESTONE 13 — Endgame Systems
+**Goal:** Players who clear Tier 10 have a reason to keep going. The ceiling is infinite.
+
+**Deliverables:**
+
+**Ascendancy System**
+- [ ] Unlocks at **Level 15** (reachable in ~25–30 Tier 5 runs)
+- [ ] One-time modal: *"You have mastered the runes. Choose your Ascendancy."*
+- [ ] Three paths:
+
+| Name | Passive Bonus | Playstyle |
+|---|---|---|
+| **Runebound** | All skill runes gain +1 base hit per tier; Link Runes cost 50% less mana | Generalist |
+| **Hexblade** | Melee skills deal 30% bonus Chaos damage; Chaos ignores all resistances | Melee/Chaos |
+| **Stormbringer** | Lightning skills chain to 2 extra targets; Shock duration doubled | Lightning AoE |
+
+- [ ] Choice is permanent per save file; stored in `playerState.ascendancy`
+- [ ] Each path adds 6 exclusive nodes to the Zodiac tree (visible but locked until chosen)
+- [ ] `SET_ASCENDANCY` action added to `PlayerContext.jsx`
+- [ ] Ascendancy modifiers applied in `StatsCalculator.js`
+
+**Tier Key Modifier System**
+- [ ] Cleared dungeons drop a Tier Key with 1–3 random modifiers from `tierKeyModifiers.json`:
+
+| Modifier | Effect |
+|---|---|
+| Amplified | +50% enemy HP, +100% item quantity |
+| Volatile | Enemies explode on death (10% max HP AoE) |
+| Haunted | Elite enemy in every room |
+| Enriched | +200% Rune Dust, -20% XP |
+| Cursed | Player starts at 50% HP; +300% item rarity |
+| Empowered | +2 Chaos Tier difficulty; +200% all rewards |
+| Fractured | Bosses appear in every room |
+
+- [ ] Modifier count correlates to loot multiplier shown on Dungeon Screen before entering
+- [ ] Keys are consumed on dungeon entry; shown in a Key inventory below the Tier selector
+
+**Hall of Records**
+- [ ] Tab inside Dungeon Screen
+- [ ] Tracks: Highest Tier Cleared, Most Damage in a Single Hit, Fastest Dungeon Clear (in ticks),
+  Total Enemies Slain, Total Rune Dust Spent, Favourite Skill Rune (most damage dealt overall)
+- [ ] Records persist inside the save file under `playerState.records`
+- [ ] Displayed with timestamps and build snapshot (skill rune names at time of record)
+
+**Estimated time:** 2 weeks
+
+---
+
+### 🔵 MILESTONE 14 — Challenge System + Daily Runs
+**Goal:** Give returning players a daily reason to log in and a structured challenge ladder.
+
+**Deliverables:**
+
+**Daily Challenge**
+- [ ] Each day seeds a fixed dungeon config: locked Tier, locked modifiers, locked enemy set
+- [ ] Seed derived from `new Date().toDateString()` → deterministic for all players that day
+- [ ] Daily Challenge uses a **snapshot build** — build is locked at time of entry, cannot change mid-run
+- [ ] Completion awards a special cosmetic Rune Dust colour variant (visual only, no power)
+- [ ] Completion flag stored in `playerState.dailyLastCompleted` (date string); resets daily
+
+**Challenge Ladder**
+- [ ] 30 handcrafted challenges defined in `challenges.json`:
+
+| # | Name | Condition | Reward |
+|---|---|---|---|
+| 1 | First Blood | Clear any dungeon | 200 Rune Dust |
+| 2 | Glass Cannon | Clear Tier 3 with 0 HP gear affixes | 300 Rune Dust |
+| 3 | Mono-Element | Clear Tier 5 using only Fire skills | 400 Rune Dust |
+| 4 | The Untouchable | Clear a dungeon without the player taking damage | 500 Rune Dust |
+| 5 | Speed Runner | Clear Tier 5 in under 30 ticks total | 500 Rune Dust |
+| 6 | Poison Apostle | Kill 500 enemies with Poison damage | 600 Rune Dust |
+| 7 | Keystone Hunter | Allocate 3 Keystones simultaneously | 600 Rune Dust |
+| 8 | One Rune Army | Clear Tier 8 with only 1 skill rune equipped | 750 Rune Dust |
+| 9 | Corrupted | Successfully corrupt an item 5 times | 400 Rune Dust |
+| 10 | True Ascendant | Clear Tier 10 post-Ascendancy | 1000 Rune Dust + Legendary item |
+| ... | ... | ... | ... |
+| 30 | Runefall Master | Clear Tier 20 with all 5 skill slots filled with Trigger Links | 5000 Rune Dust |
+
+- [ ] Challenge progress tracked in `playerState.challenges[]` (id, progress, completed flag)
+- [ ] Completed challenges shown with a gold checkmark; locked ones show condition text
+- [ ] Partial progress displayed for numeric challenges (e.g., "312 / 500 enemies")
+- [ ] Challenge list accessible from a tab inside the Dungeon Screen
+
+**Estimated time:** 1–2 weeks
+
+---
+
+### 🔵 MILESTONE 15 — Audio + Polish Pass
+**Goal:** The game feels finished. Sound, animation timing, and UX micro-details are complete.
+
+**Deliverables:**
+
+**Audio System**
+- [ ] `AudioManager.js` — Web Audio API wrapper; loads and plays sound effects
+- [ ] Sound effects (sourced from freesound.org CC0 or generated):
+
+| Event | Sound |
+|---|---|
+| Skill fires | Short whoosh (element-variant: crackle/ice/thunder) |
+| Hit lands | Impact thud |
+| Critical hit | Sharp crack + pitch shift up |
+| Enemy dies | Low thud / crumble |
+| Level up | Rising chime arpeggio |
+| Loot drop | Soft chime |
+| Legendary drop | Distinct fanfare (3 notes) |
+| Player death | Low reverb drone |
+| Keystone allocated | Deep resonant bell |
+
+- [ ] Background music: 2 tracks (dungeon ambient loop, build-screen calm loop)
+  sourced from OpenGameArt CC0
+- [ ] Settings Screen sound toggle wires to `AudioManager.setMuted(bool)`
+- [ ] Volume slider (0–100%) wired to `AudioManager.setVolume(float)`
+
+**Animation Polish**
+- [ ] Level-up popup: `clip-path` expand from center, star burst effect, auto-dismiss after 2.5s
+- [ ] Loot drop cards: stagger-animate in with 80ms delay between each card
+- [ ] Zodiac node allocation: pulse ring ripples outward from node on click
+- [ ] Keystone allocation: full-screen flash at 5% opacity in Keystone's element colour
+- [ ] Rune equip: socket glows briefly when a link rune is dropped in
+- [ ] Combat log entries: slide in from left with `transform: translateX(-12px)` → `0`
+- [ ] Number counters (XP bar, Rune Dust): animate via `requestAnimationFrame` count-up
+
+**UX Micro-Details**
+- [ ] Tooltip delay: 400ms before tooltip appears (prevents tooltip flicker on fast mouse moves)
+- [ ] Gear Score delta: green `▲ +42` / red `▼ -18` with colour-coded text
+- [ ] Empty Skill Slot shows a pulsing `+` with "Click to add a skill rune" hint
+- [ ] Empty Zodiac node shows point count badge: "2 points available" bounces on Zodiac tab icon
+- [ ] Build Screen keyboard shortcut: pressing `1`–`5` opens that skill slot's rune picker
+- [ ] Dungeon Screen auto-focuses the Enter button when the screen loads
+- [ ] Post-battle summary shows total damage dealt, total damage taken, and ticks elapsed
+
+**Estimated time:** 1–2 weeks
+
+---
+
+### 🟣 MILESTONE 16 — Mobile Optimization
+**Goal:** The game is fully playable on a phone. Every interaction works without a mouse.
+
+**Deliverables:**
+- [ ] Responsive layout breakpoint at 768px: bottom nav collapses to icon-only (no labels)
+- [ ] Build Screen on mobile: skill slots stack vertically; tap slot → full-screen modal picker
+- [ ] Zodiac Screen on mobile: SVG tree is pinch-zoomable and pannable (touch events)
+- [ ] Inventory on mobile: gear slots in a 2×3 grid; bag in a 4-column scrollable grid
+- [ ] All touch targets verified ≥44×44px; padding added where needed
+- [ ] Combat log font size: `--text-sm` on mobile (no smaller)
+- [ ] Canvas battle panel: scales to 100% viewport width on mobile, 16:9 aspect ratio maintained
+- [ ] No hover-only UI elements: all tooltips trigger on tap, dismiss on second tap or outside tap
+- [ ] iOS Safari: `viewport-fit=cover` meta tag; safe-area insets applied to bottom nav
+- [ ] Test matrix: iPhone SE (375px), iPhone 14 Pro (393px), iPad (768px)
+
+**Estimated time:** 1 week
+
+---
+
+### 🟣 MILESTONE 17 — Build Sharing + Community Features
+**Goal:** Players can share, compare, and clone each other's builds.
+
+**Deliverables:**
+
+**Build Export / Import**
+- [ ] `encodeBuild(playerState)` → compact base64 string representing skills + links + zodiac nodes + gear affixes
+- [ ] `decodeBuild(string)` → reconstructs build object, validates integrity (unknown rune IDs → stripped)
+- [ ] "Copy Build Code" button in Build Screen header → copies string to clipboard
+- [ ] "Import Build" button → text input modal, pastes code, loads build
+- [ ] Imported build does NOT overwrite save file progress (XP, currency, records untouched);
+  only skill slots, link configs, and zodiac allocations change
+- [ ] Build code string is URL-safe: `runefall.app/?build=ABC123` loads the game with that build pre-loaded
+
+**Build Summary Card**
+- [ ] "Share Build" button generates a build summary card as a downloadable PNG (via Canvas `toDataURL()`):
+  - Build name (editable text input, max 32 chars)
+  - 5 skill rune names + their link rune names
+  - 3 allocated Keystones
+  - Top 3 gear affixes
+  - Highest Tier cleared (from records)
+  - RUNEFALL logo watermark
+
+**Estimated time:** 1 week
+
+---
+
+### 🟣 MILESTONE 18 — Post-Launch Content Pack A: "The Hollow Court"
+**Goal:** New content that adds 10+ hours of play for players who have cleared Tier 20.
+
+**Deliverables:**
+
+**New Dungeon Biome: The Hollow Court**
+- [ ] Tiers 21–30 unlock after clearing Tier 20 with any Ascendancy
+- [ ] New visual theme: crumbling throne room, spectral lighting (CSS filters on canvas sprites)
+- [ ] 5 new monster archetypes: Shade Knight, Bone Archer, Wraith Mage, Void Crawler, Lich Herald
+- [ ] Each archetype has a unique mechanic:
+  - Shade Knight: reflects 10% of damage back as Chaos
+  - Bone Archer: applies Bleed on every hit regardless of skill element
+  - Wraith Mage: reduces player mana by 20% on hit
+  - Void Crawler: immune to one random element each fight (shown in enemy info panel)
+  - Lich Herald: resurrects once at 1 HP (combat log: `"Lich Herald rises from the dead!"`)
+
+**New Skill Runes (2)**
+- [ ] `Chaos Bolt` — Spell / Chaos: ignores all resistances; unpredictable damage range (80–200% of base)
+- [ ] `Smoke Bomb` — Melee / Physical: fast twin strikes; applies Bleed on both hits; resets cooldown if both hit
+
+**New Link Runes (3)**
+- [ ] `Life Leech` — restores HP equal to 2% of damage dealt
+- [ ] `Spell Echo` — spells repeat once after 200ms at 50% damage (Spell skills only)
+- [ ] `Detonation` — on kill: all consumed status effects explode for AoE bonus damage
+
+**New Keystones (2)**
+- [ ] `Soul Harvest` (Wisp constellation) — each enemy killed permanently grants +0.5% damage (resets on death)
+- [ ] `Void Walker` (Void constellation) — player becomes immune to all status effects;
+  instead, each status that would be applied grants +8% damage for 3 ticks
+
+**New Legendary Items (5)**
+- [ ] *The Hollow Crown* (Helmet) — "Your skills gain the Chaos element in addition to their base element"
+- [ ] *Ashbone Gauntlets* (Gloves) — "On kill: next skill fired deals 300% increased damage"
+- [ ] *Voidstep Treads* (Boots) — "After taking damage, next skill fires twice for free"
+- [ ] *Sundered Blade* (Weapon) — "Critical strikes apply all 5 status effects simultaneously"
+- [ ] *Shroud of the Court* (Chest) — "Take 20% reduced damage per active status effect on any enemy"
+
+**Estimated time:** 2–3 weeks
+
+---
+
+### 🟣 MILESTONE 19 — Post-Launch Content Pack B: "Rune Trials"
+**Goal:** A structured solo competitive mode where players race against a fixed meta.
+
+**Deliverables:**
+
+**Rune Trials Mode**
+- [ ] Separate mode accessible from Dungeon Screen: "Enter Trials" button (unlocked after Ascendancy)
+- [ ] Trial structure: 7 floors, each with a fixed enemy set and a fixed dungeon modifier
+- [ ] No loot drops during Trials — rewards given only on full 7-floor completion
+- [ ] Each Trial has a **Par Score**: the expected damage total for a "well-built" character
+  - Beat Par by 0–25%: Bronze reward (200 Rune Dust)
+  - Beat Par by 25–75%: Silver reward (500 Rune Dust + Magic item)
+  - Beat Par by 75–150%: Gold reward (1000 Rune Dust + Rare item)
+  - Beat Par by 150%+: Diamond reward (2500 Rune Dust + Legendary item + cosmetic title)
+- [ ] Trial results show: total damage, damage per tick, best single hit, elements used
+- [ ] 10 preset Trials defined in `trials.json`; 2 new trials added each content patch
+
+**Trial-Exclusive Cosmetics**
+- [ ] Diamond completions unlock visual rune skin variants (colour shifts only, no stat changes):
+  - Frost Arrow → *Obsidian Arrow* (black ice particle trail)
+  - Fireball → *Solar Flare* (white-gold burst instead of orange)
+  - Ground Slash → *Void Cleave* (purple/black slash animation)
+- [ ] Cosmetic skins stored in `playerState.unlockedSkins[]`; applied per-skill in Build Screen
+
+**Estimated time:** 2 weeks
+
+---
+
+## 7. Technical Architecture
+
+### File Structure
+/src
+/data
+skillRunes.json ← All skill rune definitions
+linkRunes.json ← All link rune definitions
+zodiacTree.json ← Node positions, connections, stat effects
+affixPool.json ← All gear affix definitions by tier
+monsters.json ← Enemy templates with stats + resistances
+dungeons.json ← Room wave configs per Tier
+challenges.json ← 30 challenge definitions
+trials.json ← Trial floor configs
+tierKeyModifiers.json ← All Tier Key modifier definitions
+/systems
+CombatEngine.js ← runCombat(player, enemies) → combatLog]
+SkillResolver.js ← buildSkillFromSlot(slot) → resolvedSkill
+StatusEngine.js ← apply/stack/tick/expire statuses per entity
+StatsCalculator.js ← merges gear + zodiac + ascendancy → playerStats
+LootGenerator.js ← generateItem(tier, slot) → item object
+AudioManager.js ← Web Audio API wrapper
+SaveManager.js ← encodeSave / decodeSave / exportSave / importSave
+BuildEncoder.js ← encodeBuild / decodeBuild for sharing
+/components
+/screens
+BuildScreen.jsx
+InventoryScreen.jsx
+ZodiacScreen.jsx
+DungeonScreen.jsx
+BattleScreen.jsx
+CraftingScreen.jsx
+SettingsScreen.jsx
+/ui
+BottomNav.jsx
+Header.jsx
+ItemTooltip.jsx
+SkillSlot.jsx
+RunePicker.jsx
+TutorialTooltip.jsx
+LevelUpPopup.jsx
+BuildSummaryCard.jsx
+/canvas
+BattleCanvas.jsx ← Canvas 2D controller
+SpriteRenderer.js
+SkillAnimator.js
+DamageNumbers.js
+/context
+PlayerContext.jsx ← Global state + reducer
+/hooks
+useCombat.js
+useZodiac.js
+useLoot.js
+
+---
+
+### State Shape
+
+```js
+playerState = {
+  name: "Runebound",
+  level: 1,
+  xp: 0,
+  runeDust: 50,
+  ascendancy: null,              // "runebound" | "hexblade" | "stormbringer"
+  tutorialComplete: false,
+  dailyLastCompleted: null,      // ISO date string
+
+  skills: [
+    {
+      id: "skill-slot-1",
+      skillRune: null,           // skillRune object or null
+      links: [null, null, null, null, null, null]
+    },
+    // ... slots 2–5
+  ],
+
+  gear: {
+    weapon: null,
+    helmet: null,
+    chest: null,
+    gloves: null,
+    boots: null
+  },
+
+  bag: [],                       // array of item objects (max 20)
+
+  zodiac: {
+    points: 0,
+    allocated: []                // array of node IDs
+  },
+
+  records: {
+    highestTierCleared: 0,
+    highestSingleHit: 0,
+    fastestClear: Infinity,
+    totalEnemiesSlain: 0,
+    totalRuneDustSpent: 0,
+    favouriteSkillRune: null
+  },
+
+  challenges: [],                // [{ id, progress, completed }]
+  unlockedSkins: [],
+  completedTiers: []             // array of tier numbers cleared at least once
+}
+```
+
+---
+
+### Reducer Actions
+EQUIP_SKILL_RUNE → { slotIndex, skillRune }
+UNEQUIP_SKILL_RUNE → { slotIndex }
+EQUIP_LINK_RUNE → { slotIndex, socketIndex, linkRune }
+UNEQUIP_LINK_RUNE → { slotIndex, socketIndex }
+EQUIP_GEAR → { slot, item }
+UNEQUIP_GEAR → { slot }
+SALVAGE_ITEM → { itemId } → adds Rune Dust
+ALLOCATE_ZODIAC_NODE → { nodeId } → validates path + deducts point
+RESPEC_ZODIAC_NODE → { nodeId } → deducts 50 Rune Dust
+ADD_XP → { amount } → triggers level-up if threshold crossed
+LEVEL_UP → awards Zodiac Point, sets new XP threshold
+SET_ASCENDANCY → { path } → permanent, one-time only
+CRAFT_ITEM → { operation, itemId, ...args }
+COMPLETE_DUNGEON → { tier, loot[], xp, runeDust }
+PLAYER_DEATH → {}
+LOAD_SAVE → { savedState } → replaces entire state
+UPDATE_RECORD → { key, value }
+UPDATE_CHALLENGE → { id, progress }
+
+---
+
+## 8. Balance Targets
+
+| Metric | Target |
+|---|---|
+| Tier 1 clear time | ~15–20 ticks (7.5–10 seconds at 1×) |
+| Tier 5 clear time | ~40–60 ticks (20–30 seconds at 1×) |
+| Tier 10 clear time | ~80–100 ticks; requires optimised build |
+| Tier 20 clear time | ~150–200 ticks; requires near-perfect gear + full Zodiac path |
+| Time to Ascendancy (Level 15) | ~25–30 Tier 5 runs (~2–3 hours of play) |
+| Time to first Legendary drop | ~15–20 Tier 6+ runs |
+| Average crafting sessions per item | 3–5 (balanced to feel impactful but not mandatory) |
+| Rune Dust earned per Tier 5 run | ~80–120 (plus salvage) |
+| Respec cost as % of one run's Dust | ~40–60% (expensive enough to be a real decision) |
+
+---
+
+## 9. Out of Scope (v1)
+
+The following are intentionally excluded from v1 to protect scope:
+
+- Multiplayer of any kind
+- Cloud saves / account system
+- PvP or leaderboards
+- Procedurally generated Keystones
+- New Game+ / Prestige system
+- Storyline / narrative content
+- Voice acting
+- Pixel art sprite sheets (geometric placeholders ship in v1)
+- Controller support
+- Localization (English only for v1)
+
+---
+
+## 10. Version History
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1 | Initial | First draft — basic combat loop, 3 milestones |
+| 0.2 | Revision | Auto-combat architecture confirmed; full system designs added |
+| 0.3 | Current | Optimized milestones; rune unlock levels added; XP table; onboarding rewrite; Hall of Records; full tech architecture; balance targets |
