@@ -80,3 +80,18 @@
   text-align: center;
   padding: 20px;
 }
+
+.rune-locked {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.rune-locked:hover {
+  background: transparent;
+}
+
+.rune-unlock-label {
+  color: #888;
+  font-size: 11px;
+  margin-top: 4px;
+}

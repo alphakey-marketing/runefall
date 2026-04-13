@@ -2,11 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import './CombatLog.css';
 
 function getLogClass(entry) {
+  if (!entry) return 'log-normal';
   switch (entry.type) {
     case 'crit': return 'log-crit';
     case 'kill': return 'log-kill';
     case 'defeat': return 'log-defeat';
     case 'victory': return 'log-victory';
+    case 'room_clear': return 'log-room-clear';
     case 'status_applied': return 'log-status';
     case 'enemy_attack': return 'log-enemy';
     case 'echo': return 'log-echo';
@@ -25,11 +27,11 @@ export default function CombatLog({ entries = [] }) {
 
   return (
     <div className="combat-log">
-      {entries.map((entry, i) => (
+      {entries.map((entry, i) => entry ? (
         <div key={i} className={`log-entry ${getLogClass(entry)}`}>
           {entry.text}
         </div>
-      ))}
+      ) : null)}
       <div ref={bottomRef} />
     </div>
   );

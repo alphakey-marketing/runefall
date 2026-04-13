@@ -1,6 +1,8 @@
 .battle-screen {
   padding: 16px;
   padding-bottom: 80px;
+  min-height: 100%;
+  background: #0d0d1a;
 }
 
 .bag-full-toast {
@@ -119,4 +121,48 @@
   bottom: 100px;
   right: 16px;
   z-index: 150;
+}
+
+.death-overlay {
+  background: linear-gradient(to bottom, #2a0000, #1a0000);
+  border: 2px solid #ff4444;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  margin-top: 12px;
+}
+.death-title {
+  font-size: 28px;
+  color: #ff4444;
+  font-weight: bold;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+.death-skull {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+.death-msg {
+  color: #cc8888;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.no-combat-msg {
+  text-align: center;
+  padding: 40px 16px;
+  color: #888;
+}
+.no-combat-msg p {
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.no-loot-msg {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 12px;
+  margin-top: 8px;
 }

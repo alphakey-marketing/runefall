@@ -11,6 +11,7 @@ export default function BattleScreen() {
   const canvasRef = useRef(null);
   const [visibleLog, setVisibleLog] = useState([]);
   const [showLoot, setShowLoot] = useState(false);
+  const [showDeathScreen, setShowDeathScreen] = useState(false);
   const [hoveredLoot, setHoveredLoot] = useState(null);
   const [bagFullMsg, setBagFullMsg] = useState(false);
 
@@ -20,6 +21,7 @@ export default function BattleScreen() {
   useEffect(() => {
     setVisibleLog([]);
     setShowLoot(false);
+    setShowDeathScreen(false);
     if (!combatLog || combatLog.length === 0) return;
 
     let i = 0;
@@ -28,6 +30,8 @@ export default function BattleScreen() {
         clearInterval(interval);
         if (combatResult === 'victory') {
           setTimeout(() => setShowLoot(true), 500);
+        } else if (combatResult === 'defeat') {
+          setTimeout(() => setShowDeathScreen(true), 500);
         }
         return;
       }
@@ -35,7 +39,10 @@ export default function BattleScreen() {
       i++;
     }, 150);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Note: do NOT reset showDeathScreen here — it would clear the overlay before it renders
+    };
   }, [combatLog, combatResult]);
 
   // Canvas drawing — redraws on each new log entry to reflect live HP changes
@@ -52,6 +59,7 @@ export default function BattleScreen() {
 
     for (let i = visibleLog.length - 1; i >= 0; i--) {
       const entry = visibleLog[i];
+      if (!entry) continue;
       if (!flashEnemy && (entry.type === 'damage' || entry.type === 'crit' || entry.type === 'echo' || entry.type === 'totem' || entry.type === 'cull' || entry.type === 'status')) {
         // Parse HP from text like "(42/150 HP)" or set 0 if "[KILLED]"
         const hpMatch = entry.text?.match(/\((\d+)\/(\d+) HP\)/);
@@ -96,10 +104,24 @@ export default function BattleScreen() {
   };
 
   const handleReturnToDungeon = () => {
+    gameDispatch({ type: 'RESET_COMBAT' });
     gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' });
     gameDispatch({ type: 'CLEAR_PENDING_LOOT' });
     setShowLoot(false);
+    setShowDeathScreen(false);
   };
+
+  // No combat data edge case
+  if (combatResult === null && (!combatLog || combatLog.length === 0)) {
+    return (
+      <div className="battle-screen">
+        <div className="no-combat-msg">
+          <p>No combat data — return to dungeon</p>
+          <button className="return-btn" onClick={handleReturnToDungeon}>Return to Dungeon</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="battle-screen">
@@ -114,6 +136,19 @@ export default function BattleScreen() {
       {bagFullMsg && <div className="bag-full-toast">🎒 Bag is full! Salvage an item first.</div>}
 
       <CombatLog entries={visibleLog} />
+
+      {showDeathScreen && (
+        <div className="death-overlay">
+          <span className="death-skull">💀</span>
+          <div className="death-title">YOU HAVE FALLEN</div>
+          <div className="death-msg">Your journey ends here... for now.</div>
+          <button className="return-btn" onClick={handleReturnToDungeon}>Return to Dungeon</button>
+        </div>
+      )}
+
+      {showLoot && pendingLoot.length === 0 && (
+        <div className="no-loot-msg">Nothing dropped this run.</div>
+      )}
 
       {showLoot && pendingLoot.length > 0 && (
         <div className="loot-panel">
@@ -144,10 +179,11 @@ export default function BattleScreen() {
         </div>
       )}
 
-      <button className="return-btn" onClick={handleReturnToDungeon}>
-        Return to Dungeon
-      </button>
-    </div>
+      {!showDeathScreen && (
+        <button className="return-btn" onClick={handleReturnToDungeon}>
+          Return to Dungeon
+        </button>
+      )}    </div>
   );
 }
 

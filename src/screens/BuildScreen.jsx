@@ -28,6 +28,12 @@ export default function BuildScreen() {
     dispatch({ type: 'SET_LINK_RUNE', slotIndex, linkIndex, link: null });
   };
 
+  const playerLevel = state.level;
+  const unlockedSkillRunes = skillRunesData.filter(r => (r.unlockLevel || 1) <= playerLevel);
+  const lockedSkillRunes = skillRunesData.filter(r => (r.unlockLevel || 1) > playerLevel);
+  const unlockedLinkRunes = linkRunesData.filter(r => (r.unlockLevel || 1) <= playerLevel);
+  const lockedLinkRunes = linkRunesData.filter(r => (r.unlockLevel || 1) > playerLevel);
+
   return (
     <div className="build-screen">
       <h2 className="screen-title">⚔️ Build</h2>
@@ -97,7 +103,8 @@ export default function BuildScreen() {
       {picker?.type === 'skill' && (
         <RunePicker
           title="Select Skill Rune"
-          runes={skillRunesData}
+          runes={unlockedSkillRunes}
+          lockedRunes={lockedSkillRunes}
           onSelect={handleSelectSkillRune}
           onClose={() => setPicker(null)}
         />
@@ -105,7 +112,8 @@ export default function BuildScreen() {
       {picker?.type === 'link' && (
         <RunePicker
           title="Select Link Rune"
-          runes={linkRunesData}
+          runes={unlockedLinkRunes}
+          lockedRunes={lockedLinkRunes}
           onSelect={handleSelectLinkRune}
           onClose={() => setPicker(null)}
         />

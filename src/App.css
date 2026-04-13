@@ -14,7 +14,7 @@ body {
 .app {
   max-width: 768px;
   margin: 0 auto;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: #0d0d1a;
@@ -23,10 +23,11 @@ body {
 .app-header {
   background: #1a1a2e;
   border-bottom: 2px solid #4a3f8a;
-  padding: 10px 16px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .game-title {
@@ -41,4 +42,56 @@ body {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 60px;
+  min-height: 0;
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.header-level {
+  color: #ffd700;
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.header-dust {
+  color: #c4a3ff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.save-btn {
+  background: none;
+  border: 1px solid #4a3f8a;
+  color: #c4a3ff;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.save-btn:hover {
+  background: #2a2a4a;
+}
+
+.xp-bar-wrapper {
+  width: 80px;
+  height: 6px;
+  background: #2a2a4a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4a3f8a, #c4a3ff);
+  border-radius: 3px;
+  transition: width 0.3s ease;
 }

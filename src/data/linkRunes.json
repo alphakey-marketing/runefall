@@ -1,14 +1,203 @@
 [
-  { "id": "fork", "name": "Fork", "effect": "hits", "value": 2, "description": "Skill hits 2 targets instead of 1", "manaCostMultiplier": 1.3, "cooldownMultiplier": 1.0 },
-  { "id": "aoe_expand", "name": "AoE Expand", "effect": "hits", "value": 2, "description": "Increases hit count in AoE skills by +2", "manaCostMultiplier": 1.2, "cooldownMultiplier": 1.0 },
-  { "id": "multicast", "name": "Multicast", "effect": "multicast", "value": 2, "damageMultiplier": 0.6, "description": "Skill fires twice per tick at 60% damage each", "manaCostMultiplier": 1.5, "cooldownMultiplier": 1.0 },
-  { "id": "more_damage", "name": "More Damage", "effect": "damage", "value": 1.45, "description": "+45% flat damage multiplier", "manaCostMultiplier": 1.2, "cooldownMultiplier": 1.0 },
-  { "id": "ignite_support", "name": "Ignite Support", "effect": "addStatus", "value": "burn", "description": "Adds Burn to any skill", "manaCostMultiplier": 1.1, "cooldownMultiplier": 1.0 },
-  { "id": "chill_support", "name": "Chill Support", "effect": "addStatus", "value": "chill", "description": "Adds Chill to any skill", "manaCostMultiplier": 1.1, "cooldownMultiplier": 1.0 },
-  { "id": "echo", "name": "Echo", "effect": "echo", "value": 0.3, "description": "30% chance to cast skill a second time for free", "manaCostMultiplier": 1.0, "cooldownMultiplier": 1.0 },
-  { "id": "totem", "name": "Totem", "effect": "totem", "value": 0.5, "description": "Skill spawns a totem that fires independently at 50% damage", "manaCostMultiplier": 1.4, "cooldownMultiplier": 1.0 },
-  { "id": "trigger_on_kill", "name": "Trigger: On Kill", "effect": "triggerOnKill", "value": true, "description": "Linked skill auto-casts when an enemy dies", "manaCostMultiplier": 1.0, "cooldownMultiplier": 1.0 },
-  { "id": "mana_leech", "name": "Mana Leech", "effect": "manaLeech", "value": 0.03, "description": "Restores mana equal to 3% of damage dealt", "manaCostMultiplier": 1.0, "cooldownMultiplier": 1.0 },
-  { "id": "culling_strike", "name": "Culling Strike", "effect": "culling", "value": 0.15, "description": "Instantly kills enemies below 15% HP", "manaCostMultiplier": 1.1, "cooldownMultiplier": 1.0 },
-  { "id": "penetration", "name": "Penetration", "effect": "penetration", "value": 0.25, "description": "Ignores 25% of enemy elemental resistance", "manaCostMultiplier": 1.1, "cooldownMultiplier": 1.0 }
+  {
+    "id": "fork",
+    "name": "Fork",
+    "effect": "hits",
+    "value": 2,
+    "unlockLevel": 1,
+    "description": "Skill hits 2 targets instead of 1",
+    "manaCostMultiplier": 1.3,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "aoe_expand",
+    "name": "AoE Expand",
+    "effect": "hits",
+    "value": 2,
+    "unlockLevel": 1,
+    "description": "Increases hit count in AoE skills by +2",
+    "manaCostMultiplier": 1.2,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "multicast",
+    "name": "Multicast",
+    "effect": "multicast",
+    "value": 2,
+    "damageMultiplier": 0.6,
+    "unlockLevel": 2,
+    "description": "Skill fires twice per tick at 60% damage each",
+    "manaCostMultiplier": 1.5,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "more_damage",
+    "name": "More Damage",
+    "effect": "damage",
+    "value": 1.45,
+    "unlockLevel": 1,
+    "description": "+45% flat damage multiplier",
+    "manaCostMultiplier": 1.2,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "ignite_support",
+    "name": "Ignite Support",
+    "effect": "addStatus",
+    "value": "burn",
+    "unlockLevel": 2,
+    "description": "Adds Burn to any skill",
+    "manaCostMultiplier": 1.1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "chill_support",
+    "name": "Chill Support",
+    "effect": "addStatus",
+    "value": "chill",
+    "unlockLevel": 2,
+    "description": "Adds Chill to any skill",
+    "manaCostMultiplier": 1.1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "echo",
+    "name": "Echo",
+    "effect": "echo",
+    "value": 0.3,
+    "unlockLevel": 3,
+    "description": "30% chance to cast skill a second time for free",
+    "manaCostMultiplier": 1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "totem",
+    "name": "Totem",
+    "effect": "totem",
+    "value": 0.5,
+    "unlockLevel": 4,
+    "description": "Skill spawns a totem that fires independently at 50% damage",
+    "manaCostMultiplier": 1.4,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "trigger_on_kill",
+    "name": "Trigger: On Kill",
+    "effect": "triggerOnKill",
+    "value": true,
+    "unlockLevel": 5,
+    "description": "Linked skill auto-casts when an enemy dies",
+    "manaCostMultiplier": 1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "mana_leech",
+    "name": "Mana Leech",
+    "effect": "manaLeech",
+    "value": 0.03,
+    "unlockLevel": 3,
+    "description": "Restores mana equal to 3% of damage dealt",
+    "manaCostMultiplier": 1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "culling_strike",
+    "name": "Culling Strike",
+    "effect": "culling",
+    "value": 0.15,
+    "unlockLevel": 6,
+    "description": "Instantly kills enemies below 15% HP",
+    "manaCostMultiplier": 1.1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "penetration",
+    "name": "Penetration",
+    "effect": "penetration",
+    "value": 0.25,
+    "unlockLevel": 4,
+    "description": "Ignores 25% of enemy elemental resistance",
+    "manaCostMultiplier": 1.1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "trigger_on_hit",
+    "name": "Trigger: On Hit",
+    "effect": "triggerOnHit",
+    "value": true,
+    "unlockLevel": 7,
+    "description": "30% chance to fire a bonus shot on every hit",
+    "manaCostMultiplier": 1.2,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "trigger_on_low_hp",
+    "name": "Trigger: On Low HP",
+    "effect": "triggerOnLowHp",
+    "value": true,
+    "unlockLevel": 5,
+    "description": "Skill fires an extra time when player is below 30% HP",
+    "manaCostMultiplier": 1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "trigger_on_full_mana",
+    "name": "Trigger: On Full Mana",
+    "effect": "triggerOnFullMana",
+    "value": true,
+    "unlockLevel": 5,
+    "description": "Skill fires an extra time when mana is full",
+    "manaCostMultiplier": 1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "shock_support",
+    "name": "Shock Support",
+    "effect": "addStatus",
+    "value": "shock",
+    "unlockLevel": 2,
+    "description": "Adds Shock to any skill",
+    "manaCostMultiplier": 1.1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "bleed_support",
+    "name": "Bleed Support",
+    "effect": "addStatus",
+    "value": "bleed",
+    "unlockLevel": 2,
+    "description": "Adds Bleed to any skill",
+    "manaCostMultiplier": 1.1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "poison_support",
+    "name": "Poison Support",
+    "effect": "addStatus",
+    "value": "poison",
+    "unlockLevel": 2,
+    "description": "Adds Poison to any skill",
+    "manaCostMultiplier": 1.1,
+    "cooldownMultiplier": 1
+  },
+  {
+    "id": "concentrated",
+    "name": "Concentrated",
+    "effect": "damage",
+    "value": 1.6,
+    "unlockLevel": 8,
+    "description": "+60% damage but hits only 1 target",
+    "manaCostMultiplier": 1.3,
+    "cooldownMultiplier": 0.9
+  },
+  {
+    "id": "swift_cast",
+    "name": "Swift Cast",
+    "effect": "cooldown_reduction",
+    "value": 0.25,
+    "unlockLevel": 3,
+    "description": "Reduces this skill's cooldown by 25%",
+    "manaCostMultiplier": 1.15,
+    "cooldownMultiplier": 0.75
+  }
 ]

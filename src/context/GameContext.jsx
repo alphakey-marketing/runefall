@@ -9,6 +9,8 @@ const initialState = {
   combatResult: null,
   combatLog: [],
   pendingLoot: [],
+  simulatorResult: null,
+  simulatorLog: [],
 };
 
 function gameReducer(state, action) {
@@ -26,6 +28,10 @@ function gameReducer(state, action) {
       return { ...state, unlockedTiers: [...state.unlockedTiers, action.tier] };
     case 'SET_CURRENT_TIER':
       return { ...state, currentTier: action.tier };
+    case 'RESET_COMBAT':
+      return { ...state, combatResult: null, combatLog: [], pendingLoot: [] };
+    case 'SET_SIMULATOR_RESULT':
+      return { ...state, simulatorResult: action.result, simulatorLog: action.log };
     default:
       return state;
   }
