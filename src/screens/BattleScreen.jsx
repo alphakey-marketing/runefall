@@ -59,6 +59,7 @@ export default function BattleScreen() {
 
     for (let i = visibleLog.length - 1; i >= 0; i--) {
       const entry = visibleLog[i];
+      if (!entry) continue;
       if (!flashEnemy && (entry.type === 'damage' || entry.type === 'crit' || entry.type === 'echo' || entry.type === 'totem' || entry.type === 'cull' || entry.type === 'status')) {
         // Parse HP from text like "(42/150 HP)" or set 0 if "[KILLED]"
         const hpMatch = entry.text?.match(/\((\d+)\/(\d+) HP\)/);

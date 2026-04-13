@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import './CombatLog.css';
 
 function getLogClass(entry) {
+  if (!entry) return 'log-normal';
   switch (entry.type) {
     case 'crit': return 'log-crit';
     case 'kill': return 'log-kill';
@@ -26,11 +27,11 @@ export default function CombatLog({ entries = [] }) {
 
   return (
     <div className="combat-log">
-      {entries.map((entry, i) => (
+      {entries.map((entry, i) => entry ? (
         <div key={i} className={`log-entry ${getLogClass(entry)}`}>
           {entry.text}
         </div>
-      ))}
+      ) : null)}
       <div ref={bottomRef} />
     </div>
   );

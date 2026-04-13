@@ -91,7 +91,10 @@ export function runCombat(playerStats, skills, enemies, playerCurrentHp = null) 
     player.hp = Math.min(player.maxHp, player.hp + (playerStats.hpRegen || 1) * 0.5);
 
     const aliveEnemies = enemyStates.filter(e => e.hp > 0);
-    if (aliveEnemies.length === 0) break;
+    if (aliveEnemies.length === 0) {
+      log.push({ type: 'victory', text: `VICTORY — All enemies defeated in ${tick} ticks!` });
+      return { result: 'victory', log, ticks: tick, playerHpRemaining: player.hp };
+    }
 
     const isFullMana = player.mana >= player.maxMana;
 
@@ -176,7 +179,10 @@ export function runCombat(playerStats, skills, enemies, playerCurrentHp = null) 
     });
 
     const stillAlive = enemyStates.filter(e => e.hp > 0);
-    if (stillAlive.length === 0) break;
+    if (stillAlive.length === 0) {
+      log.push({ type: 'victory', text: `VICTORY — All enemies defeated in ${tick} ticks!` });
+      return { result: 'victory', log, ticks: tick, playerHpRemaining: player.hp };
+    }
 
     stillAlive.forEach(enemy => {
       if (isFrozen(enemy)) {
