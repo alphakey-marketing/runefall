@@ -15,10 +15,17 @@ html, body, #root {
   box-sizing: border-box;
 }
 
+/* FIX: changed 14px → 16px so small-screen text stays above the 12px
+   minimum floor after cascade. The old 14px was shrinking Zodiac tooltip
+   labels (11px base × 0.875 inherited scale) below the legible threshold. */
 @media (max-width: 480px) {
-  html { font-size: 14px; }
+  html {
+    font-size: 16px;
+  }
 }
 
 @supports (padding: max(0px)) {
-  .app { padding-bottom: env(safe-area-inset-bottom); }
+  .app {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
