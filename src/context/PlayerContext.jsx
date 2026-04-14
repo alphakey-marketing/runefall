@@ -1,25 +1,11 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import { getBaseStats, calculatePlayerStats } from '../utils/StatsCalculator.js';
-import { computeZodiacBonuses, isNodeAllocatable } from '../engine/ZodiacSystem.js';
+import { computeZodiacBonuses, isNodeAllocatable, isNodeRemovable } from '../engine/ZodiacSystem.js';
 import challengesData from '../data/challenges.json';
 
-const STARTER_SKILL_RUNE = {
-  id: "frost_arrow", name: "Frost Arrow", type: "ranged", element: "ice",
-  baseDamage: 45, baseManaCost: 20, baseCooldown: 1, baseHits: 1,
-  statusEffect: "chill", unlockLevel: 1,
-  description: "Fires a frost-tipped projectile that chills enemies"
-};
-
-const STARTER_LINK_RUNE = {
-  id: "more_damage", name: "More Damage", effect: "damage", value: 1.45,
-  unlockLevel: 1, description: "+45% flat damage multiplier",
-  manaCostMultiplier: 1.2, cooldownMultiplier: 1
-};
-
-const STARTER_WEAPON = {
-  id: "starter_iron_sword", name: "Iron Sword", slot: "weapon",
-  rarity: "normal", gearScore: 10, affixes: []
-};
+const STARTER_SKILL_RUNE = { id: "frost_arrow", name: "Frost Arrow", type: "ranged", element: "ice", baseDamage: 45, baseManaCost: 20, baseCooldown: 1, baseHits: 1, statusEffect: "chill", unlockLevel: 1, description: "Fires a frost-tipped projectile that chills enemies" };
+const STARTER_LINK_RUNE = { id: "more_damage", name: "More Damage", effect: "damage", value: 1.45, unlockLevel: 1, description: "+45% flat damage multiplier", manaCostMultiplier: 1.2, cooldownMultiplier: 1 };
+const STARTER_WEAPON = { id: "starter_iron_sword", name: "Iron Sword", slot: "weapon", rarity: "normal", gearScore: 10, affixes: [] };
 
 const PlayerContext = createContext(null);
 
@@ -35,19 +21,15 @@ const initialState = {
     { skillRune: null, links: [null, null, null, null, null, null] },
     { skillRune: null, links: [null, null, null, null, null, null] },
   ],
-  equippedGear: {
-    weapon: STARTER_WEAPON,
-    helmet: null,
-    chest: null,
-    gloves: null,
-    boots: null,
-  },
+  equippedGear: { weapon: STARTER_WEAPON, helmet: null, chest: null, gloves: null, boots: null },
   inventory: [],
   zodiacPoints: 0,
   allocatedNodes: [],
   levelUpPending: false,
   baseStats: getBaseStats(),
   tutorialComplete: false,
+  // FIX: replaced _bagFull (state pollution) with bagFullNotification
+  bagFullNotification: false,
   records: {
     highestTier: 0,
     mostDamageHit: 0,
@@ -89,9 +71,13 @@ function playerReducer(state, action) {
       const inventory = prevItem ? [...state.inventory, prevItem] : state.inventory;
       return { ...state, equippedGear, inventory };
     }
+    // FIX: Use bagFullNotification instead of _bagFull to avoid polluting saved state
     case 'ADD_TO_INVENTORY': {
-      if (state.inventory.length >= 20) return { ...state, _bagFull: true };
-      return { ...state, inventory: [...state.inventory, action.item], _bagFull: false };
+      if (state.inventory.length >= 20) return { ...state, bagFullNotification: true };
+      return { ...state, inventory: [...state.inventory, action.item], bagFullNotification: false };
+    }
+    case 'CLEAR_BAG_NOTIFICATION': {
+      return { ...state, bagFullNotification: false };
     }
     case 'SALVAGE_ITEM': {
       const dustGain = action.item.gearScore + 5;
@@ -106,32 +92,51 @@ function playerReducer(state, action) {
         runeDust: state.runeDust + dustGain,
       };
     }
+    // FIX: Track oldLevel to detect level-up; use `leveledUp || state.levelUpPending`
+    // so a second ADD_XP fired before DISMISS_LEVEL_UP doesn't reset the pending flag
+    // to false, which was causing zodiacPoints to appear not to add.
     case 'ADD_XP': {
       let { xp, level, zodiacPoints } = state;
       const oldLevel = level;
       xp += action.amount;
       while (xp >= Math.floor(100 * Math.pow(level, 1.5))) {
-        const xpReq = Math.floor(100 * Math.pow(level, 1.5));
-        xp -= xpReq;
+        xp -= Math.floor(100 * Math.pow(level, 1.5));
         level++;
         zodiacPoints++;
       }
       const leveledUp = level > oldLevel;
-      return { ...state, xp, level, zodiacPoints, levelUpPending: leveledUp };
+      return {
+        ...state,
+        xp,
+        level,
+        zodiacPoints,
+        levelUpPending: leveledUp || state.levelUpPending,
+      };
     }
-    case 'DISMISS_LEVEL_UP':
-      return { ...state, levelUpPending: false };
+    case 'DISMISS_LEVEL_UP': return { ...state, levelUpPending: false };
     case 'ALLOCATE_NODE': {
       if (state.zodiacPoints <= 0) return state;
       if (state.allocatedNodes.includes(action.nodeId)) return state;
       if (!isNodeAllocatable(action.nodeId, state.allocatedNodes)) return state;
-      return { ...state, allocatedNodes: [...state.allocatedNodes, action.nodeId], zodiacPoints: state.zodiacPoints - 1 };
+      return {
+        ...state,
+        allocatedNodes: [...state.allocatedNodes, action.nodeId],
+        zodiacPoints: state.zodiacPoints - 1,
+      };
     }
+    // FIX: Added isNodeRemovable guard inside the reducer (was only in UI before),
+    // preventing any future malformed dispatch from breaking tree path requirements.
     case 'RESPEC_NODE': {
       const dustCost = 50;
       if (state.runeDust < dustCost) return state;
       if (!state.allocatedNodes.includes(action.nodeId)) return state;
-      return { ...state, allocatedNodes: state.allocatedNodes.filter(n => n !== action.nodeId), zodiacPoints: state.zodiacPoints + 1, runeDust: state.runeDust - dustCost };
+      if (!isNodeRemovable(action.nodeId, state.allocatedNodes)) return state;
+      return {
+        ...state,
+        allocatedNodes: state.allocatedNodes.filter(n => n !== action.nodeId),
+        zodiacPoints: state.zodiacPoints + 1,
+        runeDust: state.runeDust - dustCost,
+      };
     }
     case 'CRAFT_REROLL': {
       if (state.runeDust < 50) return state;
@@ -173,14 +178,16 @@ function playerReducer(state, action) {
       const slots = [...state.skillSlots];
       const slot = slots[action.slotIndex];
       if (!slot?.skillRune) return state;
-      const upgradedRune = { ...slot.skillRune, tier: (slot.skillRune.tier || 1) + 1, baseDamage: Math.round(slot.skillRune.baseDamage * 1.1) };
+      const upgradedRune = {
+        ...slot.skillRune,
+        tier: (slot.skillRune.tier || 1) + 1,
+        baseDamage: Math.round(slot.skillRune.baseDamage * 1.1),
+      };
       slots[action.slotIndex] = { ...slot, skillRune: upgradedRune };
       return { ...state, skillSlots: slots, runeDust: state.runeDust - 200 };
     }
-    case 'ADD_RUNE_DUST':
-      return { ...state, runeDust: state.runeDust + action.amount };
-    case 'SET_ASCENDANCY':
-      return { ...state, ascendancy: action.path };
+    case 'ADD_RUNE_DUST': return { ...state, runeDust: state.runeDust + action.amount };
+    case 'SET_ASCENDANCY': return { ...state, ascendancy: action.path };
     case 'UPDATE_RECORDS': {
       const r = { ...state.records };
       if (action.highestTier && action.highestTier > r.highestTier) r.highestTier = action.highestTier;
@@ -207,12 +214,13 @@ function playerReducer(state, action) {
     }
     case 'UPDATE_CHALLENGE_PROGRESS': {
       const challenges = state.challenges.map(c =>
-        c.id === action.challengeId ? { ...c, progress: Math.min(c.progress + (action.amount || 1), challengesData.find(d => d.id === c.id)?.target || c.progress) } : c
+        c.id === action.challengeId
+          ? { ...c, progress: Math.min(c.progress + (action.amount || 1), challengesData.find(d => d.id === c.id)?.target || c.progress) }
+          : c
       );
       return { ...state, challenges };
     }
-    case 'ADD_TIER_KEY':
-      return { ...state, tierKeys: [...state.tierKeys, action.key] };
+    case 'ADD_TIER_KEY': return { ...state, tierKeys: [...state.tierKeys, action.key] };
     case 'USE_TIER_KEY': {
       const idx = state.tierKeys.findIndex(k => k.id === action.keyId);
       if (idx === -1) return state;
@@ -220,10 +228,8 @@ function playerReducer(state, action) {
       tierKeys.splice(idx, 1);
       return { ...state, tierKeys };
     }
-    case 'SET_DAILY_COMPLETED':
-      return { ...state, dailyLastCompleted: action.date };
-    case 'SET_TUTORIAL_COMPLETE':
-      return { ...state, tutorialComplete: true };
+    case 'SET_DAILY_COMPLETED': return { ...state, dailyLastCompleted: action.date };
+    case 'SET_TUTORIAL_COMPLETE': return { ...state, tutorialComplete: true };
     case 'UNLOCK_SKIN':
       if (state.unlockedSkins.includes(action.skinId)) return state;
       return { ...state, unlockedSkins: [...state.unlockedSkins, action.skinId] };
@@ -250,23 +256,20 @@ function playerReducer(state, action) {
         unlockedSkins: s.unlockedSkins || [],
         tutorialComplete: s.tutorialComplete || false,
         dailyLastCompleted: s.dailyLastCompleted || null,
+        bagFullNotification: false,
       };
     }
-    case 'RESET_SAVE':
-      return { ...initialState };
-    default:
-      return state;
+    case 'RESET_SAVE': return { ...initialState };
+    default: return state;
   }
 }
 
 export function PlayerProvider({ children }) {
   const [state, dispatch] = useReducer(playerReducer, initialState);
-
   const zodiacBonuses = computeZodiacBonuses(state.allocatedNodes);
   const playerStats = calculatePlayerStats(state.baseStats, state.equippedGear, zodiacBonuses, state);
-
   return (
-    <PlayerContext.Provider value={{ state, dispatch, playerStats }}>
+    <PlayerContext.Provider value={{ state, dispatch, playerStats, zodiacBonuses }}>
       {children}
     </PlayerContext.Provider>
   );
