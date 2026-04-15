@@ -24,7 +24,7 @@ const initialState = {
   equippedGear: { weapon: STARTER_WEAPON, helmet: null, chest: null, gloves: null, boots: null },
   inventory: [],
   zodiacPoints: 0,
-  allocatedNodes: [],
+  allocatedNodes: ['origin'],
   levelUpPending: false,
   baseStats: getBaseStats(),
   tutorialComplete: false,
@@ -251,6 +251,7 @@ function playerReducer(state, action) {
       return {
         ...initialState,
         ...s,
+        allocatedNodes: s.allocatedNodes.includes('origin') ? s.allocatedNodes : ['origin', ...s.allocatedNodes],
         records: { ...initialState.records, ...(s.records || {}) },
         challenges: s.challenges || initialState.challenges,
         completedChallenges: s.completedChallenges || [],

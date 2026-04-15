@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import { ZODIAC_NODES, ZODIAC_CONSTELLATIONS, isNodeAllocatable, isNodeRemovable } from '../engine/ZodiacSystem.js';
 import { AudioManager } from '../systems/AudioManager.js';
@@ -32,21 +32,27 @@ function formatBonus(key, val) {
   return `+${val}${unit} ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`;
 }
 
-/** Single node circle button */
-function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec }) {
-  const [showTip, setShowTip] = useState(false);
-
+/** Single node circle button — tooltip is lifted to parent via onShowTip/onHideTip */
+function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onShowTip, onHideTip }) {
   const isKeystone = node.type === 'keystone';
   const isGateway = node.type === 'gateway';
   const isAllocated = nodeState === 'allocated';
   const isAllocatable = nodeState === 'allocatable';
 
-  const bonusLines = node.bonuses
-    ? Object.entries(node.bonuses).map(([k, v]) => formatBonus(k, v))
-    : [];
+  const handleMouseEnter = (e) => {
+    onShowTip(node, nodeState, color, canRespec, e.clientX, e.clientY);
+  };
+  const handleMouseMove = (e) => {
+    onShowTip(node, nodeState, color, canRespec, e.clientX, e.clientY);
+  };
 
   return (
-    <div className="zn-wrapper" onMouseEnter={() => setShowTip(true)} onMouseLeave={() => setShowTip(false)}>
+    <div
+      className="zn-wrapper"
+      onMouseEnter={handleMouseEnter}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={onHideTip}
+    >
       <button
         className={`zn-btn zn-${nodeState}${isKeystone ? ' zn-keystone' : ''}${isGateway ? ' zn-gateway' : ''}`}
         style={{ '--node-color': color }}
@@ -57,19 +63,6 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec }) {
         {isKeystone ? '★' : isGateway ? '◎' : isAllocated ? '●' : isAllocatable ? '○' : '·'}
       </button>
 
-      {showTip && (
-        <div className="zn-tooltip">
-          <div className="zn-tt-name">{node.name}</div>
-          {node.description && <div className="zn-tt-desc">{node.description}</div>}
-          {bonusLines.map((b, i) => <div key={i} className="zn-tt-bonus">{b}</div>)}
-          {isAllocated && canRespec && (
-            <div className="zn-tt-respec">Right-click / tap Respec to remove (50 🔮)</div>
-          )}
-          {isAllocatable && <div className="zn-tt-hint">Click to allocate (1 point)</div>}
-          {nodeState === 'locked' && <div className="zn-tt-locked">🔒 Allocate previous node first</div>}
-        </div>
-      )}
-
       {isAllocated && node.type !== 'origin' && canRespec && (
         <button className="zn-respec-btn" onClick={onRespec} title="Respec (50 🔮)">↩</button>
       )}
@@ -78,7 +71,7 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec }) {
 }
 
 /** One constellation card showing its linear chain */
-function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch }) {
+function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch, onShowTip, onHideTip }) {
   const chain = buildChain(constellation);
   const allocatedCount = chain.filter(n => allocatedNodes.includes(n.id)).length;
   const keystoneNode = chain.find(n => n.type === 'keystone');
@@ -128,6 +121,8 @@ function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDu
               onClick={() => handleClick(node)}
               onRespec={() => handleRespec(node)}
               canRespec={runeDust >= 50}
+              onShowTip={onShowTip}
+              onHideTip={onHideTip}
             />
           </React.Fragment>
         ))}
@@ -142,9 +137,57 @@ function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDu
   );
 }
 
+/** Fixed-position tooltip rendered at the ZodiacScreen level, escapes all overflow clipping */
+function ZodiacTooltip({ tip }) {
+  if (!tip.visible || !tip.node) return null;
+
+  const { node, nodeState, color, canRespec } = tip;
+  const bonusLines = node.bonuses
+    ? Object.entries(node.bonuses).map(([k, v]) => formatBonus(k, v))
+    : [];
+  const isAllocated = nodeState === 'allocated';
+  const isAllocatable = nodeState === 'allocatable';
+
+  // Place tooltip above cursor, nudged to stay on-screen
+  const TOOLTIP_W = 220;
+  const TOOLTIP_OFFSET = 16;
+  let left = tip.x + TOOLTIP_OFFSET;
+  let top = tip.y - TOOLTIP_OFFSET;
+  if (left + TOOLTIP_W > window.innerWidth - 8) {
+    left = tip.x - TOOLTIP_W - TOOLTIP_OFFSET;
+  }
+  if (top < 8) top = tip.y + TOOLTIP_OFFSET;
+
+  return (
+    <div
+      className="zn-tooltip-fixed"
+      style={{ left, top, '--tip-color': color }}
+    >
+      <div className="zn-tt-name" style={{ color }}>{node.name}</div>
+      {node.description && <div className="zn-tt-desc">{node.description}</div>}
+      {bonusLines.map((b, i) => <div key={i} className="zn-tt-bonus">{b}</div>)}
+      {isAllocatable && <div className="zn-tt-hint">Click to allocate (1 point)</div>}
+      {isAllocated && node.type !== 'origin' && canRespec && (
+        <div className="zn-tt-respec">Tap ↩ to respec (50 🔮)</div>
+      )}
+      {nodeState === 'locked' && <div className="zn-tt-locked">🔒 Allocate previous node first</div>}
+    </div>
+  );
+}
+
 export default function ZodiacScreen() {
   const { state: playerState, dispatch } = usePlayer();
   const { allocatedNodes, zodiacPoints, runeDust, level, levelUpPending } = playerState;
+
+  const [tip, setTip] = useState({ visible: false, x: 0, y: 0, node: null, nodeState: '', color: '', canRespec: false });
+
+  const handleShowTip = useCallback((node, nodeState, color, canRespec, x, y) => {
+    setTip({ visible: true, node, nodeState, color, canRespec, x, y });
+  }, []);
+
+  const handleHideTip = useCallback(() => {
+    setTip(t => ({ ...t, visible: false }));
+  }, []);
 
   // Compute active bonuses summary
   const activeBonuses = {};
@@ -209,9 +252,14 @@ export default function ZodiacScreen() {
             zodiacPoints={zodiacPoints}
             runeDust={runeDust}
             dispatch={dispatch}
+            onShowTip={handleShowTip}
+            onHideTip={handleHideTip}
           />
         ))}
       </div>
+
+      {/* Single fixed-position tooltip, escapes all overflow clipping */}
+      <ZodiacTooltip tip={tip} />
     </div>
   );
 }
