@@ -61,9 +61,12 @@ function playerReducer(state, action) {
       return { ...state, skillSlots: slots };
     }
     case 'EQUIP_ITEM': {
+      const prevItem = state.equippedGear[action.item.slot];
       const equippedGear = { ...state.equippedGear, [action.item.slot]: action.item };
       const inventory = state.inventory.filter(i => i.id !== action.item.id);
-      return { ...state, equippedGear, inventory };
+      // Return the previously equipped item to the bag
+      const finalInventory = prevItem ? [...inventory, prevItem] : inventory;
+      return { ...state, equippedGear, inventory: finalInventory };
     }
     case 'UNEQUIP_ITEM': {
       const equippedGear = { ...state.equippedGear, [action.slot]: null };

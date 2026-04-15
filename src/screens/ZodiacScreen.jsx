@@ -4,63 +4,159 @@ import { ZODIAC_NODES, ZODIAC_CONSTELLATIONS, isNodeAllocatable, isNodeRemovable
 import { AudioManager } from '../systems/AudioManager.js';
 import './ZodiacScreen.css';
 
-export default function ZodiacScreen() {
-  const { state: playerState, dispatch } = usePlayer();
-  const { allocatedNodes, zodiacPoints, runeDust, level, levelUpPending } = playerState;
-  const [hoveredNode, setHoveredNode] = useState(null);
-  const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, node: null });
+/** Build the ordered node chain for a constellation (gateway → minors → keystone) */
+function buildChain(constellation) {
+  const conNodes = ZODIAC_NODES.filter(n => n.constellation === constellation.id);
+  const nodeById = Object.fromEntries(conNodes.map(n => [n.id, n]));
+  const gateway = conNodes.find(n => n.type === 'gateway');
+  if (!gateway) return conNodes;
 
-  const constellationMap = {};
-  ZODIAC_CONSTELLATIONS.forEach(c => { constellationMap[c.id] = c; });
+  const chain = [];
+  const visited = new Set();
+  let current = gateway;
+  while (current) {
+    chain.push(current);
+    visited.add(current.id);
+    const next = current.connections
+      .map(id => nodeById[id])
+      .find(n => n && !visited.has(n.id));
+    current = next || null;
+  }
+  return chain;
+}
 
-  const getNodeColor = (node) => {
-    if (node.type === 'origin') return '#ffd700';
-    const constellation = constellationMap[node.constellation];
-    return constellation ? constellation.color : '#888';
-  };
+/** Format bonus value for display */
+function formatBonus(key, val) {
+  if (typeof val === 'boolean') return 'Keystone ability';
+  const unit = key.includes('Bonus') || key.includes('Chance') || key.includes('Multiplier') ? '%' : '';
+  return `+${val}${unit} ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`;
+}
+
+/** Single node circle button */
+function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec }) {
+  const [showTip, setShowTip] = useState(false);
+
+  const isKeystone = node.type === 'keystone';
+  const isGateway = node.type === 'gateway';
+  const isAllocated = nodeState === 'allocated';
+  const isAllocatable = nodeState === 'allocatable';
+
+  const bonusLines = node.bonuses
+    ? Object.entries(node.bonuses).map(([k, v]) => formatBonus(k, v))
+    : [];
+
+  return (
+    <div className="zn-wrapper" onMouseEnter={() => setShowTip(true)} onMouseLeave={() => setShowTip(false)}>
+      <button
+        className={`zn-btn zn-${nodeState}${isKeystone ? ' zn-keystone' : ''}${isGateway ? ' zn-gateway' : ''}`}
+        style={{ '--node-color': color }}
+        onClick={onClick}
+        disabled={!isAllocatable && !isAllocated}
+        aria-label={node.name}
+      >
+        {isKeystone ? '★' : isGateway ? '◎' : isAllocated ? '●' : isAllocatable ? '○' : '·'}
+      </button>
+
+      {showTip && (
+        <div className="zn-tooltip">
+          <div className="zn-tt-name">{node.name}</div>
+          {node.description && <div className="zn-tt-desc">{node.description}</div>}
+          {bonusLines.map((b, i) => <div key={i} className="zn-tt-bonus">{b}</div>)}
+          {isAllocated && canRespec && (
+            <div className="zn-tt-respec">Right-click / tap Respec to remove (50 🔮)</div>
+          )}
+          {isAllocatable && <div className="zn-tt-hint">Click to allocate (1 point)</div>}
+          {nodeState === 'locked' && <div className="zn-tt-locked">🔒 Allocate previous node first</div>}
+        </div>
+      )}
+
+      {isAllocated && node.type !== 'origin' && canRespec && (
+        <button className="zn-respec-btn" onClick={onRespec} title="Respec (50 🔮)">↩</button>
+      )}
+    </div>
+  );
+}
+
+/** One constellation card showing its linear chain */
+function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch }) {
+  const chain = buildChain(constellation);
+  const allocatedCount = chain.filter(n => allocatedNodes.includes(n.id)).length;
+  const keystoneNode = chain.find(n => n.type === 'keystone');
+  const keystoneAllocated = keystoneNode && allocatedNodes.includes(keystoneNode.id);
 
   const getNodeState = (node) => {
     if (allocatedNodes.includes(node.id)) return 'allocated';
-    if (node.type === 'origin') return 'origin';
     if (isNodeAllocatable(node.id, allocatedNodes)) return 'allocatable';
     return 'locked';
   };
 
-  const handleNodeClick = (node) => {
-    const nodeState = getNodeState(node);
-    if (nodeState === 'allocatable' && zodiacPoints > 0) {
+  const handleClick = (node) => {
+    const ns = getNodeState(node);
+    if (ns === 'allocatable' && zodiacPoints > 0) {
       dispatch({ type: 'ALLOCATE_NODE', nodeId: node.id });
-      if (node.type === 'keystone') {
-        AudioManager.play('keystoneAlloc');
-      } else {
-        AudioManager.play('nodeAlloc');
-      }
+      AudioManager.play(node.type === 'keystone' ? 'keystoneAlloc' : 'nodeAlloc');
     }
   };
 
-  const handleNodeRightClick = (e, node) => {
-    e.preventDefault();
-    if (allocatedNodes.includes(node.id) && node.type !== 'origin') {
+  const handleRespec = (node) => {
+    if (allocatedNodes.includes(node.id) && node.type !== 'origin' && runeDust >= 50) {
       if (isNodeRemovable(node.id, allocatedNodes)) {
-        if (runeDust >= 50) {
-          dispatch({ type: 'RESPEC_NODE', nodeId: node.id });
-        }
+        dispatch({ type: 'RESPEC_NODE', nodeId: node.id });
       }
     }
   };
 
-  const handleNodeHover = (e, node) => {
-    setHoveredNode(node);
-    const rect = e.currentTarget.closest('svg').getBoundingClientRect();
-    setTooltip({ visible: true, x: e.clientX - rect.left, y: e.clientY - rect.top, node });
-  };
+  return (
+    <div className={`constellation-card${keystoneAllocated ? ' con-card-active' : ''}`}>
+      <div className="con-card-header" style={{ borderColor: constellation.color }}>
+        <span className="con-card-name" style={{ color: constellation.color }}>{constellation.name}</span>
+        <span className="con-card-theme">{constellation.theme}</span>
+        <span className="con-card-progress">{allocatedCount}/{chain.length}</span>
+      </div>
 
-  const handleNodeLeave = () => {
-    setHoveredNode(null);
-    setTooltip({ visible: false, x: 0, y: 0, node: null });
-  };
+      <div className="con-chain">
+        {chain.map((node, i) => (
+          <React.Fragment key={node.id}>
+            {i > 0 && (
+              <div className={`con-connector${allocatedNodes.includes(chain[i - 1].id) && allocatedNodes.includes(node.id) ? ' con-connector-active' : ''}`}
+                style={{ '--node-color': constellation.color }} />
+            )}
+            <ZodiacNode
+              node={node}
+              nodeState={getNodeState(node)}
+              color={constellation.color}
+              onClick={() => handleClick(node)}
+              onRespec={() => handleRespec(node)}
+              canRespec={runeDust >= 50}
+            />
+          </React.Fragment>
+        ))}
+      </div>
 
-  const drawnConnections = new Set();
+      {keystoneAllocated && keystoneNode && (
+        <div className="con-keystone-active" style={{ color: constellation.color }}>
+          ★ {keystoneNode.description}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function ZodiacScreen() {
+  const { state: playerState, dispatch } = usePlayer();
+  const { allocatedNodes, zodiacPoints, runeDust, level, levelUpPending } = playerState;
+
+  // Compute active bonuses summary
+  const activeBonuses = {};
+  allocatedNodes.forEach(nodeId => {
+    const node = ZODIAC_NODES.find(n => n.id === nodeId);
+    if (!node || !node.bonuses) return;
+    Object.entries(node.bonuses).forEach(([k, v]) => {
+      if (typeof v === 'boolean') activeBonuses[k] = true;
+      else activeBonuses[k] = (activeBonuses[k] || 0) + v;
+    });
+  });
+  const bonusSummary = Object.entries(activeBonuses);
 
   return (
     <div className="zodiac-screen">
@@ -77,118 +173,44 @@ export default function ZodiacScreen() {
         </div>
       )}
 
+      {/* Info bar */}
       <div className="zodiac-info-bar">
-        <span className="zodiac-points">⭐ {zodiacPoints} Zodiac Point{zodiacPoints !== 1 ? 's' : ''}</span>
-        <span className="zodiac-dust">🔮 {runeDust} Rune Dust</span>
-        <span className="zodiac-hint">Click allocatable node to spend a point · Right-click to respec (50 Dust)</span>
+        <div className="zodiac-info-left">
+          <span className="zodiac-points-badge">⭐ {zodiacPoints} {zodiacPoints === 1 ? 'Point' : 'Points'}</span>
+          <span className="zodiac-dust-badge">🔮 {runeDust} Dust</span>
+          <span className="zodiac-nodes-badge">🌟 {allocatedNodes.length - 1} nodes</span>
+        </div>
+        <div className="zodiac-info-hint">
+          {zodiacPoints > 0
+            ? `${zodiacPoints} point${zodiacPoints > 1 ? 's' : ''} to spend — click a highlighted node`
+            : 'Level up to earn Zodiac Points · Respec costs 50 Rune Dust'}
+        </div>
       </div>
 
-      <div className="zodiac-svg-container">
-        <svg viewBox="0 0 1200 800" className="zodiac-svg" preserveAspectRatio="xMidYMid meet">
-          {/* Draw connections */}
-          {ZODIAC_NODES.map(node =>
-            node.connections.map(connId => {
-              const connKey = [node.id, connId].sort().join('-');
-              if (drawnConnections.has(connKey)) return null;
-              drawnConnections.add(connKey);
-              const connNode = ZODIAC_NODES.find(n => n.id === connId);
-              if (!connNode) return null;
-              const bothAllocated = allocatedNodes.includes(node.id) && allocatedNodes.includes(connId);
-              return (
-                <line
-                  key={connKey}
-                  x1={node.x} y1={node.y}
-                  x2={connNode.x} y2={connNode.y}
-                  className={`zodiac-line ${bothAllocated ? 'line-allocated' : 'line-inactive'}`}
-                />
-              );
-            })
-          )}
+      {/* Active bonuses summary */}
+      {bonusSummary.length > 0 && (
+        <div className="zodiac-bonuses-bar">
+          <span className="zb-label">Active:</span>
+          {bonusSummary.map(([k, v]) => (
+            <span key={k} className={`zb-tag${typeof v === 'boolean' ? ' zb-tag-keystone' : ''}`}>
+              {typeof v === 'boolean' ? `★ ${k}` : `+${v} ${k.replace(/([A-Z])/g, ' $1').replace('Bonus', '').trim()}`}
+            </span>
+          ))}
+        </div>
+      )}
 
-          {/* Draw nodes */}
-          {ZODIAC_NODES.map(node => {
-            const nodeState = getNodeState(node);
-            const color = getNodeColor(node);
-            const isKeystone = node.type === 'keystone';
-            const isOrigin = node.type === 'origin';
-            const r = isOrigin ? 14 : isKeystone ? 13 : 9;
-
-            return (
-              <g
-                key={node.id}
-                transform={`translate(${node.x}, ${node.y})`}
-                className={`zodiac-node node-${nodeState}`}
-                onClick={() => handleNodeClick(node)}
-                onContextMenu={(e) => handleNodeRightClick(e, node)}
-                onMouseEnter={(e) => handleNodeHover(e, node)}
-                onMouseLeave={handleNodeLeave}
-                style={{ cursor: nodeState === 'allocatable' ? 'pointer' : nodeState === 'allocated' && node.type !== 'origin' ? 'context-menu' : 'default' }}
-              >
-                {nodeState === 'allocated' && (
-                  <circle r={r + 5} fill={color} opacity={0.2} />
-                )}
-                <circle
-                  r={r}
-                  fill={nodeState === 'locked' ? '#1a1a2e' : nodeState === 'allocated' ? color : nodeState === 'allocatable' ? '#2a2a5a' : color}
-                  stroke={nodeState === 'locked' ? '#333' : color}
-                  strokeWidth={nodeState === 'allocated' ? 3 : nodeState === 'allocatable' ? 2 : 1}
-                  opacity={nodeState === 'locked' ? 0.4 : 1}
-                />
-                {isOrigin && (
-                  <text textAnchor="middle" dy="5" fontSize="16" fill="#ffd700">✦</text>
-                )}
-                {isKeystone && nodeState === 'allocated' && (
-                  <text textAnchor="middle" dy="5" fontSize="14" fill="#fff">★</text>
-                )}
-              </g>
-            );
-          })}
-
-          {/* Constellation labels */}
-          {ZODIAC_CONSTELLATIONS.map(constellation => {
-            const keystoneNode = ZODIAC_NODES.find(n => n.id === constellation.keystoneId);
-            if (!keystoneNode) return null;
-            return (
-              <text
-                key={constellation.id}
-                x={keystoneNode.x}
-                y={keystoneNode.y - 20}
-                textAnchor="middle"
-                fontSize="14"
-                fill={constellation.color}
-                opacity={0.7}
-                className="constellation-label"
-              >
-                {constellation.name}
-              </text>
-            );
-          })}
-
-          {/* Tooltip */}
-          {tooltip.visible && tooltip.node && (
-            <foreignObject
-              x={Math.min(tooltip.x + 10, 980)}
-              y={Math.min(tooltip.y - 10, 700)}
-              width="200"
-              height="120"
-              className="zodiac-tooltip-fo"
-            >
-              <div className="zodiac-tooltip">
-                <div className="tt-name">{tooltip.node.name}</div>
-                {tooltip.node.description && (
-                  <div className="tt-desc">{tooltip.node.description}</div>
-                )}
-                {tooltip.node.bonuses && Object.keys(tooltip.node.bonuses).length > 0 && (
-                  <div className="tt-bonuses">
-                    {Object.entries(tooltip.node.bonuses).map(([k, v]) => (
-                      <div key={k} className="tt-bonus">+{typeof v === 'boolean' ? 'Keystone' : v} {k}</div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </foreignObject>
-          )}
-        </svg>
+      {/* Constellation cards */}
+      <div className="zodiac-cards">
+        {ZODIAC_CONSTELLATIONS.map(constellation => (
+          <ConstellationCard
+            key={constellation.id}
+            constellation={constellation}
+            allocatedNodes={allocatedNodes}
+            zodiacPoints={zodiacPoints}
+            runeDust={runeDust}
+            dispatch={dispatch}
+          />
+        ))}
       </div>
     </div>
   );
