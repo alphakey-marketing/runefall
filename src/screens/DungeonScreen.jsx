@@ -68,6 +68,8 @@ export default function DungeonScreen() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
   const { state: playerState, dispatch: playerDispatch, playerStats } = usePlayer();
   const [activeTab, setActiveTab] = useState('tiers');
+  const [ch1Collapsed, setCh1Collapsed] = useState(false);
+  const [ch2Collapsed, setCh2Collapsed] = useState(false);
 
   const handleEnterDungeon = (tierData) => {
     const skills = playerState.skillSlots
@@ -85,6 +87,8 @@ export default function DungeonScreen() {
     let combinedLog = [];
     let playerHpRemaining = playerStats.maxHp || 200;
     let finalResult = 'victory';
+    let totalTicks = 0;
+    let totalEnemiesSlain = 0;
 
     for (const room of tierData.rooms) {
       const enemies = room.enemies
@@ -96,14 +100,26 @@ export default function DungeonScreen() {
       const roomResult = runCombat(playerStats, skills, enemies, playerHpRemaining);
       combinedLog = [...combinedLog, ...roomResult.log];
       playerHpRemaining = roomResult.playerHpRemaining ?? 0;
+      totalTicks += roomResult.ticks || 0;
 
       if (roomResult.result !== 'victory') {
         finalResult = roomResult.result;
         break;
       }
 
+      totalEnemiesSlain += enemies.length;
       combinedLog.push({ type: 'room_clear', text: `— Room cleared! HP remaining: ${Math.ceil(playerHpRemaining)} —` });
     }
+
+    // Derive stats from log for records and challenges
+    let biggestHit = 0;
+    let playerTookDamage = false;
+    let totalManaRemaining = playerStats.maxMana || 100;
+    let singleTickDmgMap = {}; // tick-level damage tracking (using log index as proxy)
+    combinedLog.forEach(entry => {
+      if (entry?.damage && entry.damage > biggestHit) biggestHit = entry.damage;
+      if (entry?.type === 'enemy_attack' && entry.damage > 0) playerTookDamage = true;
+    });
 
     gameDispatch({ type: 'SET_COMBAT_RESULT', result: finalResult, log: combinedLog });
 
@@ -134,13 +150,104 @@ export default function DungeonScreen() {
         playerDispatch({ type: 'ADD_RUNE_DUST', amount: 100 });
       }
 
-      // Complete "First Blood" challenge
-      if (!playerState.completedChallenges.includes(1)) {
-        playerDispatch({ type: 'COMPLETE_CHALLENGE', challengeId: 1 });
-      }
+      // ── Update records ──────────────────────────────────────────────────────
+      playerDispatch({
+        type: 'UPDATE_RECORDS',
+        highestTier: tierData.tier,
+        mostDamageHit: biggestHit,
+        fastestClear: totalTicks,
+        totalEnemiesSlain,
+        favouriteSkillRune: skills[0]?.name ?? null,
+      });
 
-      // Update records
-      playerDispatch({ type: 'UPDATE_RECORDS', highestTier: tierData.tier });
+      // ── Evaluate and complete challenges ────────────────────────────────────
+      const cc = playerState.completedChallenges;
+      const equippedGearSlots = Object.values(playerState.equippedGear).filter(Boolean);
+      const equippedSkills = playerState.skillSlots.filter(s => s.skillRune);
+      const allSkillElements = [...new Set(equippedSkills.map(s => s.skillRune?.element).filter(Boolean))];
+      const activeLinks = equippedSkills.reduce((acc, s) => acc + (s.links?.filter(Boolean).length || 0), 0);
+      const maxLinksOnOneSkill = Math.max(0, ...equippedSkills.map(s => s.links?.filter(Boolean).length || 0));
+      const hasHpGearAffix = equippedGearSlots.some(g =>
+        g.affixes?.some(a => typeof a === 'string' ? a.toLowerCase().includes('hp') : (a.stat || '').toLowerCase().includes('hp'))
+      );
+
+      const completeIfNew = (id) => {
+        if (!cc.includes(id)) playerDispatch({ type: 'COMPLETE_CHALLENGE', challengeId: id });
+      };
+      const updateProgress = (id, amount) => {
+        playerDispatch({ type: 'UPDATE_CHALLENGE_PROGRESS', challengeId: id, amount });
+        // Auto-complete if now at target
+        const ch = challengesData.find(c => c.id === id);
+        const prog = (playerState.challenges.find(c => c.id === id)?.progress || 0) + amount;
+        if (ch && prog >= ch.target && !cc.includes(id)) {
+          playerDispatch({ type: 'COMPLETE_CHALLENGE', challengeId: id });
+        }
+      };
+
+      // id 1: First Blood — clear any dungeon
+      completeIfNew(1);
+
+      // id 2: Glass Cannon — clear Tier 3 with 0 HP gear affixes
+      if (tierData.tier >= 3 && !hasHpGearAffix) completeIfNew(2);
+
+      // id 3: Mono-Element — clear Tier 5 using only Fire skills
+      if (tierData.tier >= 5 && allSkillElements.length === 1 && allSkillElements[0] === 'fire') completeIfNew(3);
+
+      // id 4: The Untouchable — clear a dungeon without taking damage
+      if (!playerTookDamage) completeIfNew(4);
+
+      // id 5: Speed Runner — clear Tier 5 in under 30 ticks
+      if (tierData.tier >= 5 && totalTicks < 30) completeIfNew(5);
+
+      // id 8: One Rune Army — clear Tier 8 with only 1 skill rune
+      if (tierData.tier >= 8 && equippedSkills.length === 1) completeIfNew(8);
+
+      // id 10: True Ascendant — clear Tier 10 post-ascendancy
+      if (tierData.tier >= 10 && playerState.ascendancy) completeIfNew(10);
+
+      // id 11: Dungeon Diver — complete 10 dungeons total (track progress)
+      updateProgress(11, 1);
+
+      // id 13: Iron Will — clear Tier 5 without any gear
+      if (tierData.tier >= 5 && equippedGearSlots.length === 0) completeIfNew(13);
+
+      // id 14: Elemental Master — 5 different elements simultaneously
+      if (allSkillElements.length >= 5) completeIfNew(14);
+
+      // id 20: Tier 5 Conqueror — clear Tier 5
+      if (tierData.tier >= 5) completeIfNew(20);
+
+      // id 21: Tier 10 Conqueror — clear Tier 10
+      if (tierData.tier >= 10) completeIfNew(21);
+
+      // id 22: Mana Efficient — clear dungeon with 50+ mana remaining
+      // Approximate using last mana-related log entry; simpler: use playerHpRemaining as proxy is wrong.
+      // The engine doesn't expose final mana in roomResult, so we check skills' mana cost vs maxMana as heuristic.
+      // Reliable check: look for no `no_mana` entries and skills are cheap relative to max mana.
+      const hadNoMana = combinedLog.some(e => e?.type === 'no_mana');
+      if (!hadNoMana && (playerStats.maxMana || 100) >= 50) completeIfNew(22);
+
+      // id 25: Survivalist — clear Tier 8 with >150 HP remaining
+      if (tierData.tier >= 8 && playerHpRemaining > 150) completeIfNew(25);
+
+      // id 26: Multi-Linker — equip 4 link runes on a single skill
+      if (maxLinksOnOneSkill >= 4) completeIfNew(26);
+
+      // id 28: No Mercy — clear Tier 7 without any status effects active (no status_applied entries from player side)
+      if (tierData.tier >= 7 && !combinedLog.some(e => e?.type === 'status_applied')) completeIfNew(28);
+
+      // id 30: Runefall Master — clear Tier 20 with all 5 slots filled
+      if (tierData.tier >= 20 && equippedSkills.length >= 5) completeIfNew(30);
+
+      // ── Recurring stat challenges (check thresholds) ────────────────────────
+      // id 12: Rune Hoarder — accumulate 1000 Rune Dust (check current amount)
+      if (playerState.runeDust >= 1000) completeIfNew(12);
+
+      // id 15: Zodiac Scholar — allocate 10 zodiac nodes
+      if (playerState.allocatedNodes.filter(n => n !== 'origin').length >= 10) completeIfNew(15);
+
+      // id 29: Dual Ascendant — reach Level 20
+      if (playerState.level >= 20) completeIfNew(29);
     }
 
     gameDispatch({ type: 'NAVIGATE', screen: 'battle' });
@@ -214,26 +321,40 @@ export default function DungeonScreen() {
           <p className="dungeon-subtitle">Select a tier and enter the dungeon</p>
 
           {/* Chapter 1 */}
-          <div className="chapter-header ch1-header">
+          <button
+            className="chapter-header ch1-header chapter-toggle"
+            onClick={() => setCh1Collapsed(c => !c)}
+            aria-expanded={!ch1Collapsed}
+          >
             <span className="chapter-icon">⚔️</span>
             <span className="chapter-title">Chapter 1: The Runefall</span>
             <span className="chapter-range">Tiers 1–20</span>
-          </div>
-          <div className="tier-list">
-            {ch1Tiers.map(renderTierCard)}
-          </div>
+            <span className="chapter-collapse-icon">{ch1Collapsed ? '▶' : '▼'}</span>
+          </button>
+          {!ch1Collapsed && (
+            <div className="tier-list">
+              {ch1Tiers.map(renderTierCard)}
+            </div>
+          )}
 
           {/* Chapter 2 — shown once at least one tier 21+ is unlocked */}
           {ch2Unlocked && (
             <>
-              <div className="chapter-header ch2-header">
+              <button
+                className="chapter-header ch2-header chapter-toggle"
+                onClick={() => setCh2Collapsed(c => !c)}
+                aria-expanded={!ch2Collapsed}
+              >
                 <span className="chapter-icon">🔥</span>
                 <span className="chapter-title">Chapter 2: Abyssal Throne</span>
                 <span className="chapter-range">Tiers 21–40</span>
-              </div>
-              <div className="tier-list">
-                {ch2Tiers.map(renderTierCard)}
-              </div>
+                <span className="chapter-collapse-icon">{ch2Collapsed ? '▶' : '▼'}</span>
+              </button>
+              {!ch2Collapsed && (
+                <div className="tier-list">
+                  {ch2Tiers.map(renderTierCard)}
+                </div>
+              )}
             </>
           )}
         </>

@@ -53,6 +53,13 @@ function gameReducer(state, action) {
       return { ...state, soundEnabled: !state.soundEnabled };
     case 'RESET_GAME':
       return { ...initialState };
+    case 'LOAD_GAME_PROGRESS': {
+      const tiers = action.unlockedTiers;
+      if (!Array.isArray(tiers)) return state;
+      // Merge: keep any already-unlocked tiers plus all from save
+      const merged = Array.from(new Set([...state.unlockedTiers, ...tiers]));
+      return { ...state, unlockedTiers: merged };
+    }
     case 'SET_TRIAL_MODE':
       return { ...state, currentMode: 'trial', trialId: action.trialId, trialFloor: 0, trialTotalDamage: 0 };
     case 'ADVANCE_TRIAL_FLOOR':

@@ -74,7 +74,7 @@ function LevelUpPopup() {
 }
 
 export default function App() {
-  const { state: gameState } = useGame();
+  const { state: gameState, dispatch: gameDispatch } = useGame();
   const { state: playerState, dispatch: playerDispatch } = usePlayer();
   const importRef = useRef(null);
 
@@ -88,7 +88,13 @@ export default function App() {
   }, []);
 
   const handleExport = () => {
-    const json = JSON.stringify(playerState, null, 2);
+    // Bundle both player data and dungeon progress so the save is complete
+    const saveBundle = {
+      player: playerState,
+      game: { unlockedTiers: gameState.unlockedTiers },
+      version: 1,
+    };
+    const json = JSON.stringify(saveBundle, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -104,8 +110,13 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const savedState = JSON.parse(evt.target.result);
-        playerDispatch({ type: 'LOAD_SAVE', savedState });
+        const parsed = JSON.parse(evt.target.result);
+        // Support both new bundle format { player, game } and legacy flat playerState
+        const playerData = parsed.player ?? parsed;
+        playerDispatch({ type: 'LOAD_SAVE', savedState: playerData });
+        if (parsed.game?.unlockedTiers) {
+          gameDispatch({ type: 'LOAD_GAME_PROGRESS', unlockedTiers: parsed.game.unlockedTiers });
+        }
       } catch {
         alert('Invalid save file.');
       }

@@ -6,6 +6,9 @@ import CombatLog from '../components/CombatLog.jsx';
 import ItemTooltip from '../components/ItemTooltip.jsx';
 import './BattleScreen.css';
 
+const BAG_SIZE = 20;
+const BAG_WARN_THRESHOLD = 16; // show warning at 16/20
+
 export default function BattleScreen() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
   const { state: playerState, dispatch: playerDispatch, playerStats } = usePlayer();
@@ -15,8 +18,12 @@ export default function BattleScreen() {
   const [hoveredLoot, setHoveredLoot] = useState(null);
   const [bagFullMsg, setBagFullMsg] = useState(false);
   const [showChapterAdvance, setShowChapterAdvance] = useState(false);
+  const [showInventorySalvage, setShowInventorySalvage] = useState(false);
 
   const { combatLog, combatResult, pendingLoot } = gameState;
+  const invCount = playerState.inventory.length;
+  const bagFull = invCount >= BAG_SIZE;
+  const bagNearFull = invCount >= BAG_WARN_THRESHOLD && invCount < BAG_SIZE;
 
   // Derive initial enemy max HP from the first enriched log entry that carries it
   const initialEnemyMaxHp = useMemo(() => {
@@ -54,7 +61,7 @@ export default function BattleScreen() {
   }, [combatLog, combatResult]);
 
   const handlePickupItem = (item) => {
-    if (playerState.inventory.length >= 20) {
+    if (bagFull) {
       setBagFullMsg(true);
       setTimeout(() => setBagFullMsg(false), 2500);
       return;
@@ -66,6 +73,10 @@ export default function BattleScreen() {
   const handleSalvageItem = (item) => {
     playerDispatch({ type: 'SALVAGE_ITEM', item });
     gameDispatch({ type: 'SET_PENDING_LOOT', loot: pendingLoot.filter(i => i.id !== item.id) });
+  };
+
+  const handleSalvageInvItem = (item) => {
+    playerDispatch({ type: 'SALVAGE_ITEM', item });
   };
 
   const handleReturnToDungeon = () => {
@@ -109,7 +120,10 @@ export default function BattleScreen() {
         {combatResult === 'timeout' && <span className="result-timeout">⏱ TIMEOUT</span>}
       </div>
 
-      {bagFullMsg && <div className="bag-full-toast">🎒 Bag is full! Salvage an item first.</div>}
+      {bagFullMsg && <div className="bag-full-toast">🎒 Bag is full ({BAG_SIZE}/{BAG_SIZE})! Salvage an item to make space.</div>}
+      {bagNearFull && !bagFullMsg && (
+        <div className="bag-warn-toast">⚠️ Bag almost full ({invCount}/{BAG_SIZE})</div>
+      )}
 
       {/* In-battle speed control */}
       <div className="combat-speed-control">
@@ -144,7 +158,43 @@ export default function BattleScreen() {
 
       {showLoot && pendingLoot.length > 0 && (
         <div className="loot-panel">
-          <h3>Loot Drops!</h3>
+          <div className="loot-panel-header">
+            <h3>Loot Drops!</h3>
+            <span className="bag-count-badge" style={{ color: bagFull ? '#ff7777' : bagNearFull ? '#ffaa44' : '#888' }}>
+              🎒 {invCount}/{BAG_SIZE}
+            </span>
+          </div>
+          {bagFull && (
+            <div className="bag-full-inline">
+              <div className="bag-full-inline-msg">Bag full — salvage an inventory item to make space</div>
+              <button
+                className="inv-salvage-toggle"
+                onClick={() => setShowInventorySalvage(s => !s)}
+              >
+                {showInventorySalvage ? '▲ Hide Inventory' : '▼ Show Inventory to Salvage'}
+              </button>
+              {showInventorySalvage && (
+                <div className="inv-salvage-list">
+                  {playerState.inventory.length === 0 ? (
+                    <div className="inv-salvage-empty">Inventory is empty</div>
+                  ) : (
+                    playerState.inventory.map(item => (
+                      <div key={item.id} className="inv-salvage-row">
+                        <span className={`inv-salvage-name rarity-${item.rarity}`}>{item.name}</span>
+                        <span className="inv-salvage-gs">GS {item.gearScore}</span>
+                        <button
+                          className="inv-salvage-btn"
+                          onClick={() => handleSalvageInvItem(item)}
+                        >
+                          Salvage (+{item.gearScore + 5}🔮)
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className="loot-grid">
             {pendingLoot.map(item => (
               <div
@@ -156,7 +206,7 @@ export default function BattleScreen() {
                 <div className={`loot-name rarity-${item.rarity}`}>{item.name}</div>
                 <div className="loot-gs">GS: {item.gearScore}</div>
                 <div className="loot-actions">
-                  <button onClick={() => handlePickupItem(item)}>Pick Up</button>
+                  <button onClick={() => handlePickupItem(item)} disabled={bagFull}>Pick Up</button>
                   <button onClick={() => handleSalvageItem(item)}>Salvage</button>
                 </div>
               </div>

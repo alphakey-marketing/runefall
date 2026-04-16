@@ -16,6 +16,17 @@
   text-align: center;
 }
 
+.bag-warn-toast {
+  background: #2e2a16;
+  border: 1px solid #886622;
+  color: #ffcc66;
+  border-radius: 6px;
+  padding: 6px 14px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-align: center;
+}
+
 /* In-battle speed control (scoped to avoid collision with SettingsScreen) */
 .combat-speed-control {
   display: flex;
@@ -76,6 +87,106 @@
 .loot-panel h3 {
   color: #c4a3ff;
   margin: 0 0 10px;
+}
+
+.loot-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.loot-panel-header h3 {
+  color: #c4a3ff;
+  margin: 0;
+}
+
+.bag-count-badge {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bag full inline salvage panel */
+.bag-full-inline {
+  background: #2a1a1a;
+  border: 1px solid #663333;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.bag-full-inline-msg {
+  font-size: 12px;
+  color: #ffaaaa;
+  margin-bottom: 6px;
+}
+
+.inv-salvage-toggle {
+  width: 100%;
+  padding: 5px;
+  font-size: 11px;
+  background: #3a1a1a;
+  border: 1px solid #7a3333;
+  color: #e87878;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.inv-salvage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.inv-salvage-empty {
+  color: #666;
+  font-size: 12px;
+  text-align: center;
+  padding: 8px;
+}
+
+.inv-salvage-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.inv-salvage-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inv-salvage-gs {
+  color: #666;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.inv-salvage-btn {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  font-size: 11px;
+  background: #3a1a1a;
+  border: 1px solid #8a3a3a;
+  color: #e87878;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.loot-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .loot-grid {
