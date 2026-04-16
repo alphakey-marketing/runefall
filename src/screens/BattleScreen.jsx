@@ -37,7 +37,7 @@ export default function BattleScreen() {
       }
       setVisibleLog(prev => [...prev, combatLog[i]]);
       i++;
-    }, 150);
+    }, Math.round(150 / (gameState.combatSpeed || 1)));
 
     return () => {
       clearInterval(interval);
@@ -134,6 +134,11 @@ export default function BattleScreen() {
       </div>
 
       {bagFullMsg && <div className="bag-full-toast">🎒 Bag is full! Salvage an item first.</div>}
+
+      <div className="combat-speed-indicator">
+        Combat Speed: {gameState.combatSpeed || 1}×
+        <span className="speed-tip">(Change in Settings)</span>
+      </div>
 
       <CombatLog entries={visibleLog} />
 

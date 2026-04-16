@@ -108,26 +108,28 @@
     "name": "Chaos Bolt",
     "type": "spell",
     "element": "chaos",
-    "baseDamage": 55,
-    "baseManaCost": 30,
+    "baseDamage": 60,
+    "baseManaCost": 40,
     "baseCooldown": 1.2,
     "baseHits": 1,
     "statusEffect": null,
-    "unlockLevel": 7,
-    "description": "A bolt of pure chaos energy that ignores resistances"
+    "unlockLevel": 8,
+    "description": "Ignores all resistances; damage range 80-200% of base",
+    "ignoresResist": true,
+    "variableDamage": true
   },
   {
     "id": "smoke_bomb",
     "name": "Smoke Bomb",
     "type": "melee",
     "element": "physical",
-    "baseDamage": 35,
-    "baseManaCost": 20,
+    "baseDamage": 55,
+    "baseManaCost": 18,
     "baseCooldown": 0.8,
     "baseHits": 2,
     "statusEffect": "bleed",
-    "unlockLevel": 8,
-    "description": "Fast twin strikes that apply bleed"
+    "unlockLevel": 7,
+    "description": "Twin strikes; applies Bleed on both hits"
   },
   {
     "id": "summon_wraith",

@@ -1,17 +1,329 @@
 [
-  { "id": "skeleton_warrior", "name": "Skeleton Warrior", "hp": 45, "armor": 3, "attackDamage": 6, "attackSpeed": 0.8, "resistances": { "fire": 0, "ice": 0, "lightning": 0, "physical": 0, "poison": 20 }, "xpReward": 15 },
-  { "id": "fire_imp", "name": "Fire Imp", "hp": 30, "armor": 0, "attackDamage": 10, "attackSpeed": 1.2, "resistances": { "fire": 50, "ice": -20, "lightning": 0, "physical": 0, "poison": 0 }, "xpReward": 20, "onHitStatus": "burn" },
-  { "id": "ice_golem", "name": "Ice Golem", "hp": 95, "armor": 15, "attackDamage": 12, "attackSpeed": 0.6, "resistances": { "fire": -30, "ice": 60, "lightning": 0, "physical": 10, "poison": 0 }, "xpReward": 35, "onHitStatus": "chill" },
-  { "id": "corrupted_mage", "name": "Corrupted Mage", "hp": 40, "armor": 0, "attackDamage": 18, "attackSpeed": 0.7, "resistances": { "fire": 10, "ice": 10, "lightning": 10, "physical": -10, "poison": 0 }, "xpReward": 25 },
-  { "id": "plague_rat", "name": "Plague Rat", "hp": 20, "armor": 0, "attackDamage": 5, "attackSpeed": 1.5, "resistances": { "fire": 0, "ice": 0, "lightning": 0, "physical": 0, "poison": 40 }, "xpReward": 10, "onHitStatus": "poison" },
-  { "id": "thunder_beast", "name": "Thunder Beast", "hp": 75, "armor": 8, "attackDamage": 14, "attackSpeed": 0.8, "resistances": { "fire": 0, "ice": 0, "lightning": 50, "physical": 0, "poison": 0 }, "xpReward": 30, "onHitStatus": "shock" },
-  { "id": "bone_archer", "name": "Bone Archer", "hp": 35, "armor": 2, "attackDamage": 14, "attackSpeed": 1.0, "resistances": { "fire": 0, "ice": 0, "lightning": 0, "physical": 0, "poison": 10 }, "xpReward": 18 },
-  { "id": "shadow_wraith", "name": "Shadow Wraith", "hp": 50, "armor": 0, "attackDamage": 16, "attackSpeed": 1.1, "resistances": { "fire": 10, "ice": 10, "lightning": 10, "physical": 30, "poison": 10 }, "xpReward": 28 },
-  { "id": "venom_spider", "name": "Venom Spider", "hp": 28, "armor": 1, "attackDamage": 9, "attackSpeed": 1.5, "resistances": { "fire": 0, "ice": 0, "lightning": 0, "physical": 0, "poison": 60 }, "xpReward": 22, "onHitStatus": "poison" },
-  { "id": "stone_guardian", "name": "Stone Guardian", "hp": 130, "armor": 20, "attackDamage": 22, "attackSpeed": 0.4, "resistances": { "fire": 0, "ice": 20, "lightning": 0, "physical": 20, "poison": 30 }, "xpReward": 50 },
-  { "id": "blood_fiend", "name": "Blood Fiend", "hp": 60, "armor": 3, "attackDamage": 18, "attackSpeed": 0.9, "resistances": { "fire": 0, "ice": 0, "lightning": 0, "physical": -10, "poison": 0 }, "xpReward": 32, "onHitStatus": "bleed" },
-  { "id": "frost_specter", "name": "Frost Specter", "hp": 55, "armor": 0, "attackDamage": 14, "attackSpeed": 1.2, "resistances": { "fire": -20, "ice": 70, "lightning": 0, "physical": 20, "poison": 0 }, "xpReward": 26, "onHitStatus": "chill" },
-  { "id": "inferno_golem", "name": "Inferno Golem", "hp": 115, "armor": 22, "attackDamage": 18, "attackSpeed": 0.5, "resistances": { "fire": 80, "ice": -40, "lightning": 0, "physical": 15, "poison": 0 }, "xpReward": 45, "onHitStatus": "burn" },
-  { "id": "elite_champion", "name": "Elite Champion", "hp": 190, "armor": 30, "attackDamage": 28, "attackSpeed": 0.7, "resistances": { "fire": 20, "ice": 20, "lightning": 20, "physical": 20, "poison": 20 }, "xpReward": 80, "isElite": true, "mechanic": "enrage" },
-  { "id": "void_herald", "name": "Void Herald", "hp": 120, "armor": 10, "attackDamage": 30, "attackSpeed": 0.9, "resistances": { "fire": 10, "ice": 10, "lightning": 10, "physical": 0, "poison": 10, "chaos": 50 }, "xpReward": 55, "isElite": true }
+  {
+    "id": "skeleton_warrior",
+    "name": "Skeleton Warrior",
+    "hp": 45,
+    "armor": 3,
+    "attackDamage": 6,
+    "attackSpeed": 0.8,
+    "resistances": {
+      "fire": 0,
+      "ice": 0,
+      "lightning": 0,
+      "physical": 0,
+      "poison": 20
+    },
+    "xpReward": 15
+  },
+  {
+    "id": "fire_imp",
+    "name": "Fire Imp",
+    "hp": 30,
+    "armor": 0,
+    "attackDamage": 10,
+    "attackSpeed": 1.2,
+    "resistances": {
+      "fire": 50,
+      "ice": -20,
+      "lightning": 0,
+      "physical": 0,
+      "poison": 0
+    },
+    "xpReward": 20,
+    "onHitStatus": "burn"
+  },
+  {
+    "id": "ice_golem",
+    "name": "Ice Golem",
+    "hp": 95,
+    "armor": 15,
+    "attackDamage": 12,
+    "attackSpeed": 0.6,
+    "resistances": {
+      "fire": -30,
+      "ice": 60,
+      "lightning": 0,
+      "physical": 10,
+      "poison": 0
+    },
+    "xpReward": 35,
+    "onHitStatus": "chill"
+  },
+  {
+    "id": "corrupted_mage",
+    "name": "Corrupted Mage",
+    "hp": 40,
+    "armor": 0,
+    "attackDamage": 18,
+    "attackSpeed": 0.7,
+    "resistances": {
+      "fire": 10,
+      "ice": 10,
+      "lightning": 10,
+      "physical": -10,
+      "poison": 0
+    },
+    "xpReward": 25
+  },
+  {
+    "id": "plague_rat",
+    "name": "Plague Rat",
+    "hp": 20,
+    "armor": 0,
+    "attackDamage": 5,
+    "attackSpeed": 1.5,
+    "resistances": {
+      "fire": 0,
+      "ice": 0,
+      "lightning": 0,
+      "physical": 0,
+      "poison": 40
+    },
+    "xpReward": 10,
+    "onHitStatus": "poison"
+  },
+  {
+    "id": "thunder_beast",
+    "name": "Thunder Beast",
+    "hp": 75,
+    "armor": 8,
+    "attackDamage": 14,
+    "attackSpeed": 0.8,
+    "resistances": {
+      "fire": 0,
+      "ice": 0,
+      "lightning": 50,
+      "physical": 0,
+      "poison": 0
+    },
+    "xpReward": 30,
+    "onHitStatus": "shock"
+  },
+  {
+    "id": "bone_archer",
+    "name": "Bone Archer",
+    "hp": 35,
+    "armor": 2,
+    "attackDamage": 14,
+    "attackSpeed": 1.0,
+    "resistances": {
+      "fire": 0,
+      "ice": 0,
+      "lightning": 0,
+      "physical": 0,
+      "poison": 10
+    },
+    "xpReward": 18
+  },
+  {
+    "id": "shadow_wraith",
+    "name": "Shadow Wraith",
+    "hp": 50,
+    "armor": 0,
+    "attackDamage": 16,
+    "attackSpeed": 1.1,
+    "resistances": {
+      "fire": 10,
+      "ice": 10,
+      "lightning": 10,
+      "physical": 30,
+      "poison": 10
+    },
+    "xpReward": 28
+  },
+  {
+    "id": "venom_spider",
+    "name": "Venom Spider",
+    "hp": 28,
+    "armor": 1,
+    "attackDamage": 9,
+    "attackSpeed": 1.5,
+    "resistances": {
+      "fire": 0,
+      "ice": 0,
+      "lightning": 0,
+      "physical": 0,
+      "poison": 60
+    },
+    "xpReward": 22,
+    "onHitStatus": "poison"
+  },
+  {
+    "id": "stone_guardian",
+    "name": "Stone Guardian",
+    "hp": 130,
+    "armor": 20,
+    "attackDamage": 22,
+    "attackSpeed": 0.4,
+    "resistances": {
+      "fire": 0,
+      "ice": 20,
+      "lightning": 0,
+      "physical": 20,
+      "poison": 30
+    },
+    "xpReward": 50
+  },
+  {
+    "id": "blood_fiend",
+    "name": "Blood Fiend",
+    "hp": 60,
+    "armor": 3,
+    "attackDamage": 18,
+    "attackSpeed": 0.9,
+    "resistances": {
+      "fire": 0,
+      "ice": 0,
+      "lightning": 0,
+      "physical": -10,
+      "poison": 0
+    },
+    "xpReward": 32,
+    "onHitStatus": "bleed"
+  },
+  {
+    "id": "frost_specter",
+    "name": "Frost Specter",
+    "hp": 55,
+    "armor": 0,
+    "attackDamage": 14,
+    "attackSpeed": 1.2,
+    "resistances": {
+      "fire": -20,
+      "ice": 70,
+      "lightning": 0,
+      "physical": 20,
+      "poison": 0
+    },
+    "xpReward": 26,
+    "onHitStatus": "chill"
+  },
+  {
+    "id": "inferno_golem",
+    "name": "Inferno Golem",
+    "hp": 115,
+    "armor": 22,
+    "attackDamage": 18,
+    "attackSpeed": 0.5,
+    "resistances": {
+      "fire": 80,
+      "ice": -40,
+      "lightning": 0,
+      "physical": 15,
+      "poison": 0
+    },
+    "xpReward": 45,
+    "onHitStatus": "burn"
+  },
+  {
+    "id": "elite_champion",
+    "name": "Elite Champion",
+    "hp": 190,
+    "armor": 30,
+    "attackDamage": 28,
+    "attackSpeed": 0.7,
+    "resistances": {
+      "fire": 20,
+      "ice": 20,
+      "lightning": 20,
+      "physical": 20,
+      "poison": 20
+    },
+    "xpReward": 80,
+    "isElite": true,
+    "mechanic": "enrage"
+  },
+  {
+    "id": "void_herald",
+    "name": "Void Herald",
+    "hp": 120,
+    "armor": 10,
+    "attackDamage": 30,
+    "attackSpeed": 0.9,
+    "resistances": {
+      "fire": 10,
+      "ice": 10,
+      "lightning": 10,
+      "physical": 0,
+      "poison": 10,
+      "chaos": 50
+    },
+    "xpReward": 55,
+    "isElite": true
+  },
+  {
+    "id": "shade_knight",
+    "name": "Shade Knight",
+    "hp": 180,
+    "armor": 20,
+    "attackDamage": 35,
+    "attackSpeed": 0.9,
+    "resistances": {
+      "physical": 15
+    },
+    "xpReward": 25,
+    "archetype": "humanoid",
+    "element": "chaos",
+    "mechanic": "damageReflect",
+    "mechanicValue": 0.1
+  },
+  {
+    "id": "bone_archer_hc",
+    "name": "Bone Archer",
+    "hp": 120,
+    "armor": 5,
+    "attackDamage": 28,
+    "attackSpeed": 1.2,
+    "resistances": {},
+    "xpReward": 20,
+    "archetype": "humanoid",
+    "element": "physical",
+    "mechanic": "bleedOnHit"
+  },
+  {
+    "id": "wraith_mage",
+    "name": "Wraith Mage",
+    "hp": 100,
+    "armor": 0,
+    "attackDamage": 40,
+    "attackSpeed": 0.8,
+    "resistances": {
+      "ice": 30,
+      "fire": 30
+    },
+    "xpReward": 30,
+    "archetype": "elemental",
+    "element": "chaos",
+    "mechanic": "manaShred",
+    "mechanicValue": 0.2
+  },
+  {
+    "id": "void_crawler",
+    "name": "Void Crawler",
+    "hp": 150,
+    "armor": 10,
+    "attackDamage": 25,
+    "attackSpeed": 1.5,
+    "resistances": {},
+    "xpReward": 22,
+    "archetype": "beast",
+    "element": "chaos",
+    "mechanic": "randomImmune"
+  },
+  {
+    "id": "lich_herald",
+    "name": "Lich Herald",
+    "hp": 250,
+    "armor": 15,
+    "attackDamage": 50,
+    "attackSpeed": 0.7,
+    "resistances": {
+      "physical": 20,
+      "ice": 20
+    },
+    "xpReward": 40,
+    "archetype": "humanoid",
+    "element": "chaos",
+    "mechanic": "resurrectOnce"
+  }
 ]

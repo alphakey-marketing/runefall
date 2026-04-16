@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import { buildSkillFromSlot } from '../engine/SkillResolver.js';
 import RunePicker from '../components/RunePicker.jsx';
+import { encodeBuild } from '../utils/BuildCodec.js';
 import skillRunesData from '../data/skillRunes.json';
 import linkRunesData from '../data/linkRunes.json';
 import './BuildScreen.css';
@@ -28,6 +29,29 @@ export default function BuildScreen() {
     dispatch({ type: 'SET_LINK_RUNE', slotIndex, linkIndex, link: null });
   };
 
+  const handleCopyBuildCode = () => {
+    const code = encodeBuild(state);
+    navigator.clipboard.writeText(code).then(() => {
+      alert('Build code copied! Share with friends.');
+    }).catch(() => {
+      prompt('Copy this build code:', code);
+    });
+  };
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 5 && !picker) {
+        setPicker({ type: 'skill', slotIndex: num - 1 });
+      }
+      if (e.key === 'Escape') setPicker(null);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [picker]);
+
   const playerLevel = state.level;
   const unlockedSkillRunes = skillRunesData.filter(r => (r.unlockLevel || 1) <= playerLevel);
   const lockedSkillRunes = skillRunesData.filter(r => (r.unlockLevel || 1) > playerLevel);
@@ -43,6 +67,13 @@ export default function BuildScreen() {
         <span>Mana: {playerStats.maxMana}</span>
         <span>Crit: {playerStats.critChance}%</span>
         <span>Dust: {state.runeDust}</span>
+      </div>
+
+      <div className="build-toolbar">
+        <button className="build-code-btn" onClick={handleCopyBuildCode} title="Copy shareable build code">
+          📋 Copy Build Code
+        </button>
+        <div className="keyboard-hint">Press 1-5 to quickly open skill slot</div>
       </div>
 
       <div className="skill-slots">

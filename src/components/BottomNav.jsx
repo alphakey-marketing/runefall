@@ -9,12 +9,13 @@ const TABS = [
   { id: 'dungeon', label: 'Dungeon', icon: '🗺️' },
   { id: 'crafting', label: 'Craft', icon: '⚗️' },
   { id: 'simulator', label: 'Sim', icon: '🎯' },
+  { id: 'settings', label: 'Settings', icon: '⚙️' },
 ];
 
 export default function BottomNav() {
   const { state, dispatch } = useGame();
   return (
-    <nav className="bottom-nav bottom-nav-six">
+    <nav className="bottom-nav bottom-nav-seven">
       {TABS.map(tab => (
         <button
           key={tab.id}

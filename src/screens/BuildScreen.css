@@ -144,3 +144,33 @@
   padding: 0;
   line-height: 1;
 }
+
+.build-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.build-code-btn {
+  background: rgba(40, 30, 60, 0.8);
+  border: 1px solid #4a3a7a;
+  border-radius: 6px;
+  color: #c4a3ff;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  min-height: 36px;
+  transition: all 0.2s;
+}
+
+.build-code-btn:hover {
+  border-color: #7c5cbf;
+  background: rgba(124, 92, 191, 0.2);
+}
+
+.keyboard-hint {
+  color: #666;
+  font-size: 11px;
+}

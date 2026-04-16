@@ -5,12 +5,19 @@ const GameContext = createContext(null);
 const initialState = {
   currentScreen: 'build',
   currentTier: 1,
-  unlockedTiers: [1],
+  unlockedTiers: [0, 1],
   combatResult: null,
   combatLog: [],
   pendingLoot: [],
   simulatorResult: null,
   simulatorLog: [],
+  combatSpeed: 1,
+  colorBlindMode: false,
+  soundEnabled: true,
+  currentMode: 'normal',
+  trialId: null,
+  trialFloor: 0,
+  trialTotalDamage: 0,
 };
 
 function gameReducer(state, action) {
@@ -32,6 +39,20 @@ function gameReducer(state, action) {
       return { ...state, combatResult: null, combatLog: [], pendingLoot: [] };
     case 'SET_SIMULATOR_RESULT':
       return { ...state, simulatorResult: action.result, simulatorLog: action.log };
+    case 'SET_COMBAT_SPEED':
+      return { ...state, combatSpeed: action.speed };
+    case 'TOGGLE_COLOR_BLIND':
+      return { ...state, colorBlindMode: !state.colorBlindMode };
+    case 'TOGGLE_SOUND':
+      return { ...state, soundEnabled: !state.soundEnabled };
+    case 'RESET_GAME':
+      return { ...initialState };
+    case 'SET_TRIAL_MODE':
+      return { ...state, currentMode: 'trial', trialId: action.trialId, trialFloor: 0, trialTotalDamage: 0 };
+    case 'ADVANCE_TRIAL_FLOOR':
+      return { ...state, trialFloor: state.trialFloor + 1, trialTotalDamage: state.trialTotalDamage + (action.damage || 0) };
+    case 'RESET_TRIAL':
+      return { ...state, currentMode: 'normal', trialId: null, trialFloor: 0, trialTotalDamage: 0 };
     default:
       return state;
   }
