@@ -124,8 +124,8 @@ export default function BattleArena({ visibleLog, combatResult, playerMaxHp, ene
   return (
     <div className="battle-arena">
       {/* Background layers */}
-      <div className="arena-bg" />
-      <div className="arena-ground" />
+      <div className="arena-bg" aria-hidden="true" />
+      <div className="arena-ground" aria-hidden="true" />
 
       {/* Player side */}
       <div className="arena-side arena-player-side">
@@ -141,7 +141,7 @@ export default function BattleArena({ visibleLog, combatResult, playerMaxHp, ene
 
         <div className={`avatar avatar-player avatar-${playerState}`}>
           <div className="avatar-body">🧙</div>
-          <div className="avatar-shadow" />
+          <div className="avatar-shadow" aria-hidden="true" />
         </div>
 
         {floatingDmg.filter(f => f.isPlayer).map(fd => (
@@ -181,7 +181,7 @@ export default function BattleArena({ visibleLog, combatResult, playerMaxHp, ene
 
         <div className={`avatar avatar-enemy avatar-${enemyState}`}>
           <div className="avatar-body">👹</div>
-          <div className="avatar-shadow" />
+          <div className="avatar-shadow" aria-hidden="true" />
         </div>
 
         {floatingDmg.filter(f => !f.isPlayer).map(fd => (
