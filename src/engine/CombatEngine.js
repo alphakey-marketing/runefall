@@ -251,7 +251,10 @@ export function runCombat(playerStats, skills, enemies, playerCurrentHp = null) 
       log.push({
         type: 'enemy_attack',
         text: `${enemy.name} attacks player for ${mitigated} damage (${player.hp}/${player.maxHp} HP)`,
-        damage: mitigated, attacker: enemy.name,
+        damage: mitigated,
+        attacker: enemy.name,
+        playerHpAfter: player.hp,
+        playerMaxHp: player.maxHp,
       });
 
       if (enemy.onHitStatus) {
@@ -300,7 +303,7 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
       if (skill.hasCulling && target.hp / target.maxHp < (skill.cullingThreshold || 0.15)) {
         const culledHp = target.hp;
         target.hp = 0;
-        log.push({ type: 'cull', text: `${skill.name}${castLabel} CULLS ${target.name}! (${culledHp} HP remaining)`, target: target.name });
+        log.push({ type: 'cull', text: `${skill.name}${castLabel} CULLS ${target.name}! (${culledHp} HP remaining)`, target: target.name, skillElement: skill.element, skillId: skill.id, enemyHpAfter: 0, enemyMaxHp: target.maxHp, playerHpAfter: player.hp, playerMaxHp: player.maxHp });
         return;
       }
 
@@ -321,7 +324,16 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
       log.push({
         type: isCrit ? 'crit' : 'damage',
         text: `${skill.name}${castLabel}${multiLabel} → ${target.name}: ${finalDmg} ${skill.element} damage${critLabel}${fortuneLabel}${target.hp <= 0 ? ' [KILLED]' : ` (${target.hp}/${target.maxHp} HP)`}`,
-        damage: finalDmg, isCrit, target: target.name, skill: skill.name,
+        damage: finalDmg,
+        isCrit,
+        target: target.name,
+        skill: skill.name,
+        skillId: skill.id,
+        skillElement: skill.element,
+        enemyHpAfter: target.hp,
+        enemyMaxHp: target.maxHp,
+        playerHpAfter: player.hp,
+        playerMaxHp: player.maxHp,
       });
 
       const allStatuses = [skill.statusEffect, ...(skill.additionalStatuses || [])].filter(Boolean);
@@ -343,6 +355,9 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
             type: 'damage',
             text: `${skill.name} [ON HIT] → ${bonusTarget.name}: ${bonusDmg} ${skill.element} damage${bonusTarget.hp <= 0 ? ' [KILLED]' : ` (${bonusTarget.hp}/${bonusTarget.maxHp} HP)`}`,
             damage: bonusDmg, target: bonusTarget.name, skill: skill.name,
+            skillId: skill.id, skillElement: skill.element,
+            enemyHpAfter: bonusTarget.hp, enemyMaxHp: bonusTarget.maxHp,
+            playerHpAfter: player.hp, playerMaxHp: player.maxHp,
           });
         }
       }
@@ -354,7 +369,7 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
     if (echoTarget) {
       const echoDmg = calcFinalDamage(skill.damage, skill, playerStats, echoTarget, false, false);
       echoTarget.hp = Math.max(0, echoTarget.hp - echoDmg);
-      log.push({ type: 'echo', text: `ECHO! ${skill.name} fires again → ${echoTarget.name}: ${echoDmg} damage${echoTarget.hp <= 0 ? ' [KILLED]' : ''}`, damage: echoDmg });
+      log.push({ type: 'echo', text: `ECHO! ${skill.name} fires again → ${echoTarget.name}: ${echoDmg} damage${echoTarget.hp <= 0 ? ' [KILLED]' : ''}`, damage: echoDmg, skillElement: skill.element, skillId: skill.id, enemyHpAfter: echoTarget.hp, enemyMaxHp: echoTarget.maxHp, playerHpAfter: player.hp, playerMaxHp: player.maxHp });
     }
   }
 
@@ -365,7 +380,7 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
     chainTargets.forEach(ct => {
       const chainDmg = calcFinalDamage(Math.round(skill.damage * 0.5), skill, playerStats, ct, false, false);
       ct.hp = Math.max(0, ct.hp - chainDmg);
-      log.push({ type: 'damage', text: `${skill.name} [CHAIN] → ${ct.name}: ${chainDmg} lightning damage [Stormbringer]${ct.hp <= 0 ? ' [KILLED]' : ` (${ct.hp}/${ct.maxHp} HP)`}`, damage: chainDmg, target: ct.name });
+      log.push({ type: 'damage', text: `${skill.name} [CHAIN] → ${ct.name}: ${chainDmg} lightning damage [Stormbringer]${ct.hp <= 0 ? ' [KILLED]' : ` (${ct.hp}/${ct.maxHp} HP)`}`, damage: chainDmg, target: ct.name, skillElement: skill.element, skillId: skill.id, enemyHpAfter: ct.hp, enemyMaxHp: ct.maxHp, playerHpAfter: player.hp, playerMaxHp: player.maxHp });
     });
   }
 
@@ -374,7 +389,7 @@ function fireSkill(skill, targets, player, playerStats, log, hitCounters, skillI
     if (totemTarget) {
       const totemDmg = calcFinalDamage(Math.round(skill.damage * (skill.totemDamageMultiplier || 0.5)), skill, playerStats, totemTarget, false, false);
       totemTarget.hp = Math.max(0, totemTarget.hp - totemDmg);
-      log.push({ type: 'totem', text: `TOTEM fires ${skill.name} → ${totemTarget.name}: ${totemDmg} damage`, damage: totemDmg });
+      log.push({ type: 'totem', text: `TOTEM fires ${skill.name} → ${totemTarget.name}: ${totemDmg} damage`, damage: totemDmg, skillElement: skill.element, skillId: skill.id, enemyHpAfter: totemTarget.hp, enemyMaxHp: totemTarget.maxHp, playerHpAfter: player.hp, playerMaxHp: player.maxHp });
     }
   }
 }

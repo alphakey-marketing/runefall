@@ -1,22 +1,23 @@
 import React, { useEffect, useRef } from 'react';
 import './CombatLog.css';
 
-function getLogClass(entry) {
-  if (!entry) return 'log-normal';
-  switch (entry.type) {
-    case 'crit': return 'log-crit';
-    case 'kill': return 'log-kill';
-    case 'defeat': return 'log-defeat';
-    case 'victory': return 'log-victory';
-    case 'room_clear': return 'log-room-clear';
-    case 'status_applied': return 'log-status';
-    case 'enemy_attack': return 'log-enemy';
-    case 'echo': return 'log-echo';
-    case 'totem': return 'log-totem';
-    case 'no_mana': return 'log-no-mana';
-    default: return 'log-normal';
-  }
-}
+const TYPE_COLOR = {
+  damage:         '#e8e8e8',
+  crit:           '#ffd700',
+  enemy_attack:   '#ff8888',
+  echo:           '#cc88ff',
+  totem:          '#88ccff',
+  cull:           '#ff5500',
+  status_applied: '#88ffcc',
+  trigger:        '#ffcc44',
+  no_mana:        '#888888',
+  frozen:         '#aaddff',
+  defeated:       '#ff6666',
+  victory:        '#00ff88',
+  defeat:         '#ff4444',
+  start:          '#888888',
+  room_clear:     '#c4a3ff',
+};
 
 export default function CombatLog({ entries = [] }) {
   const bottomRef = useRef(null);
@@ -28,9 +29,18 @@ export default function CombatLog({ entries = [] }) {
   return (
     <div className="combat-log">
       {entries.map((entry, i) => entry ? (
-        <div key={i} className={`log-entry ${getLogClass(entry)}`}>
-          {entry.text}
-        </div>
+        <React.Fragment key={i}>
+          {i > 0 && i % 10 === 0 && (
+            <div className="log-phase-sep">── Round {Math.floor(i / 10) + 1} ──</div>
+          )}
+          <div
+            className={`log-entry log-entry-${entry.type}`}
+            style={{ color: TYPE_COLOR[entry.type] || '#ccc' }}
+          >
+            <span className="log-text">{entry.text}</span>
+            {entry.isCrit && <span className="log-crit-badge">CRIT</span>}
+          </div>
+        </React.Fragment>
       ) : null)}
       <div ref={bottomRef} />
     </div>
