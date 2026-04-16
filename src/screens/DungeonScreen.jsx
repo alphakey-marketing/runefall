@@ -114,8 +114,6 @@ export default function DungeonScreen() {
     // Derive stats from log for records and challenges
     let biggestHit = 0;
     let playerTookDamage = false;
-    let totalManaRemaining = playerStats.maxMana || 100;
-    let singleTickDmgMap = {}; // tick-level damage tracking (using log index as proxy)
     combinedLog.forEach(entry => {
       if (entry?.damage && entry.damage > biggestHit) biggestHit = entry.damage;
       if (entry?.type === 'enemy_attack' && entry.damage > 0) playerTookDamage = true;
@@ -221,11 +219,9 @@ export default function DungeonScreen() {
       if (tierData.tier >= 10) completeIfNew(21);
 
       // id 22: Mana Efficient — clear dungeon with 50+ mana remaining
-      // Approximate using last mana-related log entry; simpler: use playerHpRemaining as proxy is wrong.
-      // The engine doesn't expose final mana in roomResult, so we check skills' mana cost vs maxMana as heuristic.
-      // Reliable check: look for no `no_mana` entries and skills are cheap relative to max mana.
+      // Heuristic: no `no_mana` entries fired, meaning mana was never exhausted during the run.
       const hadNoMana = combinedLog.some(e => e?.type === 'no_mana');
-      if (!hadNoMana && (playerStats.maxMana || 100) >= 50) completeIfNew(22);
+      if (!hadNoMana) completeIfNew(22);
 
       // id 25: Survivalist — clear Tier 8 with >150 HP remaining
       if (tierData.tier >= 8 && playerHpRemaining > 150) completeIfNew(25);

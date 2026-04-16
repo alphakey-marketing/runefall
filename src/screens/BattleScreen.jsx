@@ -61,6 +61,7 @@ export default function BattleScreen() {
   }, [combatLog, combatResult]);
 
   const handlePickupItem = (item) => {
+    if (!item) return;
     if (bagFull) {
       setBagFullMsg(true);
       setTimeout(() => setBagFullMsg(false), 2500);

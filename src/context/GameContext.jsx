@@ -57,7 +57,7 @@ function gameReducer(state, action) {
       const tiers = action.unlockedTiers;
       if (!Array.isArray(tiers)) return state;
       // Merge: keep any already-unlocked tiers plus all from save
-      const merged = Array.from(new Set([...state.unlockedTiers, ...tiers]));
+      const merged = Array.from(new Set([...state.unlockedTiers, ...tiers])).sort((a, b) => a - b);
       return { ...state, unlockedTiers: merged };
     }
     case 'SET_TRIAL_MODE':
