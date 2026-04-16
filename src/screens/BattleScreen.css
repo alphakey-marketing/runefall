@@ -5,6 +5,35 @@
   background: #0d0d1a;
 }
 
+/* HP / damage stats bar (Issue 4) */
+.battle-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111128;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bs-player {
+  color: #4a9eff;
+  font-weight: bold;
+}
+
+.bs-damage {
+  color: #ffd700;
+  font-size: 12px;
+}
+
+.bs-enemy {
+  color: #ff6666;
+  font-weight: bold;
+}
+
 .bag-full-toast {
   background: #3a2020;
   border: 1px solid #aa4444;
@@ -157,6 +186,64 @@
 .no-combat-msg p {
   margin-bottom: 16px;
   font-size: 15px;
+}
+
+/* Chapter advance overlay (Issue 6) */
+.chapter-advance-overlay {
+  background: linear-gradient(to bottom, #1a0a0a, #0d0520);
+  border: 2px solid #cc4422;
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.chapter-advance-icon {
+  font-size: 56px;
+  margin-bottom: 10px;
+}
+
+.chapter-advance-title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffaa88;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.chapter-advance-sub {
+  color: #ccaa99;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.chapter-advance-unlock {
+  display: inline-block;
+  font-size: 13px;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 6px;
+  padding: 5px 12px;
+  margin-bottom: 16px;
+}
+
+.chapter-advance-btn {
+  width: 100%;
+  padding: 13px;
+  background: #3a1a08;
+  border: 1px solid #cc4422;
+  color: #ffaa88;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.chapter-advance-btn:hover {
+  background: #4a2210;
 }
 
 .no-loot-msg {

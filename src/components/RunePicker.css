@@ -90,6 +90,15 @@
   background: transparent;
 }
 
+.rune-duplicate {
+  opacity: 0.45;
+  border-color: #4a3a1a;
+}
+
+.rune-duplicate .rune-name {
+  color: #aa8855;
+}
+
 .rune-unlock-label {
   color: #888;
   font-size: 11px;

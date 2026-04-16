@@ -18,6 +18,8 @@ const initialState = {
   trialId: null,
   trialFloor: 0,
   trialTotalDamage: 0,
+  lastCompletedTier: null,
+  lastCompletedChapter: null,
 };
 
 function gameReducer(state, action) {
@@ -35,8 +37,12 @@ function gameReducer(state, action) {
       return { ...state, unlockedTiers: [...state.unlockedTiers, action.tier] };
     case 'SET_CURRENT_TIER':
       return { ...state, currentTier: action.tier };
+    case 'SET_LAST_COMPLETED_TIER':
+      return { ...state, lastCompletedTier: action.tier, lastCompletedChapter: action.chapter };
+    case 'CLEAR_LAST_COMPLETED_TIER':
+      return { ...state, lastCompletedTier: null, lastCompletedChapter: null };
     case 'RESET_COMBAT':
-      return { ...state, combatResult: null, combatLog: [], pendingLoot: [] };
+      return { ...state, combatResult: null, combatLog: [], pendingLoot: [], lastCompletedTier: null, lastCompletedChapter: null };
     case 'SET_SIMULATOR_RESULT':
       return { ...state, simulatorResult: action.result, simulatorLog: action.log };
     case 'SET_COMBAT_SPEED':

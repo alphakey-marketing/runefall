@@ -7,13 +7,15 @@ import './BattleScreen.css';
 
 export default function BattleScreen() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
-  const { state: playerState, dispatch: playerDispatch } = usePlayer();
+  const { state: playerState, dispatch: playerDispatch, playerStats } = usePlayer();
   const canvasRef = useRef(null);
   const [visibleLog, setVisibleLog] = useState([]);
   const [showLoot, setShowLoot] = useState(false);
   const [showDeathScreen, setShowDeathScreen] = useState(false);
   const [hoveredLoot, setHoveredLoot] = useState(null);
   const [bagFullMsg, setBagFullMsg] = useState(false);
+  const [showChapterAdvance, setShowChapterAdvance] = useState(false);
+  const [battleStats, setBattleStats] = useState({ playerHp: null, playerMaxHp: null, enemyHp: null, enemyMaxHp: null, lastPlayerDamage: null });
 
   const { combatLog, combatResult, pendingLoot } = gameState;
 
@@ -22,6 +24,8 @@ export default function BattleScreen() {
     setVisibleLog([]);
     setShowLoot(false);
     setShowDeathScreen(false);
+    setShowChapterAdvance(false);
+    setBattleStats({ playerHp: null, playerMaxHp: null, enemyHp: null, enemyMaxHp: null, lastPlayerDamage: null });
     if (!combatLog || combatLog.length === 0) return;
 
     let i = 0;
@@ -44,6 +48,38 @@ export default function BattleScreen() {
       // Note: do NOT reset showDeathScreen here — it would clear the overlay before it renders
     };
   }, [combatLog, combatResult]);
+
+  // Track live battle stats from log entries for the HP display bar
+  useEffect(() => {
+    if (!visibleLog.length) return;
+    let pHp = null, pMaxHp = null, eHp = null, eMaxHp = null, lastDmg = null;
+
+    for (let i = visibleLog.length - 1; i >= 0; i--) {
+      const entry = visibleLog[i];
+      if (!entry) continue;
+
+      if (pHp === null && entry.type === 'enemy_attack') {
+        const m = entry.text?.match(/\((\d+)\/(\d+) HP\)/);
+        if (m) { pHp = parseInt(m[1]); pMaxHp = parseInt(m[2]); }
+      }
+
+      if (eHp === null && (entry.type === 'damage' || entry.type === 'crit' || entry.type === 'echo' || entry.type === 'totem')) {
+        const m = entry.text?.match(/\((\d+)\/(\d+) HP\)/);
+        if (m) { eHp = parseInt(m[1]); eMaxHp = parseInt(m[2]); }
+        if (lastDmg === null && entry.damage) lastDmg = entry.damage;
+      }
+
+      if (pHp !== null && eHp !== null && lastDmg !== null) break;
+    }
+
+    setBattleStats(prev => ({
+      playerHp: pHp ?? prev.playerHp,
+      playerMaxHp: pMaxHp ?? prev.playerMaxHp,
+      enemyHp: combatResult === 'victory' ? 0 : (eHp ?? prev.enemyHp),
+      enemyMaxHp: eMaxHp ?? prev.enemyMaxHp,
+      lastPlayerDamage: lastDmg ?? prev.lastPlayerDamage,
+    }));
+  }, [visibleLog, combatResult]);
 
   // Canvas drawing — redraws on each new log entry to reflect live HP changes
   useEffect(() => {
@@ -88,7 +124,6 @@ export default function BattleScreen() {
   }, [visibleLog.length, combatResult]);
 
   const handlePickupItem = (item) => {
-    const nextState = { ...playerState, inventory: [...playerState.inventory, item] };
     if (playerState.inventory.length >= 20) {
       setBagFullMsg(true);
       setTimeout(() => setBagFullMsg(false), 2500);
@@ -104,11 +139,17 @@ export default function BattleScreen() {
   };
 
   const handleReturnToDungeon = () => {
+    // If a chapter was just completed, show the advance screen first (Issue 6)
+    if (gameState.lastCompletedTier && !showChapterAdvance) {
+      setShowChapterAdvance(true);
+      return;
+    }
     gameDispatch({ type: 'RESET_COMBAT' });
     gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' });
     gameDispatch({ type: 'CLEAR_PENDING_LOOT' });
     setShowLoot(false);
     setShowDeathScreen(false);
+    setShowChapterAdvance(false);
   };
 
   // No combat data edge case
@@ -125,6 +166,19 @@ export default function BattleScreen() {
 
   return (
     <div className="battle-screen">
+      {/* HP + damage stats bar (Issue 4) */}
+      <div className="battle-stats-bar">
+        <span className="bs-player">
+          🧙 {battleStats.playerHp ?? playerStats.maxHp}/{battleStats.playerMaxHp ?? playerStats.maxHp} HP
+        </span>
+        {battleStats.lastPlayerDamage && (
+          <span className="bs-damage">⚔️ {battleStats.lastPlayerDamage}</span>
+        )}
+        <span className="bs-enemy">
+          💀 {battleStats.enemyHp != null ? battleStats.enemyHp : '?'}/{battleStats.enemyMaxHp != null ? battleStats.enemyMaxHp : '?'} HP
+        </span>
+      </div>
+
       <canvas ref={canvasRef} width={600} height={180} className="battle-canvas" />
 
       <div className="battle-result-label">
@@ -184,11 +238,40 @@ export default function BattleScreen() {
         </div>
       )}
 
-      {!showDeathScreen && (
+      {/* Chapter advance overlay (Issue 6) — only shown when player clicks Return after a chapter-final tier */}
+      {showChapterAdvance && (
+        <div className="chapter-advance-overlay">
+          <div className="chapter-advance-icon">
+            {gameState.lastCompletedChapter === 1 ? '🔥' : '🏆'}
+          </div>
+          <div className="chapter-advance-title">
+            Chapter {gameState.lastCompletedChapter} Complete!
+          </div>
+          <div className="chapter-advance-sub">
+            {gameState.lastCompletedChapter === 1
+              ? 'You have conquered the Runefall. Chapter 2: Abyssal Throne now awaits...'
+              : 'You have defeated the ultimate challenge. The Runebreaker is no more.'}
+          </div>
+          {gameState.lastCompletedChapter === 1 && (
+            <div className="chapter-advance-unlock">🔓 Chapter 2 Unlocked — Tiers 21–40</div>
+          )}
+          <button className="chapter-advance-btn" onClick={() => {
+            gameDispatch({ type: 'RESET_COMBAT' });
+            gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' });
+            gameDispatch({ type: 'CLEAR_PENDING_LOOT' });
+            setShowChapterAdvance(false);
+          }}>
+            ⚔️ Continue to Dungeon
+          </button>
+        </div>
+      )}
+
+      {!showDeathScreen && !showChapterAdvance && (
         <button className="return-btn" onClick={handleReturnToDungeon}>
           Return to Dungeon
         </button>
-      )}    </div>
+      )}
+    </div>
   );
 }
 

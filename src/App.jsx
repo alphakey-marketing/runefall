@@ -43,9 +43,11 @@ function XPBar({ xp, level }) {
 
 function LevelUpPopup() {
   const { state: playerState, dispatch: playerDispatch } = usePlayer();
-  const { dispatch: gameDispatch } = useGame();
+  const { state: gameState, dispatch: gameDispatch } = useGame();
 
   if (!playerState.levelUpPending) return null;
+
+  const onBattleScreen = gameState.currentScreen === 'battle';
 
   return (
     <div className="level-up-popup-overlay" onClick={() => playerDispatch({ type: 'DISMISS_LEVEL_UP' })}>
@@ -55,9 +57,13 @@ function LevelUpPopup() {
         <div className="level-up-popup-msg">You are now Level {playerState.level}!</div>
         <div className="level-up-popup-sub">+1 Zodiac Point earned</div>
         <div className="level-up-popup-btns">
-          <button className="level-up-goto-zodiac" onClick={() => { playerDispatch({ type: 'DISMISS_LEVEL_UP' }); gameDispatch({ type: 'NAVIGATE', screen: 'zodiac' }); }}>
-            Open Zodiac ⭐
-          </button>
+          {onBattleScreen ? (
+            <div className="level-up-battle-note">Finish collecting loot, then visit the Zodiac screen to spend your point.</div>
+          ) : (
+            <button className="level-up-goto-zodiac" onClick={() => { playerDispatch({ type: 'DISMISS_LEVEL_UP' }); gameDispatch({ type: 'NAVIGATE', screen: 'zodiac' }); }}>
+              Open Zodiac ⭐
+            </button>
+          )}
           <button className="level-up-dismiss-btn" onClick={() => playerDispatch({ type: 'DISMISS_LEVEL_UP' })}>
             Dismiss
           </button>

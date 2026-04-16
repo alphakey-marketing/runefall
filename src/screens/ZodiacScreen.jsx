@@ -71,7 +71,7 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onSh
 }
 
 /** One constellation card showing its linear chain */
-function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch, onShowTip, onHideTip }) {
+function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch, onShowTip, onHideTip, onRequestAlloc }) {
   const chain = buildChain(constellation);
   const allocatedCount = chain.filter(n => allocatedNodes.includes(n.id)).length;
   const keystoneNode = chain.find(n => n.type === 'keystone');
@@ -86,8 +86,7 @@ function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDu
   const handleClick = (node) => {
     const ns = getNodeState(node);
     if (ns === 'allocatable' && zodiacPoints > 0) {
-      dispatch({ type: 'ALLOCATE_NODE', nodeId: node.id });
-      AudioManager.play(node.type === 'keystone' ? 'keystoneAlloc' : 'nodeAlloc');
+      onRequestAlloc(node, constellation.color);
     }
   };
 
@@ -177,9 +176,10 @@ function ZodiacTooltip({ tip }) {
 
 export default function ZodiacScreen() {
   const { state: playerState, dispatch } = usePlayer();
-  const { allocatedNodes, zodiacPoints, runeDust, level, levelUpPending } = playerState;
+  const { allocatedNodes, zodiacPoints, runeDust } = playerState;
 
   const [tip, setTip] = useState({ visible: false, x: 0, y: 0, node: null, nodeState: '', color: '', canRespec: false });
+  const [pendingAlloc, setPendingAlloc] = useState(null); // { node, color }
 
   const handleShowTip = useCallback((node, nodeState, color, canRespec, x, y) => {
     setTip({ visible: true, node, nodeState, color, canRespec, x, y });
@@ -188,6 +188,22 @@ export default function ZodiacScreen() {
   const handleHideTip = useCallback(() => {
     setTip(t => ({ ...t, visible: false }));
   }, []);
+
+  const handleRequestAlloc = useCallback((node, color) => {
+    setPendingAlloc({ node, color });
+    setTip(t => ({ ...t, visible: false }));
+  }, []);
+
+  const handleConfirmAlloc = () => {
+    if (!pendingAlloc) return;
+    dispatch({ type: 'ALLOCATE_NODE', nodeId: pendingAlloc.node.id });
+    AudioManager.play(pendingAlloc.node.type === 'keystone' ? 'keystoneAlloc' : 'nodeAlloc');
+    setPendingAlloc(null);
+  };
+
+  const handleCancelAlloc = () => {
+    setPendingAlloc(null);
+  };
 
   // Compute active bonuses summary
   const activeBonuses = {};
@@ -203,15 +219,27 @@ export default function ZodiacScreen() {
 
   return (
     <div className="zodiac-screen">
-      {levelUpPending && (
-        <div className="level-up-overlay">
-          <div className="level-up-box">
-            <span className="level-up-emoji">⬆️</span>
-            <div className="level-up-title">LEVEL UP!</div>
-            <div className="level-up-msg">You are now Level {level}! +1 Zodiac Point</div>
-            <button className="level-up-dismiss" onClick={() => dispatch({ type: 'DISMISS_LEVEL_UP' })}>
-              Dismiss
-            </button>
+      {/* Confirm allocation modal */}
+      {pendingAlloc && (
+        <div className="zn-confirm-overlay" onClick={handleCancelAlloc}>
+          <div className="zn-confirm-modal" style={{ '--tip-color': pendingAlloc.color }} onClick={e => e.stopPropagation()}>
+            <div className="zn-confirm-title" style={{ color: pendingAlloc.color }}>Allocate Node?</div>
+            <div className="zn-confirm-name">{pendingAlloc.node.name}</div>
+            {pendingAlloc.node.description && (
+              <div className="zn-confirm-desc">{pendingAlloc.node.description}</div>
+            )}
+            {pendingAlloc.node.bonuses && (
+              <div className="zn-confirm-bonuses">
+                {Object.entries(pendingAlloc.node.bonuses).map(([k, v]) => (
+                  <div key={k} className="zn-confirm-bonus">{formatBonus(k, v)}</div>
+                ))}
+              </div>
+            )}
+            <div className="zn-confirm-cost">Cost: 1 Zodiac Point (you have {zodiacPoints})</div>
+            <div className="zn-confirm-btns">
+              <button className="zn-confirm-btn-ok" onClick={handleConfirmAlloc}>✔ Confirm</button>
+              <button className="zn-confirm-btn-cancel" onClick={handleCancelAlloc}>✕ Cancel</button>
+            </div>
           </div>
         </div>
       )}
@@ -254,6 +282,7 @@ export default function ZodiacScreen() {
             dispatch={dispatch}
             onShowTip={handleShowTip}
             onHideTip={handleHideTip}
+            onRequestAlloc={handleRequestAlloc}
           />
         ))}
       </div>

@@ -162,6 +162,17 @@ body {
 
 .level-up-dismiss-btn:hover { color: #c4a3ff; border-color: #7c5cbf; }
 
+.level-up-battle-note {
+  font-size: 13px;
+  color: #ffcc66;
+  background: rgba(255, 200, 50, 0.08);
+  border: 1px solid rgba(255, 200, 50, 0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-align: center;
+  line-height: 1.4;
+}
+
 @media (max-width: 480px) {
   .app-header { padding: 6px 10px; }
   .game-title { font-size: 14px; }

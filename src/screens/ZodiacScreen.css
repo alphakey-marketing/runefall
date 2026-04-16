@@ -394,6 +394,112 @@
   background: #5a4f9a;
 }
 
+/* ─── Zodiac Allocation Confirm Modal ───────────────────────────────────── */
+.zn-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+}
+
+.zn-confirm-modal {
+  background: #0d0d1a;
+  border: 2px solid var(--tip-color, #c4a3ff);
+  border-radius: 14px;
+  padding: 24px 28px;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 32px rgba(196, 163, 255, 0.25);
+}
+
+.zn-confirm-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.zn-confirm-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e0e0e0;
+  margin-bottom: 6px;
+}
+
+.zn-confirm-desc {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.zn-confirm-bonuses {
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.zn-confirm-bonus {
+  font-size: 13px;
+  color: #7ec87e;
+}
+
+.zn-confirm-cost {
+  font-size: 12px;
+  color: #ffd700;
+  margin: 12px 0 16px;
+  padding: 6px 10px;
+  background: rgba(255, 215, 0, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.zn-confirm-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.zn-confirm-btn-ok {
+  flex: 1;
+  padding: 10px 16px;
+  background: #1a3a1a;
+  border: 1px solid #4a8a4a;
+  color: #7ec87e;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.15s;
+}
+
+.zn-confirm-btn-ok:hover {
+  background: #2a5a2a;
+}
+
+.zn-confirm-btn-cancel {
+  flex: 1;
+  padding: 10px 16px;
+  background: #2a1a1a;
+  border: 1px solid #6a3a3a;
+  color: #cc8888;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+
+.zn-confirm-btn-cancel:hover {
+  background: #3a2020;
+}
+
 /* ─── Mobile ────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .zodiac-cards {
