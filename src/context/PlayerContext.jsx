@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 import { getBaseStats, calculatePlayerStats } from '../utils/StatsCalculator.js';
 import { computeZodiacBonuses, isNodeAllocatable, isNodeRemovable } from '../engine/ZodiacSystem.js';
 import challengesData from '../data/challenges.json';
+import { xpRequired } from '../utils/FormulaHelpers.js';
 
 const STARTER_SKILL_RUNE = { id: "frost_arrow", name: "Frost Arrow", type: "ranged", element: "ice", baseDamage: 45, baseManaCost: 20, baseCooldown: 1, baseHits: 1, statusEffect: "chill", unlockLevel: 1, description: "Fires a frost-tipped projectile that chills enemies" };
 const STARTER_LINK_RUNE = { id: "more_damage", name: "More Damage", effect: "damage", value: 1.45, unlockLevel: 1, description: "+45% flat damage multiplier", manaCostMultiplier: 1.2, cooldownMultiplier: 1 };
@@ -102,8 +103,8 @@ function playerReducer(state, action) {
       let { xp, level, zodiacPoints } = state;
       const oldLevel = level;
       xp += action.amount;
-      while (xp >= Math.floor(100 * Math.pow(level, 1.5))) {
-        xp -= Math.floor(100 * Math.pow(level, 1.5));
+      while (xp >= xpRequired(level)) {
+        xp -= xpRequired(level);
         level++;
         zodiacPoints++;
       }
@@ -216,11 +217,33 @@ function playerReducer(state, action) {
       };
     }
     case 'UPDATE_CHALLENGE_PROGRESS': {
+      const targetChallenge = challengesData.find(d => d.id === action.challengeId);
+      const cap = targetChallenge?.target ?? Infinity;
+
       const challenges = state.challenges.map(c =>
         c.id === action.challengeId
-          ? { ...c, progress: Math.min(c.progress + (action.amount || 1), challengesData.find(d => d.id === c.id)?.target || c.progress) }
+          ? { ...c, progress: Math.min(c.progress + (action.amount || 1), cap) }
           : c
       );
+
+      // Auto-complete inside the reducer — no stale-closure issue
+      const updatedChallenge = challenges.find(c => c.id === action.challengeId);
+      if (
+        targetChallenge &&
+        updatedChallenge &&
+        updatedChallenge.progress >= cap &&
+        !state.completedChallenges.includes(action.challengeId)
+      ) {
+        return {
+          ...state,
+          challenges: challenges.map(c =>
+            c.id === action.challengeId ? { ...c, completed: true } : c
+          ),
+          completedChallenges: [...state.completedChallenges, action.challengeId],
+          runeDust: state.runeDust + (targetChallenge.reward || 0),
+        };
+      }
+
       return { ...state, challenges };
     }
     case 'ADD_TIER_KEY': return { ...state, tierKeys: [...state.tierKeys, action.key] };

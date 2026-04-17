@@ -33,7 +33,7 @@ function formatBonus(key, val) {
 }
 
 /** Single node circle button — tooltip is lifted to parent via onShowTip/onHideTip */
-function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onShowTip, onHideTip }) {
+function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onShowTip, onHideTip, onRequestRespec }) {
   const isKeystone = node.type === 'keystone';
   const isGateway = node.type === 'gateway';
   const isAllocated = nodeState === 'allocated';
@@ -46,12 +46,22 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onSh
     onShowTip(node, nodeState, color, canRespec, e.clientX, e.clientY);
   };
 
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    onShowTip(node, nodeState, color, canRespec, touch.clientX, touch.clientY);
+  };
+  const handleTouchEnd = () => {
+    setTimeout(() => onHideTip(), 1200);
+  };
+
   return (
     <div
       className="zn-wrapper"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={onHideTip}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <button
         className={`zn-btn zn-${nodeState}${isKeystone ? ' zn-keystone' : ''}${isGateway ? ' zn-gateway' : ''}`}
@@ -64,14 +74,19 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onSh
       </button>
 
       {isAllocated && node.type !== 'origin' && canRespec && (
-        <button className="zn-respec-btn" onClick={onRespec} title="Respec (50 🔮)">↩</button>
+        <button
+          className="zn-respec-btn"
+          onClick={onRespec}
+          onTouchEnd={(e) => { e.stopPropagation(); onRequestRespec(node, color); }}
+          title="Respec (50 🔮)"
+        >↩</button>
       )}
     </div>
   );
 }
 
 /** One constellation card showing its linear chain */
-function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch, onShowTip, onHideTip, onRequestAlloc }) {
+function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch, onShowTip, onHideTip, onRequestAlloc, onRequestRespec }) {
   const chain = buildChain(constellation);
   const allocatedCount = chain.filter(n => allocatedNodes.includes(n.id)).length;
   const keystoneNode = chain.find(n => n.type === 'keystone');
@@ -87,6 +102,11 @@ function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDu
     const ns = getNodeState(node);
     if (ns === 'allocatable' && zodiacPoints > 0) {
       onRequestAlloc(node, constellation.color);
+    }
+    // On desktop, allocated nodes show the ↩ respec button overlay.
+    // On touch, tapping an allocated node opens the respec modal.
+    if (ns === 'allocated' && node.type !== 'origin') {
+      onRequestRespec(node, constellation.color);
     }
   };
 
@@ -122,6 +142,7 @@ function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDu
               canRespec={runeDust >= 50}
               onShowTip={onShowTip}
               onHideTip={onHideTip}
+              onRequestRespec={onRequestRespec}
             />
           </React.Fragment>
         ))}
@@ -180,6 +201,7 @@ export default function ZodiacScreen() {
 
   const [tip, setTip] = useState({ visible: false, x: 0, y: 0, node: null, nodeState: '', color: '', canRespec: false });
   const [pendingAlloc, setPendingAlloc] = useState(null); // { node, color }
+  const [pendingRespec, setPendingRespec] = useState(null); // { node, color }
 
   const handleShowTip = useCallback((node, nodeState, color, canRespec, x, y) => {
     setTip({ visible: true, node, nodeState, color, canRespec, x, y });
@@ -203,6 +225,24 @@ export default function ZodiacScreen() {
 
   const handleCancelAlloc = () => {
     setPendingAlloc(null);
+  };
+
+  const handleRequestRespec = useCallback((node, color) => {
+    setPendingRespec({ node, color });
+    setTip(t => ({ ...t, visible: false }));
+  }, []);
+
+  const handleConfirmRespec = () => {
+    if (!pendingRespec) return;
+    if (runeDust < 50) return;
+    if (isNodeRemovable(pendingRespec.node.id, allocatedNodes)) {
+      dispatch({ type: 'RESPEC_NODE', nodeId: pendingRespec.node.id });
+    }
+    setPendingRespec(null);
+  };
+
+  const handleCancelRespec = () => {
+    setPendingRespec(null);
   };
 
   // Compute active bonuses summary
@@ -244,12 +284,35 @@ export default function ZodiacScreen() {
         </div>
       )}
 
+      {/* Respec confirm modal */}
+      {pendingRespec && (
+        <div className="zn-confirm-overlay" onClick={handleCancelRespec}>
+          <div className="zn-confirm-modal" style={{ '--tip-color': pendingRespec.color }} onClick={e => e.stopPropagation()}>
+            <div className="zn-confirm-title" style={{ color: pendingRespec.color }}>Respec Node?</div>
+            <div className="zn-confirm-name">{pendingRespec.node.name}</div>
+            {pendingRespec.node.description && (
+              <div className="zn-confirm-desc">{pendingRespec.node.description}</div>
+            )}
+            <div className="zn-confirm-cost">Cost: 50 🔮 Rune Dust (you have {runeDust})</div>
+            {runeDust < 50 && (
+              <div className="zn-confirm-desc" style={{ color: '#ff7777' }}>Not enough Rune Dust</div>
+            )}
+            <div className="zn-confirm-btns">
+              <button className="zn-confirm-btn-ok" onClick={handleConfirmRespec} disabled={runeDust < 50}>
+                ↩ Confirm Respec
+              </button>
+              <button className="zn-confirm-btn-cancel" onClick={handleCancelRespec}>✕ Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Info bar */}
       <div className="zodiac-info-bar">
         <div className="zodiac-info-left">
           <span className="zodiac-points-badge">⭐ {zodiacPoints} {zodiacPoints === 1 ? 'Point' : 'Points'}</span>
           <span className="zodiac-dust-badge">🔮 {runeDust} Dust</span>
-          <span className="zodiac-nodes-badge">🌟 {allocatedNodes.length - 1} nodes</span>
+          <span className="zodiac-nodes-badge">🌟 {allocatedNodes.filter(id => id !== 'origin').length} nodes</span>
         </div>
         <div className="zodiac-info-hint">
           {zodiacPoints > 0
@@ -283,6 +346,7 @@ export default function ZodiacScreen() {
             onShowTip={handleShowTip}
             onHideTip={handleHideTip}
             onRequestAlloc={handleRequestAlloc}
+            onRequestRespec={handleRequestRespec}
           />
         ))}
       </div>

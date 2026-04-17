@@ -68,8 +68,24 @@ export default function DungeonScreen() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
   const { state: playerState, dispatch: playerDispatch, playerStats } = usePlayer();
   const [activeTab, setActiveTab] = useState('tiers');
-  const [ch1Collapsed, setCh1Collapsed] = useState(false);
-  const [ch2Collapsed, setCh2Collapsed] = useState(false);
+  // Persist collapse state so it survives navigation back from battle
+  const [ch1Collapsed, setCh1Collapsed] = useState(
+    () => localStorage.getItem('dungeon_ch1_collapsed') === 'true'
+  );
+  const [ch2Collapsed, setCh2Collapsed] = useState(
+    () => localStorage.getItem('dungeon_ch2_collapsed') === 'true'
+  );
+
+  const toggleCh1 = () => {
+    const next = !ch1Collapsed;
+    setCh1Collapsed(next);
+    localStorage.setItem('dungeon_ch1_collapsed', String(next));
+  };
+  const toggleCh2 = () => {
+    const next = !ch2Collapsed;
+    setCh2Collapsed(next);
+    localStorage.setItem('dungeon_ch2_collapsed', String(next));
+  };
 
   const handleEnterDungeon = (tierData) => {
     const skills = playerState.skillSlots
@@ -173,13 +189,8 @@ export default function DungeonScreen() {
         if (!cc.includes(id)) playerDispatch({ type: 'COMPLETE_CHALLENGE', challengeId: id });
       };
       const updateProgress = (id, amount) => {
+        // Auto-complete is now handled inside the reducer — no stale check here
         playerDispatch({ type: 'UPDATE_CHALLENGE_PROGRESS', challengeId: id, amount });
-        // Auto-complete if now at target
-        const ch = challengesData.find(c => c.id === id);
-        const prog = (playerState.challenges.find(c => c.id === id)?.progress || 0) + amount;
-        if (ch && prog >= ch.target && !cc.includes(id)) {
-          playerDispatch({ type: 'COMPLETE_CHALLENGE', challengeId: id });
-        }
       };
 
       // id 1: First Blood — clear any dungeon
@@ -319,7 +330,7 @@ export default function DungeonScreen() {
           {/* Chapter 1 */}
           <button
             className="chapter-header ch1-header chapter-toggle"
-            onClick={() => setCh1Collapsed(c => !c)}
+            onClick={toggleCh1}
             aria-expanded={!ch1Collapsed}
           >
             <span className="chapter-icon">⚔️</span>
@@ -338,7 +349,7 @@ export default function DungeonScreen() {
             <>
               <button
                 className="chapter-header ch2-header chapter-toggle"
-                onClick={() => setCh2Collapsed(c => !c)}
+                onClick={toggleCh2}
                 aria-expanded={!ch2Collapsed}
               >
                 <span className="chapter-icon">🔥</span>

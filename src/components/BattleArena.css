@@ -49,6 +49,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  align-self: stretch;   /* fills full arena height so justify-content: center works */
   padding-bottom: 10px;
   min-width: 56px;
 }

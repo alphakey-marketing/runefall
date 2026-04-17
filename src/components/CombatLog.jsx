@@ -19,6 +19,8 @@ const TYPE_COLOR = {
   room_clear:     '#c4a3ff',
 };
 
+const MAX_VISIBLE = 80;
+
 export default function CombatLog({ entries = [] }) {
   const bottomRef = useRef(null);
 
@@ -26,10 +28,16 @@ export default function CombatLog({ entries = [] }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [entries.length]);
 
+  const visibleEntries = entries.slice(-MAX_VISIBLE);
+  const hasHidden = entries.length > MAX_VISIBLE;
+
   return (
     <div className="combat-log">
-      {entries.map((entry, i) => entry ? (
-        <React.Fragment key={i}>
+      {hasHidden && (
+        <div className="log-phase-sep">── (older entries hidden) ──</div>
+      )}
+      {visibleEntries.map((entry, i) => entry ? (
+        <React.Fragment key={entries.length - MAX_VISIBLE + i}>
           {i > 0 && i % 10 === 0 && (
             <div className="log-phase-sep">── Round {Math.floor(i / 10) + 1} ──</div>
           )}

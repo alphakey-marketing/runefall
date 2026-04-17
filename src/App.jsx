@@ -12,7 +12,7 @@ import SimulatorScreen from './screens/SimulatorScreen.jsx';
 import SettingsScreen from './screens/SettingsScreen.jsx';
 import AscendancyModal from './screens/AscendancyModal.jsx';
 import TrialResultScreen from './screens/TrialResultScreen.jsx';
-import { decodeBuild } from './utils/BuildCodec.js';
+import { xpRequired } from './utils/FormulaHelpers.js';
 import './App.css';
 
 function ScreenRouter() {
@@ -32,7 +32,7 @@ function ScreenRouter() {
 }
 
 function XPBar({ xp, level }) {
-  const xpReq = Math.floor(100 * Math.pow(level, 1.5));
+  const xpReq = xpRequired(level);
   const pct = Math.min(100, Math.round((xp / xpReq) * 100));
   return (
     <div className="xp-bar-wrapper" title={`${xp} / ${xpReq} XP`}>
@@ -77,15 +77,6 @@ export default function App() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
   const { state: playerState, dispatch: playerDispatch } = usePlayer();
   const importRef = useRef(null);
-
-  React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const buildCode = params.get('build');
-    if (buildCode) {
-      const decoded = decodeBuild(buildCode);
-      if (decoded) console.log('Imported build from URL:', decoded);
-    }
-  }, []);
 
   const handleExport = () => {
     // Bundle both player data and dungeon progress so the save is complete
