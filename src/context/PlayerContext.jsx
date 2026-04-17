@@ -146,7 +146,7 @@ function playerReducer(state, action) {
       if (state.runeDust < 50) return state;
       const allItemsReroll = [...state.inventory, ...Object.values(state.equippedGear).filter(Boolean)];
       const itemReroll = allItemsReroll.find(i => i.id === action.itemId);
-      if (!itemReroll || itemReroll.rarity === 'unique' || itemReroll.rarity !== 'rare') return state;
+      if (!itemReroll || itemReroll.rarity !== 'rare') return state;
       const inventoryReroll = state.inventory.map(i => i.id === action.itemId ? action.newItem : i);
       const equippedGearReroll = { ...state.equippedGear };
       Object.keys(equippedGearReroll).forEach(slot => {

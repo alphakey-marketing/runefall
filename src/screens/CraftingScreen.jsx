@@ -247,9 +247,14 @@ export default function CraftingScreen() {
               ) : !selectedItem.corrupted ? (
                 <div className="craft-ops">
                   {selectedItem.rarity === 'rare' && (
-                    <button className="craft-btn" onClick={handleReroll} disabled={selectedAffixIndex === null}>
-                      Reroll Affix <span className="cost">50 Dust</span>
-                    </button>
+                    <>
+                      {!selectedItem.corrupted && selectedAffixIndex === null && (
+                        <p className="craft-hint">Click an affix above to target it for reroll</p>
+                      )}
+                      <button className="craft-btn" onClick={handleReroll} disabled={selectedAffixIndex === null}>
+                        Reroll Affix <span className="cost">50 Dust</span>
+                      </button>
+                    </>
                   )}
                   {['magic', 'rare', 'legendary'].includes(selectedItem.rarity) && (
                     <button className="craft-btn" onClick={handleAugment} disabled={(selectedItem.affixes || []).length >= (MAX_AFFIXES[selectedItem.rarity] || 6)}>

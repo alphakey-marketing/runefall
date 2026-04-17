@@ -92,10 +92,13 @@ export function generateDungeonLoot(tier, rooms, luck = 0) {
   return drops;
 }
 
+const UNIQUE_DROP_MIN_TIER = 15;
+const UNIQUE_DROP_CHANCE = 0.10; // 10% chance per run completion at Tier 15+
+
 // Drop a unique item from Tier 15+, 10% chance per run completion
 export function maybeDropUnique(tierNumber) {
-  if (tierNumber < 15) return null;
-  if (Math.random() > 0.10) return null;
+  if (tierNumber < UNIQUE_DROP_MIN_TIER) return null;
+  if (Math.random() > UNIQUE_DROP_CHANCE) return null;
   const pool = uniqueItems.filter(u => u.slot);
   const template = pool[Math.floor(Math.random() * pool.length)];
   return {
