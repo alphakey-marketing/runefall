@@ -27,6 +27,7 @@ const ELEMENT_FX_CLASS = {
   chaos:     'skill-fx-chaos',
 };
 
+const SKILL_FX_DURATION = 650; // ms — matches the CSS animation duration for skill FX burst
 let floatIdCounter = 0;
 
 export default function BattleArena({ visibleLog, combatResult, playerMaxHp, enemyMaxHp }) {
@@ -73,7 +74,7 @@ export default function BattleArena({ visibleLog, combatResult, playerMaxHp, ene
       const fxClass = skillVisual?.fxClass ?? ELEMENT_FX_CLASS[latest.skillElement] ?? 'skill-fx-physical';
       const fxEmoji = skillVisual?.emoji ?? null;
       setActiveSkillFx({ fxClass, emoji: fxEmoji, key: floatIdCounter });
-      setTimeout(() => setActiveSkillFx(null), 650);
+      setTimeout(() => setActiveSkillFx(null), SKILL_FX_DURATION);
 
       if (latest.damage) {
         const id = floatIdCounter++;

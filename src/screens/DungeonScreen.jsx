@@ -76,15 +76,10 @@ export default function DungeonScreen() {
     () => localStorage.getItem('dungeon_ch2_collapsed') === 'true'
   );
 
-  const toggleCh1 = () => {
-    const next = !ch1Collapsed;
-    setCh1Collapsed(next);
-    localStorage.setItem('dungeon_ch1_collapsed', String(next));
-  };
-  const toggleCh2 = () => {
-    const next = !ch2Collapsed;
-    setCh2Collapsed(next);
-    localStorage.setItem('dungeon_ch2_collapsed', String(next));
+  const toggleChapter = (chapter, current, setter) => {
+    const next = !current;
+    setter(next);
+    localStorage.setItem(`dungeon_ch${chapter}_collapsed`, String(next));
   };
 
   const handleEnterDungeon = (tierData) => {
@@ -330,7 +325,7 @@ export default function DungeonScreen() {
           {/* Chapter 1 */}
           <button
             className="chapter-header ch1-header chapter-toggle"
-            onClick={toggleCh1}
+            onClick={() => toggleChapter(1, ch1Collapsed, setCh1Collapsed)}
             aria-expanded={!ch1Collapsed}
           >
             <span className="chapter-icon">⚔️</span>
@@ -349,7 +344,7 @@ export default function DungeonScreen() {
             <>
               <button
                 className="chapter-header ch2-header chapter-toggle"
-                onClick={toggleCh2}
+                onClick={() => toggleChapter(2, ch2Collapsed, setCh2Collapsed)}
                 aria-expanded={!ch2Collapsed}
               >
                 <span className="chapter-icon">🔥</span>

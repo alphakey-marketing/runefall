@@ -32,6 +32,8 @@ function formatBonus(key, val) {
   return `+${val}${unit} ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`;
 }
 
+const TOUCH_TOOLTIP_DURATION = 1200; // ms to keep tooltip visible after touch ends
+
 /** Single node circle button — tooltip is lifted to parent via onShowTip/onHideTip */
 function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onShowTip, onHideTip, onRequestRespec }) {
   const isKeystone = node.type === 'keystone';
@@ -51,7 +53,7 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onSh
     onShowTip(node, nodeState, color, canRespec, touch.clientX, touch.clientY);
   };
   const handleTouchEnd = () => {
-    setTimeout(() => onHideTip(), 1200);
+    setTimeout(() => onHideTip(), TOUCH_TOOLTIP_DURATION);
   };
 
   return (
