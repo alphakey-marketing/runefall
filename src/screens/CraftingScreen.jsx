@@ -1,24 +1,39 @@
 import React, { useState } from 'react';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import affixPool from '../data/affixPool.json';
+import { weightedRandom } from '../utils/FormulaHelpers.js';
 import './CraftingScreen.css';
 
 const MAX_AFFIX_ROLL_ATTEMPTS = 20;
+const MAX_AFFIXES = { magic: 2, rare: 6, legendary: 8 };
+const AUGMENT_COST = { magic: 30, rare: 30, legendary: 80 };
+const LEGENDARY_CRAFT_COST = 500;
+const MAX_RUNE_TIER = 10;
 
 function rollAffix(rarity) {
   const eligible = affixPool.filter(a => a.tiers.includes(rarity));
   if (eligible.length === 0) return null;
-  const a = eligible[Math.floor(Math.random() * eligible.length)];
-  const value = Math.round(a.minValue + Math.random() * (a.maxValue - a.minValue));
-  return { id: a.id + '_' + Date.now() + '_' + Math.random().toString(36).slice(2), name: a.name, statKey: a.statKey, value, unit: a.unit };
+  const a = weightedRandom(eligible);
+  const min = (rarity === 'legendary' && a.legendaryMinValue != null) ? a.legendaryMinValue : a.minValue;
+  const max = (rarity === 'legendary' && a.legendaryMaxValue != null) ? a.legendaryMaxValue : a.maxValue;
+  const value = Math.round(min + Math.random() * (max - min));
+  return {
+    id: a.id + '_' + Date.now() + '_' + Math.random().toString(36).slice(2),
+    sourceId: a.id,
+    name: a.name,
+    statKey: a.statKey,
+    value,
+    unit: a.unit,
+  };
 }
 
 export default function CraftingScreen() {
   const { state: playerState, dispatch } = usePlayer();
-  const { inventory, runeDust, skillSlots } = playerState;
+  const { inventory, runeDust, skillSlots, equippedGear } = playerState;
   const [selectedItem, setSelectedItem] = useState(null);
   const [legendarySlots, setLegendarySlots] = useState([null, null, null]);
   const [message, setMessage] = useState('');
+  const [selectedAffixIndex, setSelectedAffixIndex] = useState(null);
 
   const flash = (msg) => { setMessage(msg); setTimeout(() => setMessage(''), 3000); };
 
@@ -26,16 +41,19 @@ export default function CraftingScreen() {
     setSelectedItem(newItem);
   };
 
+  const isEquipped = selectedItem && Object.values(equippedGear).some(g => g?.id === selectedItem.id);
+
   const handleReroll = () => {
     if (!selectedItem || selectedItem.rarity !== 'rare') return;
     if (runeDust < 50) { flash('Not enough Rune Dust (need 50)'); return; }
     const affixes = [...(selectedItem.affixes || [])];
     if (affixes.length === 0) { flash('No affixes to reroll'); return; }
-    const removeIdx = Math.floor(Math.random() * affixes.length);
-    const existing = affixes.map(a => a.id?.split('_')[0]);
+    if (selectedAffixIndex === null) { flash('Select an affix to reroll first'); return; }
+    const removeIdx = selectedAffixIndex;
+    const existing = affixes.map(a => a.sourceId || a.id);
     let newAffix = null;
     let attempts = 0;
-    while (!newAffix || existing.includes(newAffix.id?.split('_')[0])) {
+    while (!newAffix || existing.includes(newAffix.sourceId || newAffix.id)) {
       newAffix = rollAffix('rare');
       if (++attempts > MAX_AFFIX_ROLL_ATTEMPTS) break;
     }
@@ -44,18 +62,26 @@ export default function CraftingScreen() {
     const newItem = { ...selectedItem, affixes };
     dispatch({ type: 'CRAFT_REROLL', itemId: selectedItem.id, newItem });
     refreshSelected(newItem);
+    setSelectedAffixIndex(null);
     flash('Affix rerolled!');
   };
 
   const handleAugment = () => {
     if (!selectedItem) return;
-    if (!['magic', 'rare'].includes(selectedItem.rarity)) { flash('Can only augment magic or rare items'); return; }
-    if (runeDust < 30) { flash('Not enough Rune Dust (need 30)'); return; }
-    const existing = (selectedItem.affixes || []).map(a => a.id?.split('_')[0]);
+    if (!['magic', 'rare', 'legendary'].includes(selectedItem.rarity)) {
+      flash('Can only augment magic, rare, or legendary items'); return;
+    }
+    const currentCount = (selectedItem.affixes || []).length;
+    const cap = MAX_AFFIXES[selectedItem.rarity] || 6;
+    if (currentCount >= cap) { flash(`Item is at max affixes (${cap})`); return; }
+    const cost = AUGMENT_COST[selectedItem.rarity] || 30;
+    if (runeDust < cost) { flash(`Not enough Rune Dust (need ${cost})`); return; }
+    const existing = (selectedItem.affixes || []).map(a => a.sourceId || a.id);
     let newAffix = null;
     let attempts = 0;
-    while (!newAffix || existing.includes(newAffix.id?.split('_')[0])) {
-      newAffix = rollAffix(selectedItem.rarity === 'rare' ? 'rare' : 'magic');
+    const rollRarity = selectedItem.rarity === 'magic' ? 'magic' : selectedItem.rarity;
+    while (!newAffix || existing.includes(newAffix.sourceId || newAffix.id)) {
+      newAffix = rollAffix(rollRarity);
       if (++attempts > MAX_AFFIX_ROLL_ATTEMPTS) break;
     }
     if (!newAffix) { flash('No new affixes available'); return; }
@@ -65,11 +91,11 @@ export default function CraftingScreen() {
     const newItem = { ...selectedItem, affixes, rarity };
     dispatch({ type: 'CRAFT_AUGMENT', itemId: selectedItem.id, newItem });
     refreshSelected(newItem);
-    flash(`Augmented! ${rarity !== selectedItem.rarity ? 'Item upgraded to Rare!' : ''}`);
+    flash(`Augmented!${rarity !== selectedItem.rarity ? ' Item upgraded to Rare!' : ''}`);
   };
 
   const handleCorrupt = () => {
-    if (!selectedItem || selectedItem.rarity === 'normal') return;
+    if (!selectedItem || selectedItem.rarity === 'normal' || selectedItem.rarity === 'unique') return;
     if (runeDust < 100) { flash('Not enough Rune Dust (need 100)'); return; }
     const roll = Math.ceil(Math.random() * 6);
     let newItem = { ...selectedItem };
@@ -105,9 +131,14 @@ export default function CraftingScreen() {
   };
 
   const handleUpgradeRune = (slotIndex) => {
-    if (runeDust < 200) { flash('Not enough Rune Dust (need 200)'); return; }
+    const slot = skillSlots[slotIndex];
+    if (!slot?.skillRune) return;
+    const tier = slot.skillRune.tier || 1;
+    if (tier >= MAX_RUNE_TIER) { flash('Rune is already at max tier!'); return; }
+    const cost = 200 * tier;
+    if (runeDust < cost) { flash(`Not enough Rune Dust (need ${cost})`); return; }
     dispatch({ type: 'UPGRADE_RUNE', slotIndex });
-    flash(`Rune upgraded!`);
+    flash(`Rune upgraded to Tier ${tier + 1}!`);
   };
 
   const addToLegendarySlot = (item) => {
@@ -124,6 +155,7 @@ export default function CraftingScreen() {
     if (!filled.every(i => i.rarity === 'rare')) { flash('All 3 items must be Rare'); return; }
     const slotTypes = [...new Set(filled.map(i => i.slot))];
     if (slotTypes.length > 1) { flash(`All 3 items must be the same slot (found: ${slotTypes.join(', ')})`); return; }
+    if (runeDust < LEGENDARY_CRAFT_COST) { flash(`Not enough Rune Dust (need ${LEGENDARY_CRAFT_COST})`); return; }
     const itemIds = filled.map(i => i.id);
     const success = Math.random() < 0.25;
     if (success) {
@@ -142,10 +174,11 @@ export default function CraftingScreen() {
       const base = filled[0];
       const newItem = { ...base, id: 'magic_' + Date.now(), rarity: 'magic', affixes: [rollAffix('magic')].filter(Boolean) };
       dispatch({ type: 'CRAFT_LEGENDARY_RESULT', itemIds, newItem });
-      flash('The ritual failed... a Magic item was returned.');
+      flash(`The ritual failed... "${newItem.name}" was returned to inventory.`);
+      setSelectedItem(newItem);
     }
     setLegendarySlots([null, null, null]);
-    setSelectedItem(null);
+    if (success) setSelectedItem(null);
   };
 
   const rarityClass = (r) => `rarity-${r || 'normal'}`;
@@ -168,12 +201,14 @@ export default function CraftingScreen() {
               <div
                 key={item.id}
                 className={`craft-item ${selectedItem?.id === item.id ? 'selected' : ''} ${rarityClass(item.rarity)}`}
-                onClick={() => setSelectedItem(selectedItem?.id === item.id ? null : item)}
+                onClick={() => { setSelectedItem(selectedItem?.id === item.id ? null : item); setSelectedAffixIndex(null); }}
               >
                 <span className="ci-name">{item.name}</span>
                 <span className="ci-gs">GS{item.gearScore}</span>
                 {item.corrupted && <span className="ci-corrupt">☠</span>}
-                <button className="ci-leg-btn" onClick={(e) => { e.stopPropagation(); addToLegendarySlot(item); }} title="Add to legendary recipe">+</button>
+                {item.rarity !== 'unique' && (
+                  <button className="ci-leg-btn" onClick={(e) => { e.stopPropagation(); addToLegendarySlot(item); }} title="Add to legendary recipe">+</button>
+                )}
               </div>
             ))}
           </div>
@@ -187,47 +222,77 @@ export default function CraftingScreen() {
               {selectedItem.corrupted && <div className="cd-corrupt">⚠️ Corrupted (cannot craft further)</div>}
               <div className="cd-affixes">
                 {(selectedItem.affixes || []).map((a, i) => (
-                  <div key={i} className="cd-affix">+{a.value}{a.unit} {a.name}</div>
+                  <div
+                    key={i}
+                    className={`cd-affix${selectedItem.rarity === 'rare' && selectedAffixIndex === i ? ' affix-targeted' : ''}`}
+                    onClick={() => selectedItem.rarity === 'rare' && !selectedItem.corrupted && setSelectedAffixIndex(i)}
+                    title={selectedItem.rarity === 'rare' && !selectedItem.corrupted ? 'Click to target for reroll' : ''}
+                  >
+                    +{a.value}{a.unit} {a.name}
+                  </div>
                 ))}
                 {(!selectedItem.affixes || selectedItem.affixes.length === 0) && <div className="cd-affix dim">No affixes</div>}
               </div>
-              {!selectedItem.corrupted && (
+
+              {selectedItem.rarity === 'unique' ? (
+                <div className="craft-unique-lock">
+                  {selectedItem.flavourText && (
+                    <div className="unique-flavour">"{selectedItem.flavourText}"</div>
+                  )}
+                  {selectedItem.uniqueEffect && (
+                    <div className="unique-effect">✦ {selectedItem.uniqueEffect.description}</div>
+                  )}
+                  <div className="craft-locked-msg">⚠️ Unique items cannot be modified.</div>
+                </div>
+              ) : !selectedItem.corrupted ? (
                 <div className="craft-ops">
                   {selectedItem.rarity === 'rare' && (
-                    <button className="craft-btn" onClick={handleReroll}>
+                    <button className="craft-btn" onClick={handleReroll} disabled={selectedAffixIndex === null}>
                       Reroll Affix <span className="cost">50 Dust</span>
                     </button>
                   )}
-                  {['magic', 'rare'].includes(selectedItem.rarity) && (
-                    <button className="craft-btn" onClick={handleAugment}>
-                      Augment <span className="cost">30 Dust</span>
+                  {['magic', 'rare', 'legendary'].includes(selectedItem.rarity) && (
+                    <button className="craft-btn" onClick={handleAugment} disabled={(selectedItem.affixes || []).length >= (MAX_AFFIXES[selectedItem.rarity] || 6)}>
+                      Augment <span className="cost">{AUGMENT_COST[selectedItem.rarity] || 30} Dust</span>
                     </button>
                   )}
                   {selectedItem.rarity !== 'normal' && (
-                    <button className="craft-btn craft-corrupt-btn" onClick={handleCorrupt}>
-                      Corrupt <span className="cost">100 Dust</span>
+                    <button
+                      className="craft-btn craft-corrupt-btn"
+                      onClick={handleCorrupt}
+                      title={isEquipped ? '⚠️ This item is currently equipped!' : ''}
+                    >
+                      Corrupt {isEquipped && '⚠️'} <span className="cost">100 Dust</span>
                     </button>
                   )}
                 </div>
-              )}
+              ) : null}
             </div>
           ) : (
             <div className="craft-placeholder">← Select an item to craft</div>
           )}
 
           <div className="craft-rune-upgrade">
-            <h3>Upgrade Skill Rune <span className="cost">200 Dust</span></h3>
+            <h3>Upgrade Skill Rune</h3>
             <div className="rune-slots">
-              {skillSlots.map((slot, i) => (
-                slot.skillRune ? (
+              {skillSlots.map((slot, i) => {
+                if (!slot.skillRune) return <div key={i} className="rune-slot-row empty">Slot {i + 1}: Empty</div>;
+                const tier = slot.skillRune.tier || 1;
+                const cost = 200 * tier;
+                const atMax = tier >= MAX_RUNE_TIER;
+                return (
                   <div key={i} className="rune-slot-row">
-                    <span>{slot.skillRune.name} (Tier {slot.skillRune.tier || 1})</span>
-                    <button className="craft-btn small" onClick={() => handleUpgradeRune(i)}>Upgrade</button>
+                    <span>{slot.skillRune.name} (Tier {tier}{atMax ? ' — MAX' : ''})</span>
+                    <button
+                      className="craft-btn small"
+                      onClick={() => handleUpgradeRune(i)}
+                      disabled={atMax}
+                    >
+                      {atMax ? 'Maxed' : `Upgrade (${cost} Dust)`}
+                    </button>
                   </div>
-                ) : (
-                  <div key={i} className="rune-slot-row empty">Slot {i + 1}: Empty</div>
-                )
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -251,10 +316,10 @@ export default function CraftingScreen() {
         </div>
         <button
           className="craft-btn legend-btn"
-          disabled={legendarySlots.filter(Boolean).length < 3 || new Set(legendarySlots.filter(Boolean).map(i => i.slot)).size > 1}
+          disabled={legendarySlots.filter(Boolean).length < 3 || new Set(legendarySlots.filter(Boolean).map(i => i.slot)).size > 1 || runeDust < LEGENDARY_CRAFT_COST}
           onClick={handleLegendaryCraft}
         >
-          Craft Legendary (0 Dust)
+          Craft Legendary ({LEGENDARY_CRAFT_COST} Dust)
         </button>
       </div>
     </div>

@@ -1,5 +1,43 @@
 // CombatEngine.js — Pure function combat simulation with StatusEngine integration
 import { applyStatus, tickStatuses, checkInteractions, isFrozen, getAttackSpeedMult, getShockDamageMult } from './StatusEngine.js';
+import uniqueItems from '../data/uniqueItems.json';
+
+export const UNIQUE_EFFECTS = {
+  lifedrain: {
+    trigger: 'onSkillDamage',
+    apply: (_player, damage) => ({ healAmount: Math.floor(damage * 0.05) }),
+  },
+  voidstrike: {
+    trigger: 'onAttack',
+    apply: (_player, damage, attackCount) => ({
+      damage: attackCount % 4 === 0 ? damage * 2 : damage,
+    }),
+  },
+  ashenburst: {
+    trigger: 'onCrit',
+    apply: (_player, _target) => ({ applyStatus: { type: 'burn', duration: 3000 } }),
+  },
+  stardash: {
+    trigger: 'onFirstCast',
+    apply: (_player) => ({ manaCostOverride: 0 }),
+  },
+  bloodfortify: {
+    trigger: 'onStatCalc',
+    apply: (player) => {
+      const missingHpPct = 1 - (player.hp / player.maxHp);
+      const stacks = Math.floor(missingHpPct * 10);
+      return { bonusArmor: stacks * 5 };
+    },
+  },
+};
+
+export function getEquippedUniqueEffect(equippedGear, trigger) {
+  return Object.values(equippedGear)
+    .filter(Boolean)
+    .filter(item => item.rarity === 'unique' && item.uniqueEffect)
+    .map(item => UNIQUE_EFFECTS[item.uniqueEffect.id])
+    .filter(effect => effect && effect.trigger === trigger);
+}
 
 const MAX_TICKS = 200;
 

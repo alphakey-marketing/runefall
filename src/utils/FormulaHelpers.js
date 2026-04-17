@@ -26,3 +26,14 @@ export function rollLootTier(luck = 0) {
 export function calcGearScore(affixes) {
   return affixes.reduce((sum, a) => sum + Math.floor(a.value), 0);
 }
+
+// Weighted random pick from a pool — each item may have a `weight` field (default 10)
+export function weightedRandom(pool) {
+  const total = pool.reduce((sum, item) => sum + (item.weight || 10), 0);
+  let roll = Math.random() * total;
+  for (const item of pool) {
+    roll -= (item.weight || 10);
+    if (roll <= 0) return item;
+  }
+  return pool[pool.length - 1];
+}

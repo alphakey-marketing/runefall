@@ -312,10 +312,58 @@
 .rarity-magic { color: #4fc3f7; }
 .rarity-rare { color: #ffd700; }
 .rarity-legendary { color: #ff9800; }
+.rarity-unique {
+  color: #ff9d00;
+  text-shadow: 0 0 8px rgba(255, 157, 0, 0.6);
+  font-weight: bold;
+}
 
 .craft-empty {
   color: #444;
   text-align: center;
   padding: 12px;
   font-size: 12px;
+}
+
+.cd-affix.affix-targeted {
+  background: rgba(196, 163, 255, 0.15);
+  border-radius: 3px;
+  color: #c4a3ff;
+  cursor: pointer;
+  outline: 1px solid #c4a3ff;
+}
+
+.cd-affix:hover {
+  cursor: pointer;
+  background: rgba(255,255,255,0.04);
+  border-radius: 3px;
+}
+
+.craft-unique-lock {
+  margin-top: 8px;
+}
+
+.unique-flavour {
+  font-style: italic;
+  color: #aaa;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  border-left: 2px solid #ff9d00;
+  padding-left: 8px;
+}
+
+.unique-effect {
+  background: rgba(255, 157, 0, 0.1);
+  border: 1px solid rgba(255, 157, 0, 0.4);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  color: #ffca70;
+  margin-bottom: 8px;
+}
+
+.craft-locked-msg {
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 8px;
 }

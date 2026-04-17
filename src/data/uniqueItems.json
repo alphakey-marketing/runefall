@@ -1,0 +1,87 @@
+[
+  {
+    "id": "runefall_heart",
+    "name": "Runefall Heart",
+    "slot": "chest",
+    "rarity": "unique",
+    "gearScore": 180,
+    "flavourText": "It beats in rhythm with the falling stars.",
+    "affixes": [
+      { "id": "rh_1", "sourceId": "max_hp",       "name": "Maximum HP",        "statKey": "maxHp",       "value": 250, "unit": "" },
+      { "id": "rh_2", "sourceId": "hp_regen",     "name": "HP Regeneration",   "statKey": "hpRegen",     "value": 20,  "unit": "/s" },
+      { "id": "rh_3", "sourceId": "skill_effect", "name": "Skill Rune Effect", "statKey": "skillEffect", "value": 40,  "unit": "%" }
+    ],
+    "uniqueEffect": {
+      "id": "lifedrain",
+      "description": "Skills heal you for 5% of damage dealt"
+    }
+  },
+  {
+    "id": "void_thread",
+    "name": "Void Thread",
+    "slot": "gloves",
+    "rarity": "unique",
+    "gearScore": 160,
+    "flavourText": "Woven from the silence between runes.",
+    "affixes": [
+      { "id": "vt_1", "sourceId": "attack_speed",      "name": "Attack Speed",          "statKey": "attackSpeedBonus",  "value": 40, "unit": "%" },
+      { "id": "vt_2", "sourceId": "cooldown_reduction","name": "Cooldown Reduction",    "statKey": "cooldownReduction", "value": 30, "unit": "%" },
+      { "id": "vt_3", "sourceId": "mana_regen",        "name": "Mana Regeneration",     "statKey": "manaRegen",         "value": 15, "unit": "/s" }
+    ],
+    "uniqueEffect": {
+      "id": "voidstrike",
+      "description": "Every 4th attack deals double damage"
+    }
+  },
+  {
+    "id": "ashen_crown",
+    "name": "Ashen Crown",
+    "slot": "helmet",
+    "rarity": "unique",
+    "gearScore": 170,
+    "flavourText": "Forged in the dungeon's final breath.",
+    "affixes": [
+      { "id": "ac_1", "sourceId": "crit_chance",     "name": "Critical Strike Chance",     "statKey": "critChance",     "value": 20,  "unit": "%" },
+      { "id": "ac_2", "sourceId": "crit_multiplier", "name": "Critical Strike Multiplier", "statKey": "critMultiplier", "value": 120, "unit": "%" },
+      { "id": "ac_3", "sourceId": "all_damage",      "name": "Increased Damage",           "statKey": "allDamageBonus", "value": 35,  "unit": "%" }
+    ],
+    "uniqueEffect": {
+      "id": "ashenburst",
+      "description": "Critical hits apply Burn for 3 seconds"
+    }
+  },
+  {
+    "id": "starfall_boots",
+    "name": "Starfall Treads",
+    "slot": "boots",
+    "rarity": "unique",
+    "gearScore": 155,
+    "flavourText": "Leave no shadow where you walk.",
+    "affixes": [
+      { "id": "sb_1", "sourceId": "elemental_resist", "name": "Elemental Resistance",    "statKey": "elementalResist",   "value": 35,  "unit": "%" },
+      { "id": "sb_2", "sourceId": "max_mana",         "name": "Maximum Mana",            "statKey": "maxMana",           "value": 120, "unit": "" },
+      { "id": "sb_3", "sourceId": "spell_damage",     "name": "Increased Spell Damage",  "statKey": "spellDamageBonus",  "value": 45,  "unit": "%" }
+    ],
+    "uniqueEffect": {
+      "id": "stardash",
+      "description": "The first skill cast in combat costs no mana"
+    }
+  },
+  {
+    "id": "ironblood_plate",
+    "name": "Ironblood Plate",
+    "slot": "chest",
+    "rarity": "unique",
+    "gearScore": 175,
+    "flavourText": "Absorbs wounds. Remembers them.",
+    "affixes": [
+      { "id": "ip_1", "sourceId": "armor",           "name": "Armor",           "statKey": "armor",          "value": 180, "unit": "" },
+      { "id": "ip_2", "sourceId": "max_hp",          "name": "Maximum HP",      "statKey": "maxHp",          "value": 200, "unit": "" },
+      { "id": "ip_3", "sourceId": "status_duration", "name": "Status Duration", "statKey": "statusDuration", "value": 50,  "unit": "%" }
+    ],
+    "uniqueEffect": {
+      "id": "bloodfortify",
+      "description": "Gain +5 Armor for every 10% HP missing"
+    }
+  }
+]
