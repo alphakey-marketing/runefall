@@ -84,7 +84,8 @@ function playerReducer(state, action) {
       return { ...state, bagFullNotification: false };
     }
     case 'SALVAGE_ITEM': {
-      const dustGain = action.item.gearScore + 5;
+      // unique items always return a fixed 50 Rune Dust regardless of gearScore
+      const dustGain = action.item.rarity === 'unique' ? 50 : action.item.gearScore + 5;
       const equippedGear = { ...state.equippedGear };
       Object.keys(equippedGear).forEach(slot => {
         if (equippedGear[slot]?.id === action.item.id) equippedGear[slot] = null;

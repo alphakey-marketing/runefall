@@ -28,6 +28,19 @@ export function calculatePlayerStats(baseStats, equippedGear, zodiacBonuses = {}
   if (playerState?.ascendancy === 'hexblade') merged.hexblade = true;
   if (playerState?.ascendancy === 'stormbringer') merged.stormbringer = true;
 
+  // Apply unique item effect flags — each equipped unique injects its uniqueEffect.id as a
+  // boolean flag so the combat engine can check e.g. playerStats.cindersurge, playerStats.boneshatter
+  Object.values(equippedGear).forEach(item => {
+    if (item?.rarity === 'unique' && item.uniqueEffect?.id) {
+      const effectId = item.uniqueEffect.id;
+      merged[effectId] = true;
+      // auto_shatter and hemorrhage map onto existing zodiac node flags so combat code
+      // can check a single boolean regardless of source (zodiac vs unique item)
+      if (effectId === 'auto_shatter') merged.shatter = true;
+      if (effectId === 'hemorrhage') merged.hemorrhage = true;
+    }
+  });
+
   return merged;
 }
 

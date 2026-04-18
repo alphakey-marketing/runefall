@@ -187,7 +187,7 @@ export default function BattleScreen() {
                           className="inv-salvage-btn"
                           onClick={() => handleSalvageInvItem(item)}
                         >
-                          Salvage (+{item.gearScore + 5}🔮)
+                          Salvage (+{item.rarity === 'unique' ? 50 : item.gearScore + 5}🔮)
                         </button>
                       </div>
                     ))

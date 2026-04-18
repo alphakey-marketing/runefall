@@ -284,7 +284,7 @@
       { "id": "ss_2", "sourceId": "attack_speed",      "name": "Attack Speed",              "statKey": "attackSpeedBonus",    "value": 32, "unit": "%" },
       { "id": "ss_3", "sourceId": "cooldown_reduction","name": "Cooldown Reduction",         "statKey": "cooldownReduction",   "value": 22, "unit": "%" }
     ],
-    "uniqueEffect": { "id": "staticcharge", "description": "If a skill was on cooldown last tick (skillTimer > 0), the next cast deals +80% increased damage. Track via lastCastTick per skill slot." },
+    "uniqueEffect": { "id": "staticcharge", "description": "If a skill was on cooldown last tick (wasOnCooldown tracking per skill slot), the next cast deals +80% increased damage." },
     "dropTier": 15
   },
   {

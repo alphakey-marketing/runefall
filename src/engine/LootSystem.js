@@ -92,7 +92,7 @@ export function generateDungeonLoot(tier, rooms, luck = 0) {
   return drops;
 }
 
-const UNIQUE_DROP_MIN_TIER = 15;
+const UNIQUE_DROP_MIN_TIER = 13;
 const UNIQUE_DROP_CHANCE = 0.10; // 10% chance per run completion at Tier 15+
 
 // Drop a unique item from Tier 15+, 10% chance per run completion
