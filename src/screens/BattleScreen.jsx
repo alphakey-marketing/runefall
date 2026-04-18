@@ -3,7 +3,8 @@ import { useGame } from '../context/GameContext.jsx';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import BattleArena from '../components/BattleArena.jsx';
 import CombatLog from '../components/CombatLog.jsx';
-import ItemTooltip from '../components/ItemTooltip.jsx';
+import ItemTooltip, { RarityBadge } from '../components/ItemTooltip.jsx';
+import { calcSalvageDust } from '../utils/FormulaHelpers.js';
 import './BattleScreen.css';
 
 const BAG_SIZE = 20;
@@ -181,19 +182,16 @@ export default function BattleScreen() {
                   ) : (
                     playerState.inventory.map(item => (
                       <div key={item.id} className="inv-salvage-row">
-                        <span className={`inv-salvage-name rarity-${item.rarity}`}>{item.name}</span>
+                        <span className={`inv-salvage-name rarity-${item.rarity}`}>
+                          <RarityBadge rarity={item.rarity} />
+                          {item.name}
+                        </span>
                         <span className="inv-salvage-gs">GS {item.gearScore}</span>
                         <button
                           className="inv-salvage-btn"
                           onClick={() => handleSalvageInvItem(item)}
                         >
-                          Salvage (+{
-                            item.rarity === 'unique'    ? 50 :
-                            item.rarity === 'legendary' ? item.gearScore + 20 :
-                            item.rarity === 'rare'      ? Math.floor(item.gearScore * 0.8) + 10 :
-                            item.rarity === 'magic'     ? Math.floor(item.gearScore * 0.6) + 5 :
-                                                          Math.floor(item.gearScore * 0.5) + 3
-                          }🔮)
+                          Salvage (+{calcSalvageDust(item)}🔮)
                         </button>
                       </div>
                     ))
@@ -210,11 +208,14 @@ export default function BattleScreen() {
                 onMouseEnter={() => setHoveredLoot(item)}
                 onMouseLeave={() => setHoveredLoot(null)}
               >
-                <div className={`loot-name rarity-${item.rarity}`}>{item.name}</div>
+                <div className={`loot-name rarity-${item.rarity}`}>
+                  <RarityBadge rarity={item.rarity} />
+                  {item.name}
+                </div>
                 <div className="loot-gs">GS: {item.gearScore}</div>
                 <div className="loot-actions">
                   <button onClick={() => handlePickupItem(item)} disabled={bagFull}>Pick Up</button>
-                  <button onClick={() => handleSalvageItem(item)}>Salvage</button>
+                  <button onClick={() => handleSalvageItem(item)}>Salvage (+{calcSalvageDust(item)}🔮)</button>
                 </div>
               </div>
             ))}

@@ -87,11 +87,6 @@ export function generateDungeonLoot(tier, rooms, luck = 0) {
     drops.push(generateItem(null, null, luck, tierNumber));
   }
 
-  // Tier 11+ guarantee one legendary
-  if (tierNumber >= 11) {
-    drops.push(generateItem('legendary', null, luck));
-  }
-
   // Tier 13+ chance to drop a unique item
   const unique = maybeDropUnique(tierNumber);
   if (unique) drops.push(unique);
@@ -100,17 +95,50 @@ export function generateDungeonLoot(tier, rooms, luck = 0) {
 }
 
 const UNIQUE_DROP_MIN_TIER = 13;
-const UNIQUE_DROP_CHANCE = 0.10; // 10% chance per run completion at Tier 15+
+const UNIQUE_DROP_CHANCE = 0.10; // 10% chance per run completion at Tier 13+
+const MAX_UNIQUE_AFFIX_ATTEMPTS = 40; // enough attempts to fill 3 slots from a large pool
 
-// Drop a unique item from Tier 15+, 10% chance per run completion
+// Drop a unique item from Tier 13+, 10% chance per run completion
+// Unique items carry their 3 fixed affixes plus 3 random legendary-quality bonus affixes.
 export function maybeDropUnique(tierNumber) {
   if (tierNumber < UNIQUE_DROP_MIN_TIER) return null;
   if (Math.random() > UNIQUE_DROP_CHANCE) return null;
   const pool = uniqueItems.filter(u => u.slot);
   const template = pool[Math.floor(Math.random() * pool.length)];
+
+  // Roll 3 random legendary-quality bonus affixes distinct from the fixed ones
+  const legAffixes = affixPool.filter(a => a.tiers.includes('legendary'));
+  const fixedSourceIds = (template.affixes || []).map(a => a.sourceId);
+  const rolledAffixes = [];
+  let attempts = 0;
+  while (rolledAffixes.length < 3 && attempts < MAX_UNIQUE_AFFIX_ATTEMPTS) {
+    const candidate = legAffixes[Math.floor(Math.random() * legAffixes.length)];
+    if (
+      !fixedSourceIds.includes(candidate.id) &&
+      !rolledAffixes.some(r => r.sourceId === candidate.id)
+    ) {
+      const min = candidate.legendaryMinValue ?? candidate.minValue;
+      const max = candidate.legendaryMaxValue ?? candidate.maxValue;
+      const value = Math.floor(min + Math.random() * (max - min + 1));
+      rolledAffixes.push({
+        id: `${candidate.id}_rnd_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+        sourceId: candidate.id,
+        name: candidate.name,
+        statKey: candidate.statKey,
+        value,
+        unit: candidate.unit,
+      });
+    }
+    attempts++;
+  }
+
+  const allAffixes = [...(template.affixes || []), ...rolledAffixes];
   return {
     ...template,
     id: `unique_${template.id}_${Date.now()}`,
+    affixes: allAffixes,
+    gearScore: calcGearScore(allAffixes),
+    _fixedAffixCount: (template.affixes || []).length,
   };
 }
 

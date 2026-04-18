@@ -182,8 +182,8 @@ body {
 
 /* Unique item rarity colour — used globally across all screens */
 .rarity-unique {
-  color: #ff9d00;
-  text-shadow: 0 0 8px rgba(255, 157, 0, 0.6);
+  color: #c084fc;
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.6);
   font-weight: bold;
 }
 .unique-flavour {
@@ -191,12 +191,12 @@ body {
   color: #aaa;
   font-size: 0.85rem;
   margin-bottom: 8px;
-  border-left: 2px solid #ff9d00;
+  border-left: 2px solid #c084fc;
   padding-left: 8px;
 }
 .unique-effect {
-  background: rgba(255, 157, 0, 0.1);
-  border: 1px solid rgba(255, 157, 0, 0.4);
+  background: rgba(192, 132, 252, 0.1);
+  border: 1px solid rgba(192, 132, 252, 0.4);
   border-radius: 4px;
   padding: 6px 10px;
   font-size: 0.9rem;

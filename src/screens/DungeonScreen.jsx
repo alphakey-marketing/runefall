@@ -153,6 +153,20 @@ export default function DungeonScreen() {
 
       playerDispatch({ type: 'ADD_XP', amount: xpGain });
 
+      // ── Tier-scaled dust rewards ─────────────────────────────────────────────
+      // Tiers 5–10: grant Refined Dust (✨) per run — 1 at T5, 2 at T6-7, 3 at T8-10
+      // Tiers 11+:  grant Void Dust (💠) per run    — 2 at T11-15, 3 at T16+
+      const t = tierData.tier;
+      if (t >= 5 && t <= 10) {
+        const refinedAmt = t <= 5 ? 1 : t <= 7 ? 2 : 3; // T5→1, T6-7→2, T8-10→3
+        playerDispatch({ type: 'ADD_REFINED_DUST', amount: refinedAmt });
+      } else if (t >= 11) {
+        const voidAmt = t <= 15 ? 2 : 3; // T11-15→2, T16+→3
+        playerDispatch({ type: 'ADD_VOID_DUST', amount: voidAmt });
+        // Also grant 1 Refined Dust at mid-high tiers to help with bench costs
+        if (t <= 15) playerDispatch({ type: 'ADD_REFINED_DUST', amount: 1 });
+      }
+
       // Tutorial completion
       if (tierData.isTutorial && !playerState.tutorialComplete) {
         playerDispatch({ type: 'SET_TUTORIAL_COMPLETE' });

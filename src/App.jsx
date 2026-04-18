@@ -124,6 +124,8 @@ export default function App() {
           <span className="header-level">Lv.{playerState.level}</span>
           <XPBar xp={playerState.xp} level={playerState.level} />
           <span className="header-dust">🔮 {playerState.runeDust}</span>
+          <span className="header-dust">✨ {playerState.refinedDust}</span>
+          <span className="header-dust">💠 {playerState.voidDust}</span>
           <button className="save-btn" onClick={handleExport} title="Export save">💾</button>
           <button className="save-btn" onClick={() => importRef.current?.click()} title="Import save">📂</button>
           <input ref={importRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
