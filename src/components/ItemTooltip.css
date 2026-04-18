@@ -86,17 +86,12 @@
 .delta-pos { color: #00ff88; }
 .delta-neg { color: #ff4444; }
 
-/* Rarity badge — small inline colored square shown in item lists */
-.rarity-badge {
+/* Item type icon — small inline emoji shown in item lists */
+.item-type-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  border: 1px solid;
-  border-radius: 3px;
-  font-size: 9px;
-  font-weight: bold;
+  font-size: 13px;
   line-height: 1;
   flex-shrink: 0;
   margin-right: 4px;

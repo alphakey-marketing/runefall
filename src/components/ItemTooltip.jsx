@@ -9,27 +9,19 @@ const RARITY_COLORS = {
   unique: '#c084fc',
 };
 
-const RARITY_BADGE_LABEL = {
-  normal: 'N',
-  magic: 'M',
-  rare: 'R',
-  legendary: 'L',
-  unique: 'U',
+const ITEM_TYPE_ICONS = {
+  weapon: '⚔️',
+  helmet: '⛑️',
+  chest: '🛡️',
+  gloves: '🧤',
+  boots: '👢',
 };
 
-export function RarityBadge({ rarity }) {
-  const color = RARITY_COLORS[rarity] || '#aaa';
-  const label = RARITY_BADGE_LABEL[rarity] || '?';
+export function ItemTypeIcon({ slot }) {
+  const icon = ITEM_TYPE_ICONS[slot] || '📦';
   return (
-    <span
-      className="rarity-badge"
-      style={{
-        color,
-        borderColor: color,
-      }}
-      title={rarity}
-    >
-      {label}
+    <span className="item-type-icon" title={slot}>
+      {icon}
     </span>
   );
 }

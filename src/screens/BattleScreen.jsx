@@ -3,7 +3,7 @@ import { useGame } from '../context/GameContext.jsx';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import BattleArena from '../components/BattleArena.jsx';
 import CombatLog from '../components/CombatLog.jsx';
-import ItemTooltip, { RarityBadge } from '../components/ItemTooltip.jsx';
+import ItemTooltip, { ItemTypeIcon } from '../components/ItemTooltip.jsx';
 import { calcSalvageDust } from '../utils/FormulaHelpers.js';
 import './BattleScreen.css';
 
@@ -183,7 +183,7 @@ export default function BattleScreen() {
                     playerState.inventory.map(item => (
                       <div key={item.id} className="inv-salvage-row">
                         <span className={`inv-salvage-name rarity-${item.rarity}`}>
-                          <RarityBadge rarity={item.rarity} />
+                          <ItemTypeIcon slot={item.slot} />
                           {item.name}
                         </span>
                         <span className="inv-salvage-gs">GS {item.gearScore}</span>
@@ -209,7 +209,7 @@ export default function BattleScreen() {
                 onMouseLeave={() => setHoveredLoot(null)}
               >
                 <div className={`loot-name rarity-${item.rarity}`}>
-                  <RarityBadge rarity={item.rarity} />
+                  <ItemTypeIcon slot={item.slot} />
                   {item.name}
                 </div>
                 <div className="loot-gs">GS: {item.gearScore}</div>

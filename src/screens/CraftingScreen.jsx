@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { usePlayer } from '../context/PlayerContext.jsx';
-import { RarityBadge } from '../components/ItemTooltip.jsx';
+import { ItemTypeIcon } from '../components/ItemTooltip.jsx';
 import affixPool from '../data/affixPool.json';
 import { weightedRandom } from '../utils/FormulaHelpers.js';
 import './CraftingScreen.css';
@@ -303,7 +303,7 @@ export default function CraftingScreen() {
                 className={`craft-item ${selectedItem?.id === item.id ? 'selected' : ''} ${rarityClass(item.rarity)}`}
                 onClick={() => { setSelectedItem(selectedItem?.id === item.id ? null : item); setSelectedAffixIndex(null); setSealedAffixIndex(null); }}
               >
-                <RarityBadge rarity={item.rarity} />
+                <ItemTypeIcon slot={item.slot} />
                 <span className="ci-name">{item.name}</span>
                 <span className="ci-gs">GS{item.gearScore}</span>
                 {item.corrupted && <span className="ci-corrupt">☠</span>}
@@ -425,7 +425,7 @@ export default function CraftingScreen() {
             }}>
               {item ? (
                 <span className={rarityClass(item.rarity)}>
-                  <RarityBadge rarity={item.rarity} />
+                  <ItemTypeIcon slot={item.slot} />
                   {item.name} <span className="remove-x">×</span>
                 </span>
               ) : (
