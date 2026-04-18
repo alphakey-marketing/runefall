@@ -6,16 +6,17 @@ const GEAR_SLOTS = ['weapon', 'helmet', 'chest', 'gloves', 'boots'];
 
 function rollAffixCount(rarity) {
   switch (rarity) {
-    case 'magic': return Math.random() < 0.5 ? 1 : 2;
-    case 'rare': return 3 + Math.floor(Math.random() * 3);      // 3, 4, or 5
-    case 'legendary': return 4 + Math.floor(Math.random() * 3); // 4, 5, or 6
+    case 'normal':    return 1;                                          // 1 basic stat — not junk, but clearly inferior to magic
+    case 'magic':     return 1 + Math.floor(Math.random() * 3);         // 1, 2, or 3
+    case 'rare':      return 3 + Math.floor(Math.random() * 3);         // 3, 4, or 5
+    case 'legendary': return 4 + Math.floor(Math.random() * 3);         // 4, 5, or 6
     default: return 0;
   }
 }
 
-export function generateItem(tierOverride = null, slotOverride = null, luck = 0) {
+export function generateItem(tierOverride = null, slotOverride = null, luck = 0, tierNumber = null) {
   const slot = slotOverride || GEAR_SLOTS[Math.floor(Math.random() * GEAR_SLOTS.length)];
-  const rarity = tierOverride || rollLootTier(luck);
+  const rarity = tierOverride || rollLootTier(luck, tierNumber);
   const affixCount = rollAffixCount(rarity);
 
   const eligibleAffixes = affixPool.filter(a => a.tiers.includes(rarity));
@@ -27,8 +28,13 @@ export function generateItem(tierOverride = null, slotOverride = null, luck = 0)
     if (pool.length === 0) break;
     const affixDef = weightedRandom(pool);
     usedIds.push(affixDef.id);
-    const min = (rarity === 'legendary' && affixDef.legendaryMinValue != null) ? affixDef.legendaryMinValue : affixDef.minValue;
-    const max = (rarity === 'legendary' && affixDef.legendaryMaxValue != null) ? affixDef.legendaryMaxValue : affixDef.maxValue;
+    // Value range: legendary overrides → normal overrides → base magic/rare range
+    const min = rarity === 'legendary' && affixDef.legendaryMinValue != null ? affixDef.legendaryMinValue
+               : rarity === 'normal'    && affixDef.normalMinValue    != null ? affixDef.normalMinValue
+               : affixDef.minValue;
+    const max = rarity === 'legendary' && affixDef.legendaryMaxValue != null ? affixDef.legendaryMaxValue
+               : rarity === 'normal'    && affixDef.normalMaxValue    != null ? affixDef.normalMaxValue
+               : affixDef.maxValue;
     const value = Math.floor(min + Math.random() * (max - min + 1));
     selectedAffixes.push({
       id: affixDef.id,
@@ -75,18 +81,19 @@ export function generateDungeonLoot(tier, rooms, luck = 0) {
   const drops = [];
   const lootMult = tier.lootMultiplier || 1;
   const baseDrops = Math.floor(2 + lootMult);
+  const tierNumber = tier.tier || 0;
 
   for (let i = 0; i < baseDrops; i++) {
-    drops.push(generateItem(null, null, luck));
+    drops.push(generateItem(null, null, luck, tierNumber));
   }
 
   // Tier 11+ guarantee one legendary
-  if ((tier.tier || 0) >= 11) {
+  if (tierNumber >= 11) {
     drops.push(generateItem('legendary', null, luck));
   }
 
-  // Tier 15+ chance to drop a unique item
-  const unique = maybeDropUnique(tier.tier || 0);
+  // Tier 13+ chance to drop a unique item
+  const unique = maybeDropUnique(tierNumber);
   if (unique) drops.push(unique);
 
   return drops;

@@ -84,8 +84,21 @@ function playerReducer(state, action) {
       return { ...state, bagFullNotification: false };
     }
     case 'SALVAGE_ITEM': {
-      // unique items always return a fixed 50 Rune Dust regardless of gearScore
-      const dustGain = action.item.rarity === 'unique' ? 50 : action.item.gearScore + 5;
+      // Dust formula scaled by rarity so early-game normal/magic items yield less dust,
+      // making crafting progression more gradual. Unique items always return a flat 50.
+      let dustGain;
+      if (action.item.rarity === 'unique') {
+        dustGain = 50;
+      } else if (action.item.rarity === 'legendary') {
+        dustGain = action.item.gearScore + 20;
+      } else if (action.item.rarity === 'rare') {
+        dustGain = Math.floor(action.item.gearScore * 0.8) + 10;
+      } else if (action.item.rarity === 'magic') {
+        dustGain = Math.floor(action.item.gearScore * 0.6) + 5;
+      } else {
+        // normal — gearScore is small (single low-value affix), so dust is modest
+        dustGain = Math.floor(action.item.gearScore * 0.5) + 3;
+      }
       const equippedGear = { ...state.equippedGear };
       Object.keys(equippedGear).forEach(slot => {
         if (equippedGear[slot]?.id === action.item.id) equippedGear[slot] = null;
