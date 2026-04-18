@@ -16,13 +16,53 @@
   text-align: center;
 }
 
-.battle-canvas {
-  width: 100%;
-  max-height: 180px;
-  border-radius: 8px;
-  border: 1px solid #2a2a4a;
+.bag-warn-toast {
+  background: #2e2a16;
+  border: 1px solid #886622;
+  color: #ffcc66;
+  border-radius: 6px;
+  padding: 6px 14px;
   margin-bottom: 8px;
-  display: block;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* In-battle speed control (scoped to avoid collision with SettingsScreen) */
+.combat-speed-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #888;
+}
+
+.battle-speed-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.battle-speed-btn {
+  padding: 3px 10px;
+  font-size: 11px;
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  color: #666;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-height: 28px;
+}
+
+.battle-speed-btn:hover {
+  border-color: #4a3a7a;
+  color: #aaa;
+}
+
+.battle-speed-btn-active {
+  background: #2a1a4a;
+  border-color: #c4a3ff;
+  color: #c4a3ff;
 }
 
 .battle-result-label {
@@ -47,6 +87,106 @@
 .loot-panel h3 {
   color: #c4a3ff;
   margin: 0 0 10px;
+}
+
+.loot-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.loot-panel-header h3 {
+  color: #c4a3ff;
+  margin: 0;
+}
+
+.bag-count-badge {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bag full inline salvage panel */
+.bag-full-inline {
+  background: #2a1a1a;
+  border: 1px solid #663333;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.bag-full-inline-msg {
+  font-size: 12px;
+  color: #ffaaaa;
+  margin-bottom: 6px;
+}
+
+.inv-salvage-toggle {
+  width: 100%;
+  padding: 5px;
+  font-size: 11px;
+  background: #3a1a1a;
+  border: 1px solid #7a3333;
+  color: #e87878;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.inv-salvage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.inv-salvage-empty {
+  color: #666;
+  font-size: 12px;
+  text-align: center;
+  padding: 8px;
+}
+
+.inv-salvage-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.inv-salvage-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inv-salvage-gs {
+  color: #666;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.inv-salvage-btn {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  font-size: 11px;
+  background: #3a1a1a;
+  border: 1px solid #8a3a3a;
+  color: #e87878;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.loot-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .loot-grid {
@@ -159,6 +299,64 @@
   font-size: 15px;
 }
 
+/* Chapter advance overlay (Issue 6) */
+.chapter-advance-overlay {
+  background: linear-gradient(to bottom, #1a0a0a, #0d0520);
+  border: 2px solid #cc4422;
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.chapter-advance-icon {
+  font-size: 56px;
+  margin-bottom: 10px;
+}
+
+.chapter-advance-title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffaa88;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.chapter-advance-sub {
+  color: #ccaa99;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.chapter-advance-unlock {
+  display: inline-block;
+  font-size: 13px;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 6px;
+  padding: 5px 12px;
+  margin-bottom: 16px;
+}
+
+.chapter-advance-btn {
+  width: 100%;
+  padding: 13px;
+  background: #3a1a08;
+  border: 1px solid #cc4422;
+  color: #ffaa88;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.chapter-advance-btn:hover {
+  background: #4a2210;
+}
+
 .no-loot-msg {
   text-align: center;
   color: #888;
@@ -167,15 +365,5 @@
   margin-top: 8px;
 }
 
-.combat-speed-indicator {
-  text-align: center;
-  color: #888;
-  font-size: 12px;
-  padding: 4px 0;
-}
 
-.speed-tip {
-  margin-left: 8px;
-  color: #666;
-  font-size: 10px;
-}
+

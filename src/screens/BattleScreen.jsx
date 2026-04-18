@@ -1,27 +1,46 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../context/GameContext.jsx';
 import { usePlayer } from '../context/PlayerContext.jsx';
+import BattleArena from '../components/BattleArena.jsx';
 import CombatLog from '../components/CombatLog.jsx';
-import ItemTooltip from '../components/ItemTooltip.jsx';
+import ItemTooltip, { RarityBadge } from '../components/ItemTooltip.jsx';
+import { calcSalvageDust } from '../utils/FormulaHelpers.js';
 import './BattleScreen.css';
+
+const BAG_SIZE = 20;
+const BAG_WARN_THRESHOLD = 16; // show warning at 16/20
 
 export default function BattleScreen() {
   const { state: gameState, dispatch: gameDispatch } = useGame();
-  const { state: playerState, dispatch: playerDispatch } = usePlayer();
-  const canvasRef = useRef(null);
+  const { state: playerState, dispatch: playerDispatch, playerStats } = usePlayer();
   const [visibleLog, setVisibleLog] = useState([]);
   const [showLoot, setShowLoot] = useState(false);
   const [showDeathScreen, setShowDeathScreen] = useState(false);
   const [hoveredLoot, setHoveredLoot] = useState(null);
   const [bagFullMsg, setBagFullMsg] = useState(false);
+  const [showChapterAdvance, setShowChapterAdvance] = useState(false);
+  const [showInventorySalvage, setShowInventorySalvage] = useState(false);
 
   const { combatLog, combatResult, pendingLoot } = gameState;
+  const invCount = playerState.inventory.length;
+  const bagFull = invCount >= BAG_SIZE;
+  const bagNearFull = invCount >= BAG_WARN_THRESHOLD && invCount < BAG_SIZE;
+
+  // Derive initial enemy max HP from the first enriched log entry that carries it
+  const initialEnemyMaxHp = useMemo(() => {
+    if (!combatLog) return 100;
+    for (const entry of combatLog) {
+      if (entry?.enemyMaxHp != null) return entry.enemyMaxHp;
+    }
+    return 100;
+  }, [combatLog]);
 
   // Animate log entries with delay
   useEffect(() => {
     setVisibleLog([]);
     setShowLoot(false);
     setShowDeathScreen(false);
+    setShowChapterAdvance(false);
     if (!combatLog || combatLog.length === 0) return;
 
     let i = 0;
@@ -39,57 +58,12 @@ export default function BattleScreen() {
       i++;
     }, Math.round(150 / (gameState.combatSpeed || 1)));
 
-    return () => {
-      clearInterval(interval);
-      // Note: do NOT reset showDeathScreen here — it would clear the overlay before it renders
-    };
+    return () => { clearInterval(interval); };
   }, [combatLog, combatResult]);
 
-  // Canvas drawing — redraws on each new log entry to reflect live HP changes
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    // Derive HP ratios from the most recent relevant log entries
-    let playerHpRatio = 1;
-    let enemyHpRatio = 1;
-    let flashPlayer = false;
-    let flashEnemy = false;
-
-    for (let i = visibleLog.length - 1; i >= 0; i--) {
-      const entry = visibleLog[i];
-      if (!entry) continue;
-      if (!flashEnemy && (entry.type === 'damage' || entry.type === 'crit' || entry.type === 'echo' || entry.type === 'totem' || entry.type === 'cull' || entry.type === 'status')) {
-        // Parse HP from text like "(42/150 HP)" or set 0 if "[KILLED]"
-        const hpMatch = entry.text?.match(/\((\d+)\/(\d+) HP\)/);
-        if (hpMatch) {
-          enemyHpRatio = parseInt(hpMatch[1]) / parseInt(hpMatch[2]);
-        } else if (entry.text?.includes('[KILLED]') || entry.text?.includes('CULLS')) {
-          enemyHpRatio = 0;
-        }
-        flashEnemy = true;
-      }
-      if (!flashPlayer && entry.type === 'enemy_attack') {
-        const hpMatch = entry.text?.match(/\((\d+)\/(\d+) HP\)/);
-        if (hpMatch) {
-          playerHpRatio = parseInt(hpMatch[1]) / parseInt(hpMatch[2]);
-        }
-        flashPlayer = true;
-      }
-      if (flashEnemy && flashPlayer) break;
-    }
-
-    // Override ratios on final result
-    if (combatResult === 'defeat') playerHpRatio = 0;
-    if (combatResult === 'victory') enemyHpRatio = 0;
-
-    drawBattleScene(ctx, canvas.width, canvas.height, combatResult, playerHpRatio, enemyHpRatio);
-  }, [visibleLog.length, combatResult]);
-
   const handlePickupItem = (item) => {
-    const nextState = { ...playerState, inventory: [...playerState.inventory, item] };
-    if (playerState.inventory.length >= 20) {
+    if (!item) return;
+    if (bagFull) {
       setBagFullMsg(true);
       setTimeout(() => setBagFullMsg(false), 2500);
       return;
@@ -103,12 +77,21 @@ export default function BattleScreen() {
     gameDispatch({ type: 'SET_PENDING_LOOT', loot: pendingLoot.filter(i => i.id !== item.id) });
   };
 
+  const handleSalvageInvItem = (item) => {
+    playerDispatch({ type: 'SALVAGE_ITEM', item });
+  };
+
   const handleReturnToDungeon = () => {
+    if (gameState.lastCompletedTier && !showChapterAdvance) {
+      setShowChapterAdvance(true);
+      return;
+    }
     gameDispatch({ type: 'RESET_COMBAT' });
     gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' });
     gameDispatch({ type: 'CLEAR_PENDING_LOOT' });
     setShowLoot(false);
     setShowDeathScreen(false);
+    setShowChapterAdvance(false);
   };
 
   // No combat data edge case
@@ -125,7 +108,13 @@ export default function BattleScreen() {
 
   return (
     <div className="battle-screen">
-      <canvas ref={canvasRef} width={600} height={180} className="battle-canvas" />
+      {/* Arena — replaces canvas with animated CSS avatars */}
+      <BattleArena
+        visibleLog={visibleLog}
+        combatResult={combatResult}
+        playerMaxHp={playerStats.maxHp || 200}
+        enemyMaxHp={initialEnemyMaxHp}
+      />
 
       <div className="battle-result-label">
         {combatResult === 'victory' && <span className="result-victory">⚔️ VICTORY</span>}
@@ -133,11 +122,25 @@ export default function BattleScreen() {
         {combatResult === 'timeout' && <span className="result-timeout">⏱ TIMEOUT</span>}
       </div>
 
-      {bagFullMsg && <div className="bag-full-toast">🎒 Bag is full! Salvage an item first.</div>}
+      {bagFullMsg && <div className="bag-full-toast">🎒 Bag is full ({BAG_SIZE}/{BAG_SIZE})! Salvage an item to make space.</div>}
+      {bagNearFull && !bagFullMsg && (
+        <div className="bag-warn-toast">⚠️ Bag almost full ({invCount}/{BAG_SIZE})</div>
+      )}
 
-      <div className="combat-speed-indicator">
-        Combat Speed: {gameState.combatSpeed || 1}×
-        <span className="speed-tip">(Change in Settings)</span>
+      {/* In-battle speed control */}
+      <div className="combat-speed-control">
+        <label>⚡ Speed</label>
+        <div className="battle-speed-btns">
+          {[0.5, 1, 2, 3].map(s => (
+            <button
+              key={s}
+              className={`battle-speed-btn${(gameState.combatSpeed || 1) === s ? ' battle-speed-btn-active' : ''}`}
+              onClick={() => gameDispatch({ type: 'SET_COMBAT_SPEED', speed: s })}
+            >
+              {s}×
+            </button>
+          ))}
+        </div>
       </div>
 
       <CombatLog entries={visibleLog} />
@@ -157,7 +160,46 @@ export default function BattleScreen() {
 
       {showLoot && pendingLoot.length > 0 && (
         <div className="loot-panel">
-          <h3>Loot Drops!</h3>
+          <div className="loot-panel-header">
+            <h3>Loot Drops!</h3>
+            <span className="bag-count-badge" style={{ color: bagFull ? '#ff7777' : bagNearFull ? '#ffaa44' : '#888' }}>
+              🎒 {invCount}/{BAG_SIZE}
+            </span>
+          </div>
+          {bagFull && (
+            <div className="bag-full-inline">
+              <div className="bag-full-inline-msg">Bag full — salvage an inventory item to make space</div>
+              <button
+                className="inv-salvage-toggle"
+                onClick={() => setShowInventorySalvage(s => !s)}
+              >
+                {showInventorySalvage ? '▲ Hide Inventory' : '▼ Show Inventory to Salvage'}
+              </button>
+              {showInventorySalvage && (
+                <div className="inv-salvage-list">
+                  {playerState.inventory.length === 0 ? (
+                    <div className="inv-salvage-empty">Inventory is empty</div>
+                  ) : (
+                    playerState.inventory.map(item => (
+                      <div key={item.id} className="inv-salvage-row">
+                        <span className={`inv-salvage-name rarity-${item.rarity}`}>
+                          <RarityBadge rarity={item.rarity} />
+                          {item.name}
+                        </span>
+                        <span className="inv-salvage-gs">GS {item.gearScore}</span>
+                        <button
+                          className="inv-salvage-btn"
+                          onClick={() => handleSalvageInvItem(item)}
+                        >
+                          Salvage (+{calcSalvageDust(item)}🔮)
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className="loot-grid">
             {pendingLoot.map(item => (
               <div
@@ -166,11 +208,14 @@ export default function BattleScreen() {
                 onMouseEnter={() => setHoveredLoot(item)}
                 onMouseLeave={() => setHoveredLoot(null)}
               >
-                <div className={`loot-name rarity-${item.rarity}`}>{item.name}</div>
+                <div className={`loot-name rarity-${item.rarity}`}>
+                  <RarityBadge rarity={item.rarity} />
+                  {item.name}
+                </div>
                 <div className="loot-gs">GS: {item.gearScore}</div>
                 <div className="loot-actions">
-                  <button onClick={() => handlePickupItem(item)}>Pick Up</button>
-                  <button onClick={() => handleSalvageItem(item)}>Salvage</button>
+                  <button onClick={() => handlePickupItem(item)} disabled={bagFull}>Pick Up</button>
+                  <button onClick={() => handleSalvageItem(item)}>Salvage (+{calcSalvageDust(item)}🔮)</button>
                 </div>
               </div>
             ))}
@@ -184,79 +229,39 @@ export default function BattleScreen() {
         </div>
       )}
 
-      {!showDeathScreen && (
+      {/* Chapter advance overlay */}
+      {showChapterAdvance && (
+        <div className="chapter-advance-overlay">
+          <div className="chapter-advance-icon">
+            {gameState.lastCompletedChapter === 1 ? '🔥' : '🏆'}
+          </div>
+          <div className="chapter-advance-title">
+            Chapter {gameState.lastCompletedChapter} Complete!
+          </div>
+          <div className="chapter-advance-sub">
+            {gameState.lastCompletedChapter === 1
+              ? 'You have conquered the Runefall. Chapter 2: Abyssal Throne now awaits...'
+              : 'You have defeated the ultimate challenge. The Runebreaker is no more.'}
+          </div>
+          {gameState.lastCompletedChapter === 1 && (
+            <div className="chapter-advance-unlock">🔓 Chapter 2 Unlocked — Tiers 21–40</div>
+          )}
+          <button className="chapter-advance-btn" onClick={() => {
+            gameDispatch({ type: 'RESET_COMBAT' });
+            gameDispatch({ type: 'NAVIGATE', screen: 'dungeon' });
+            gameDispatch({ type: 'CLEAR_PENDING_LOOT' });
+            setShowChapterAdvance(false);
+          }}>
+            ⚔️ Continue to Dungeon
+          </button>
+        </div>
+      )}
+
+      {!showDeathScreen && !showChapterAdvance && (
         <button className="return-btn" onClick={handleReturnToDungeon}>
           Return to Dungeon
         </button>
-      )}    </div>
+      )}
+    </div>
   );
-}
-
-function drawBattleScene(ctx, w, h, result, playerHpRatio = 1, enemyHpRatio = 1) {
-  ctx.clearRect(0, 0, w, h);
-
-  // Background
-  const bg = ctx.createLinearGradient(0, 0, 0, h);
-  bg.addColorStop(0, '#0d0d1a');
-  bg.addColorStop(1, '#1a1a3a');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, w, h);
-
-  // Ground
-  ctx.fillStyle = '#2a2a4a';
-  ctx.fillRect(0, h - 30, w, 30);
-
-  // Player sprite (left side)
-  const playerOpacity = result === 'defeat' ? 0.4 : Math.max(0.2, playerHpRatio);
-  drawCharacter(ctx, w * 0.2, h - 50, '#4a9eff', playerOpacity, '🧙');
-  drawHpBar(ctx, w * 0.2, h - 80, 80, playerHpRatio, '#4a9eff');
-
-  // Enemy sprite (right side)
-  const enemyOpacity = result === 'victory' ? 0.2 : Math.max(0.2, enemyHpRatio);
-  drawCharacter(ctx, w * 0.8, h - 50, '#ff4a4a', enemyOpacity, '💀');
-  drawHpBar(ctx, w * 0.8, h - 80, 80, enemyHpRatio, '#ff4a4a');
-
-  // VS text in center
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = '#c4a3ff';
-  ctx.font = 'bold 24px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('⚔️', w / 2, h / 2);
-}
-
-function drawHpBar(ctx, cx, y, barWidth, ratio, color) {
-  const x = cx - barWidth / 2;
-  const barH = 6;
-  ctx.globalAlpha = 0.8;
-  // Background
-  ctx.fillStyle = '#333';
-  ctx.fillRect(x, y, barWidth, barH);
-  // Fill
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, Math.max(0, barWidth * Math.min(1, ratio)), barH);
-  ctx.globalAlpha = 1;
-}
-
-function drawCharacter(ctx, x, y, color, opacity, emoji) {
-  ctx.globalAlpha = opacity;
-
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath();
-  ctx.ellipse(x, y + 5, 20, 8, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Body
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.arc(x, y - 20, 22, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Emoji
-  ctx.globalAlpha = opacity;
-  ctx.font = '28px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(emoji, x, y - 10);
-
-  ctx.globalAlpha = 1;
 }

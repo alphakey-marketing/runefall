@@ -1,0 +1,302 @@
+[
+  {
+    "id": "embervein_blade", "name": "Embervein Blade",
+    "slot": "weapon", "rarity": "unique", "gearScore": 190,
+    "flavourText": "The forge never forgot its first fire.",
+    "affixes": [
+      { "id": "eb_1", "sourceId": "fire_damage",        "name": "Increased Fire Damage", "statKey": "fireDamageBonus",    "value": 75, "unit": "%" },
+      { "id": "eb_2", "sourceId": "skill_effect",       "name": "Skill Rune Effect",     "statKey": "skillEffect",        "value": 50, "unit": "%" },
+      { "id": "eb_3", "sourceId": "cooldown_reduction", "name": "Cooldown Reduction",    "statKey": "cooldownReduction",  "value": 30, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "cindersurge", "description": "Burn stacks deal 2× their normal tick damage." },
+    "dropTier": 15
+  },
+  {
+    "id": "marrowpiercer", "name": "Marrowpiercer",
+    "slot": "weapon", "rarity": "unique", "gearScore": 185,
+    "flavourText": "Every bone remembers the hand that threw it.",
+    "affixes": [
+      { "id": "mp_1", "sourceId": "ranged_damage",   "name": "Increased Ranged Damage",   "statKey": "rangedDamageBonus",   "value": 70, "unit": "%" },
+      { "id": "mp_2", "sourceId": "physical_damage", "name": "Increased Physical Damage", "statKey": "physicalDamageBonus", "value": 60, "unit": "%" },
+      { "id": "mp_3", "sourceId": "crit_chance",     "name": "Critical Strike Chance",    "statKey": "critChance",          "value": 18, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "boneshatter", "description": "Bone Spear gains +1 hit when striking a target with no active status effects." },
+    "dropTier": 16
+  },
+  {
+    "id": "thornwhip", "name": "Thornwhip",
+    "slot": "weapon", "rarity": "unique", "gearScore": 175,
+    "flavourText": "Pain given freely returns with interest.",
+    "affixes": [
+      { "id": "tw_1", "sourceId": "melee_damage",    "name": "Increased Melee Damage", "statKey": "meleeDamageBonus", "value": 55, "unit": "%" },
+      { "id": "tw_2", "sourceId": "status_duration", "name": "Status Effect Duration", "statKey": "statusDuration",   "value": 60, "unit": "%" },
+      { "id": "tw_3", "sourceId": "attack_speed",    "name": "Attack Speed",           "statKey": "attackSpeedBonus", "value": 35, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "thornreflect", "description": "While any enemy has 3+ Bleed stacks, your melee skills deal +25% damage." },
+    "dropTier": 14
+  },
+  {
+    "id": "wraithcaller", "name": "Wraithcaller",
+    "slot": "weapon", "rarity": "unique", "gearScore": 170,
+    "flavourText": "It does not summon. It remembers.",
+    "affixes": [
+      { "id": "wc_1", "sourceId": "skill_effect", "name": "Skill Rune Effect", "statKey": "skillEffect", "value": 60, "unit": "%" },
+      { "id": "wc_2", "sourceId": "max_mana",     "name": "Maximum Mana",      "statKey": "maxMana",     "value": 150, "unit": "" },
+      { "id": "wc_3", "sourceId": "mana_regen",   "name": "Mana Regeneration", "statKey": "manaRegen",   "value": 18,  "unit": "/s" }
+    ],
+    "uniqueEffect": { "id": "wraithfrenzy", "description": "Summon Wraith persists 50% longer and auto-triggers once on any enemy kill." },
+    "dropTier": 17
+  },
+  {
+    "id": "voidhunger", "name": "Voidhunger",
+    "slot": "weapon", "rarity": "unique", "gearScore": 195,
+    "flavourText": "Chaos does not miss. It waits.",
+    "affixes": [
+      { "id": "vh_1", "sourceId": "all_damage",      "name": "Increased Damage",           "statKey": "allDamageBonus", "value": 65,  "unit": "%" },
+      { "id": "vh_2", "sourceId": "crit_multiplier", "name": "Critical Strike Multiplier", "statKey": "critMultiplier", "value": 130, "unit": "%" },
+      { "id": "vh_3", "sourceId": "crit_chance",     "name": "Critical Strike Chance",     "statKey": "critChance",     "value": 15,  "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "voidrift", "description": "Chaos Bolt variable damage always rolls 140–200% of base (floor raised from 80%)." },
+    "dropTier": 18
+  },
+  {
+    "id": "crown_of_unmaking", "name": "Crown of Unmaking",
+    "slot": "helmet", "rarity": "unique", "gearScore": 175,
+    "flavourText": "Every thought worn away. Only power remains.",
+    "affixes": [
+      { "id": "cu_1", "sourceId": "crit_chance",     "name": "Critical Strike Chance",     "statKey": "critChance",     "value": 22,  "unit": "%" },
+      { "id": "cu_2", "sourceId": "crit_multiplier", "name": "Critical Strike Multiplier", "statKey": "critMultiplier", "value": 140, "unit": "%" },
+      { "id": "cu_3", "sourceId": "all_damage",      "name": "Increased Damage",           "statKey": "allDamageBonus", "value": 40,  "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "ashenburst", "description": "Critical hits automatically apply Burn to the target for 3 seconds." },
+    "dropTier": 15
+  },
+  {
+    "id": "frostmind_helm", "name": "Frostmind Helm",
+    "slot": "helmet", "rarity": "unique", "gearScore": 165,
+    "flavourText": "Clarity is coldest at absolute zero.",
+    "affixes": [
+      { "id": "fh_1", "sourceId": "ice_damage",          "name": "Increased Ice Damage",  "statKey": "iceDamageBonus",    "value": 70, "unit": "%" },
+      { "id": "fh_2", "sourceId": "cooldown_reduction",  "name": "Cooldown Reduction",    "statKey": "cooldownReduction", "value": 25, "unit": "%" },
+      { "id": "fh_3", "sourceId": "status_duration",     "name": "Status Effect Duration","statKey": "statusDuration",    "value": 50, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "flashfreeze", "description": "Chill stacks accumulate 2× per hit; Freeze threshold reached in 2 hits instead of 3." },
+    "dropTier": 14
+  },
+  {
+    "id": "venomcrown", "name": "Venomcrown",
+    "slot": "helmet", "rarity": "unique", "gearScore": 168,
+    "flavourText": "Patience is its own poison.",
+    "affixes": [
+      { "id": "vc_1", "sourceId": "poison_damage",   "name": "Increased Poison Damage", "statKey": "poisonDamageBonus", "value": 75, "unit": "%" },
+      { "id": "vc_2", "sourceId": "status_duration", "name": "Status Effect Duration",  "statKey": "statusDuration",    "value": 55, "unit": "%" },
+      { "id": "vc_3", "sourceId": "mana_regen",      "name": "Mana Regeneration",       "statKey": "manaRegen",         "value": 14, "unit": "/s" }
+    ],
+    "uniqueEffect": { "id": "sepsis_amp", "description": "Sepsis interaction (Bleed + Poison) deals 3% max HP/tick instead of base 1%." },
+    "dropTier": 15
+  },
+  {
+    "id": "stormweaver_circlet", "name": "Stormweaver Circlet",
+    "slot": "helmet", "rarity": "unique", "gearScore": 172,
+    "flavourText": "Lightning does not arc. It selects.",
+    "affixes": [
+      { "id": "sc_1", "sourceId": "lightning_damage", "name": "Increased Lightning Damage","statKey": "lightningDamageBonus","value": 80, "unit": "%" },
+      { "id": "sc_2", "sourceId": "attack_speed",     "name": "Attack Speed",              "statKey": "attackSpeedBonus",   "value": 30, "unit": "%" },
+      { "id": "sc_3", "sourceId": "skill_effect",     "name": "Skill Rune Effect",          "statKey": "skillEffect",        "value": 45, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "overload", "description": "Shocked enemies take 35% increased damage (up from 20%). Requires 2+ Shock stacks to activate." },
+    "dropTier": 16
+  },
+  {
+    "id": "ashen_cowl", "name": "Ashen Cowl",
+    "slot": "helmet", "rarity": "unique", "gearScore": 178,
+    "flavourText": "Breathe in the smoke. It knows the way.",
+    "affixes": [
+      { "id": "ac_1", "sourceId": "physical_damage", "name": "Increased Physical Damage","statKey": "physicalDamageBonus","value": 65, "unit": "%" },
+      { "id": "ac_2", "sourceId": "melee_damage",    "name": "Increased Melee Damage",   "statKey": "meleeDamageBonus",  "value": 60, "unit": "%" },
+      { "id": "ac_3", "sourceId": "max_hp",          "name": "Maximum HP",               "statKey": "maxHp",             "value": 180, "unit": "" }
+    ],
+    "uniqueEffect": { "id": "shadowmark", "description": "Shadow Step marks the target for 3 seconds. All hits against a marked target deal +40% damage." },
+    "dropTier": 17
+  },
+  {
+    "id": "runefall_heart", "name": "Runefall Heart",
+    "slot": "chest", "rarity": "unique", "gearScore": 185,
+    "flavourText": "It beats in rhythm with the falling stars.",
+    "affixes": [
+      { "id": "rh_1", "sourceId": "max_hp",       "name": "Maximum HP",        "statKey": "maxHp",       "value": 280, "unit": "" },
+      { "id": "rh_2", "sourceId": "hp_regen",     "name": "HP Regeneration",   "statKey": "hpRegen",     "value": 22,  "unit": "/s" },
+      { "id": "rh_3", "sourceId": "skill_effect", "name": "Skill Rune Effect", "statKey": "skillEffect", "value": 40,  "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "lifedrain", "description": "Skills heal you for 5% of damage dealt." },
+    "dropTier": 14
+  },
+  {
+    "id": "ironblood_plate", "name": "Ironblood Plate",
+    "slot": "chest", "rarity": "unique", "gearScore": 180,
+    "flavourText": "Absorbs wounds. Remembers them.",
+    "affixes": [
+      { "id": "ip_1", "sourceId": "armor",           "name": "Armor",           "statKey": "armor",          "value": 200, "unit": "" },
+      { "id": "ip_2", "sourceId": "max_hp",          "name": "Maximum HP",      "statKey": "maxHp",          "value": 220, "unit": "" },
+      { "id": "ip_3", "sourceId": "status_duration", "name": "Status Duration", "statKey": "statusDuration", "value": 50,  "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "bloodfortify", "description": "Gain +8 Armor per 10% HP missing (max +80 Armor at critical HP)." },
+    "dropTier": 15
+  },
+  {
+    "id": "shroud_of_whispers", "name": "Shroud of Whispers",
+    "slot": "chest", "rarity": "unique", "gearScore": 177,
+    "flavourText": "Chaos wears many faces. All of them yours.",
+    "affixes": [
+      { "id": "sw_1", "sourceId": "all_damage",         "name": "Increased Damage",  "statKey": "allDamageBonus",   "value": 55,  "unit": "%" },
+      { "id": "sw_2", "sourceId": "max_mana",           "name": "Maximum Mana",      "statKey": "maxMana",          "value": 180, "unit": "" },
+      { "id": "sw_3", "sourceId": "cooldown_reduction", "name": "Cooldown Reduction","statKey": "cooldownReduction","value": 28,  "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "chaosecho", "description": "20% chance on any skill cast to repeat it for free at 50% damage." },
+    "dropTier": 16
+  },
+  {
+    "id": "venom_sown_robe", "name": "Venom-Sown Robe",
+    "slot": "chest", "rarity": "unique", "gearScore": 170,
+    "flavourText": "The garden grows inward.",
+    "affixes": [
+      { "id": "vs_1", "sourceId": "poison_damage",    "name": "Increased Poison Damage","statKey": "poisonDamageBonus","value": 65, "unit": "%" },
+      { "id": "vs_2", "sourceId": "hp_regen",         "name": "HP Regeneration",        "statKey": "hpRegen",         "value": 16, "unit": "/s" },
+      { "id": "vs_3", "sourceId": "elemental_resist", "name": "Elemental Resistance",   "statKey": "elementalResist", "value": 30, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "sporecloud", "description": "When you take damage, release a Poison Nova at 30% base damage (5-second internal cooldown)." },
+    "dropTier": 15
+  },
+  {
+    "id": "mantle_of_shattering", "name": "Mantle of Shattering",
+    "slot": "chest", "rarity": "unique", "gearScore": 183,
+    "flavourText": "Everything frozen can be broken. Including mercy.",
+    "affixes": [
+      { "id": "ms_1", "sourceId": "ice_damage",       "name": "Increased Ice Damage",      "statKey": "iceDamageBonus",       "value": 60, "unit": "%" },
+      { "id": "ms_2", "sourceId": "lightning_damage", "name": "Increased Lightning Damage","statKey": "lightningDamageBonus", "value": 60, "unit": "%" },
+      { "id": "ms_3", "sourceId": "elemental_resist", "name": "Elemental Resistance",      "statKey": "elementalResist",      "value": 35, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "auto_shatter", "description": "Shatter interaction (Shock + Freeze) triggers automatically without the Shatter zodiac node. Deals 25% target max HP as burst damage." },
+    "dropTier": 17
+  },
+  {
+    "id": "void_thread", "name": "Void Thread",
+    "slot": "gloves", "rarity": "unique", "gearScore": 165,
+    "flavourText": "Woven from the silence between runes.",
+    "affixes": [
+      { "id": "vt_1", "sourceId": "attack_speed",       "name": "Attack Speed",       "statKey": "attackSpeedBonus",  "value": 45, "unit": "%" },
+      { "id": "vt_2", "sourceId": "cooldown_reduction", "name": "Cooldown Reduction", "statKey": "cooldownReduction", "value": 35, "unit": "%" },
+      { "id": "vt_3", "sourceId": "mana_regen",         "name": "Mana Regeneration",  "statKey": "manaRegen",         "value": 16, "unit": "/s" }
+    ],
+    "uniqueEffect": { "id": "voidstrike", "description": "Every 4th skill cast deals double damage." },
+    "dropTier": 14
+  },
+  {
+    "id": "graveclutch", "name": "Graveclutch",
+    "slot": "gloves", "rarity": "unique", "gearScore": 172,
+    "flavourText": "Hold nothing. Take everything.",
+    "affixes": [
+      { "id": "gc_1", "sourceId": "melee_damage", "name": "Increased Melee Damage",  "statKey": "meleeDamageBonus","value": 65, "unit": "%" },
+      { "id": "gc_2", "sourceId": "crit_chance",  "name": "Critical Strike Chance",  "statKey": "critChance",      "value": 16, "unit": "%" },
+      { "id": "gc_3", "sourceId": "attack_speed", "name": "Attack Speed",            "statKey": "attackSpeedBonus","value": 28, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "executioner", "description": "Culling Strike threshold raised from 15% HP to 25% HP." },
+    "dropTier": 15
+  },
+  {
+    "id": "bleedwraps", "name": "Bleedwraps",
+    "slot": "gloves", "rarity": "unique", "gearScore": 168,
+    "flavourText": "The wrap does not stop the bleeding. It spreads it.",
+    "affixes": [
+      { "id": "bw_1", "sourceId": "physical_damage", "name": "Increased Physical Damage","statKey": "physicalDamageBonus","value": 55, "unit": "%" },
+      { "id": "bw_2", "sourceId": "status_duration", "name": "Status Effect Duration",   "statKey": "statusDuration",    "value": 60, "unit": "%" },
+      { "id": "bw_3", "sourceId": "melee_damage",    "name": "Increased Melee Damage",   "statKey": "meleeDamageBonus",  "value": 50, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "hemorrhage", "description": "Hemorrhage interaction (Burn + Bleed) triggers automatically without the Hemorrhage zodiac node. Deals bleed stacks × 5% target max HP as burst." },
+    "dropTier": 14
+  },
+  {
+    "id": "frostgrip_gauntlets", "name": "Frostgrip Gauntlets",
+    "slot": "gloves", "rarity": "unique", "gearScore": 162,
+    "flavourText": "What you touch, you keep. Forever.",
+    "affixes": [
+      { "id": "fg_1", "sourceId": "ice_damage",   "name": "Increased Ice Damage","statKey": "iceDamageBonus",  "value": 60,  "unit": "%" },
+      { "id": "fg_2", "sourceId": "attack_speed", "name": "Attack Speed",        "statKey": "attackSpeedBonus","value": 25,  "unit": "%" },
+      { "id": "fg_3", "sourceId": "max_mana",     "name": "Maximum Mana",        "statKey": "maxMana",         "value": 120, "unit": "" }
+    ],
+    "uniqueEffect": { "id": "permafrost", "description": "Frozen enemies stay frozen for 4 seconds instead of 2." },
+    "dropTier": 13
+  },
+  {
+    "id": "totemhands", "name": "Totemhands",
+    "slot": "gloves", "rarity": "unique", "gearScore": 174,
+    "flavourText": "The hands do not cast. They command.",
+    "affixes": [
+      { "id": "th_1", "sourceId": "skill_effect", "name": "Skill Rune Effect", "statKey": "skillEffect",   "value": 55, "unit": "%" },
+      { "id": "th_2", "sourceId": "all_damage",   "name": "Increased Damage",  "statKey": "allDamageBonus","value": 45, "unit": "%" },
+      { "id": "th_3", "sourceId": "mana_regen",   "name": "Mana Regeneration", "statKey": "manaRegen",     "value": 12, "unit": "/s" }
+    ],
+    "uniqueEffect": { "id": "totem_echo", "description": "Totems spawned by the Totem link rune fire at 75% damage instead of 50%." },
+    "dropTier": 16
+  },
+  {
+    "id": "starfall_treads", "name": "Starfall Treads",
+    "slot": "boots", "rarity": "unique", "gearScore": 162,
+    "flavourText": "Leave no shadow where you walk.",
+    "affixes": [
+      { "id": "st_1", "sourceId": "elemental_resist", "name": "Elemental Resistance",  "statKey": "elementalResist",  "value": 35,  "unit": "%" },
+      { "id": "st_2", "sourceId": "max_mana",         "name": "Maximum Mana",           "statKey": "maxMana",          "value": 130, "unit": "" },
+      { "id": "st_3", "sourceId": "spell_damage",     "name": "Increased Spell Damage", "statKey": "spellDamageBonus", "value": 50,  "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "stardash", "description": "The first skill cast upon entering a new dungeon room costs zero mana." },
+    "dropTier": 14
+  },
+  {
+    "id": "deathwalkers", "name": "Deathwalkers",
+    "slot": "boots", "rarity": "unique", "gearScore": 175,
+    "flavourText": "Every step forward is a step over something.",
+    "affixes": [
+      { "id": "dw_1", "sourceId": "all_damage",   "name": "Increased Damage",     "statKey": "allDamageBonus",  "value": 50, "unit": "%" },
+      { "id": "dw_2", "sourceId": "attack_speed", "name": "Attack Speed",          "statKey": "attackSpeedBonus","value": 30, "unit": "%" },
+      { "id": "dw_3", "sourceId": "crit_chance",  "name": "Critical Strike Chance","statKey": "critChance",      "value": 14, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "killchain", "description": "The first kill in each room triggers 2 free Trigger On Kill casts back-to-back instead of 1." },
+    "dropTier": 16
+  },
+  {
+    "id": "cinderwalkers", "name": "Cinderwalkers",
+    "slot": "boots", "rarity": "unique", "gearScore": 168,
+    "flavourText": "The path behind was already burning.",
+    "affixes": [
+      { "id": "cw_1", "sourceId": "fire_damage",    "name": "Increased Fire Damage",  "statKey": "fireDamageBonus","value": 65, "unit": "%" },
+      { "id": "cw_2", "sourceId": "hp_regen",       "name": "HP Regeneration",        "statKey": "hpRegen",       "value": 14, "unit": "/s" },
+      { "id": "cw_3", "sourceId": "status_duration","name": "Status Effect Duration", "statKey": "statusDuration","value": 45, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "trailblaze", "description": "Enemies start combat with 2 Burn stacks already applied. Gains +1 additional stack per 50% Fire Damage bonus beyond base." },
+    "dropTier": 15
+  },
+  {
+    "id": "stormstriders", "name": "Stormstriders",
+    "slot": "boots", "rarity": "unique", "gearScore": 171,
+    "flavourText": "You cannot outrun lightning. So be it.",
+    "affixes": [
+      { "id": "ss_1", "sourceId": "lightning_damage",  "name": "Increased Lightning Damage","statKey": "lightningDamageBonus","value": 65, "unit": "%" },
+      { "id": "ss_2", "sourceId": "attack_speed",      "name": "Attack Speed",              "statKey": "attackSpeedBonus",    "value": 32, "unit": "%" },
+      { "id": "ss_3", "sourceId": "cooldown_reduction","name": "Cooldown Reduction",         "statKey": "cooldownReduction",   "value": 22, "unit": "%" }
+    ],
+    "uniqueEffect": { "id": "staticcharge", "description": "If a skill was on cooldown last tick (wasOnCooldown tracking per skill slot), the next cast deals +80% increased damage." },
+    "dropTier": 15
+  },
+  {
+    "id": "wraithstep", "name": "Wraithstep",
+    "slot": "boots", "rarity": "unique", "gearScore": 178,
+    "flavourText": "You walked here. Something else walked back.",
+    "affixes": [
+      { "id": "ws_1", "sourceId": "skill_effect", "name": "Skill Rune Effect", "statKey": "skillEffect","value": 50,  "unit": "%" },
+      { "id": "ws_2", "sourceId": "max_mana",     "name": "Maximum Mana",      "statKey": "maxMana",    "value": 160, "unit": "" },
+      { "id": "ws_3", "sourceId": "mana_regen",   "name": "Mana Regeneration", "statKey": "manaRegen",  "value": 15,  "unit": "/s" }
+    ],
+    "uniqueEffect": { "id": "soulwake", "description": "Summon Wraith spawns 2 wraiths at 60% damage each instead of 1 at 100%. Net output is 120% of a single cast." },
+    "dropTier": 17
+  }
+]

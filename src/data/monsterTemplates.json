@@ -325,5 +325,165 @@
     "archetype": "humanoid",
     "element": "chaos",
     "mechanic": "resurrectOnce"
+  },
+  {
+    "id": "shadow_stalker",
+    "name": "Shadow Stalker",
+    "hp": 130,
+    "armor": 0,
+    "attackDamage": 38,
+    "attackSpeed": 1.4,
+    "resistances": {
+      "physical": 30,
+      "poison": 20
+    },
+    "xpReward": 65,
+    "onHitStatus": "bleed"
+  },
+  {
+    "id": "rune_golem",
+    "name": "Rune Golem",
+    "hp": 320,
+    "armor": 45,
+    "attackDamage": 42,
+    "attackSpeed": 0.4,
+    "resistances": {
+      "physical": 30,
+      "ice": 20,
+      "fire": 20,
+      "lightning": 20
+    },
+    "xpReward": 110,
+    "isElite": true
+  },
+  {
+    "id": "storm_caller",
+    "name": "Storm Caller",
+    "hp": 145,
+    "armor": 5,
+    "attackDamage": 52,
+    "attackSpeed": 0.75,
+    "resistances": {
+      "lightning": 80,
+      "fire": -20
+    },
+    "xpReward": 80,
+    "onHitStatus": "shock"
+  },
+  {
+    "id": "blood_revenant",
+    "name": "Blood Revenant",
+    "hp": 210,
+    "armor": 10,
+    "attackDamage": 46,
+    "attackSpeed": 0.9,
+    "resistances": {
+      "physical": -20,
+      "fire": 20,
+      "poison": 30
+    },
+    "xpReward": 95,
+    "onHitStatus": "bleed",
+    "mechanic": "enrage"
+  },
+  {
+    "id": "void_tyrant",
+    "name": "Void Tyrant",
+    "hp": 290,
+    "armor": 15,
+    "attackDamage": 62,
+    "attackSpeed": 0.8,
+    "resistances": {
+      "chaos": 70,
+      "fire": 20,
+      "ice": 20,
+      "lightning": 20,
+      "physical": 10
+    },
+    "xpReward": 125,
+    "isElite": true
+  },
+  {
+    "id": "glacial_sentinel",
+    "name": "Glacial Sentinel",
+    "hp": 360,
+    "armor": 40,
+    "attackDamage": 40,
+    "attackSpeed": 0.5,
+    "resistances": {
+      "ice": 80,
+      "fire": -50,
+      "physical": 20
+    },
+    "xpReward": 115,
+    "onHitStatus": "chill",
+    "isElite": true
+  },
+  {
+    "id": "infernal_knight",
+    "name": "Infernal Knight",
+    "hp": 230,
+    "armor": 25,
+    "attackDamage": 58,
+    "attackSpeed": 0.8,
+    "resistances": {
+      "fire": 80,
+      "ice": -30,
+      "physical": 15
+    },
+    "xpReward": 105,
+    "onHitStatus": "burn",
+    "mechanic": "enrage"
+  },
+  {
+    "id": "chaos_drake",
+    "name": "Chaos Drake",
+    "hp": 420,
+    "armor": 30,
+    "attackDamage": 72,
+    "attackSpeed": 0.6,
+    "resistances": {
+      "fire": 40,
+      "ice": 40,
+      "chaos": 60,
+      "physical": 20,
+      "lightning": 20
+    },
+    "xpReward": 160,
+    "isElite": true,
+    "mechanic": "enrage"
+  },
+  {
+    "id": "arcane_phantom",
+    "name": "Arcane Phantom",
+    "hp": 185,
+    "armor": 0,
+    "attackDamage": 68,
+    "attackSpeed": 0.9,
+    "resistances": {
+      "physical": 50,
+      "poison": 50,
+      "chaos": 30
+    },
+    "xpReward": 135
+  },
+  {
+    "id": "the_runebreaker",
+    "name": "The Runebreaker",
+    "hp": 650,
+    "armor": 50,
+    "attackDamage": 95,
+    "attackSpeed": 0.7,
+    "resistances": {
+      "fire": 30,
+      "ice": 30,
+      "lightning": 30,
+      "physical": 30,
+      "poison": 30,
+      "chaos": 80
+    },
+    "xpReward": 350,
+    "isElite": true,
+    "mechanic": "enrage"
   }
 ]

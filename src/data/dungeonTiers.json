@@ -20,7 +20,8 @@
     "modifiers": [],
     "lootMultiplier": 1,
     "xpMultiplier": 1,
-    "isTutorial": true
+    "isTutorial": true,
+    "chapter": 1
   },
   {
     "tier": 1,
@@ -51,7 +52,8 @@
     ],
     "modifiers": [],
     "lootMultiplier": 1,
-    "xpMultiplier": 1
+    "xpMultiplier": 1,
+    "chapter": 1
   },
   {
     "tier": 2,
@@ -85,7 +87,8 @@
       "Monsters deal 20% increased damage"
     ],
     "lootMultiplier": 1.3,
-    "xpMultiplier": 1.2
+    "xpMultiplier": 1.2,
+    "chapter": 1
   },
   {
     "tier": 3,
@@ -120,7 +123,8 @@
       "All monsters apply Chill on hit"
     ],
     "lootMultiplier": 1.6,
-    "xpMultiplier": 1.5
+    "xpMultiplier": 1.5,
+    "chapter": 1
   },
   {
     "tier": 4,
@@ -156,7 +160,8 @@
       "Monsters have 60% increased HP"
     ],
     "lootMultiplier": 2,
-    "xpMultiplier": 1.8
+    "xpMultiplier": 1.8,
+    "chapter": 1
   },
   {
     "tier": 5,
@@ -194,7 +199,8 @@
       "Monsters explode on death"
     ],
     "lootMultiplier": 2.5,
-    "xpMultiplier": 2
+    "xpMultiplier": 2,
+    "chapter": 1
   },
   {
     "tier": 6,
@@ -229,7 +235,8 @@
       "All monsters apply Bleed on hit"
     ],
     "lootMultiplier": 2.8,
-    "xpMultiplier": 2.2
+    "xpMultiplier": 2.2,
+    "chapter": 1
   },
   {
     "tier": 7,
@@ -266,7 +273,8 @@
       "+20% monster damage"
     ],
     "lootMultiplier": 3.2,
-    "xpMultiplier": 2.5
+    "xpMultiplier": 2.5,
+    "chapter": 1
   },
   {
     "tier": 8,
@@ -302,7 +310,8 @@
       "Elite monsters present"
     ],
     "lootMultiplier": 3.6,
-    "xpMultiplier": 2.8
+    "xpMultiplier": 2.8,
+    "chapter": 1
   },
   {
     "tier": 9,
@@ -341,7 +350,8 @@
       "+50% item quantity"
     ],
     "lootMultiplier": 4,
-    "xpMultiplier": 3
+    "xpMultiplier": 3,
+    "chapter": 1
   },
   {
     "tier": 10,
@@ -378,7 +388,8 @@
       "Boss is an Elite"
     ],
     "lootMultiplier": 4.5,
-    "xpMultiplier": 3.2
+    "xpMultiplier": 3.2,
+    "chapter": 1
   },
   {
     "tier": 11,
@@ -414,7 +425,8 @@
       "Elite monsters present"
     ],
     "lootMultiplier": 5,
-    "xpMultiplier": 3.5
+    "xpMultiplier": 3.5,
+    "chapter": 1
   },
   {
     "tier": 12,
@@ -452,7 +464,8 @@
       "All monsters have Enrage at 30% HP"
     ],
     "lootMultiplier": 5.5,
-    "xpMultiplier": 3.8
+    "xpMultiplier": 3.8,
+    "chapter": 1
   },
   {
     "tier": 13,
@@ -489,7 +502,8 @@
       "Chaos damage cannot be resisted"
     ],
     "lootMultiplier": 6,
-    "xpMultiplier": 4
+    "xpMultiplier": 4,
+    "chapter": 1
   },
   {
     "tier": 14,
@@ -527,7 +541,8 @@
       "All monsters regenerate 2% HP/sec"
     ],
     "lootMultiplier": 6.5,
-    "xpMultiplier": 4.3
+    "xpMultiplier": 4.3,
+    "chapter": 1
   },
   {
     "tier": 15,
@@ -567,7 +582,8 @@
       "All elites have double life"
     ],
     "lootMultiplier": 7,
-    "xpMultiplier": 4.6
+    "xpMultiplier": 4.6,
+    "chapter": 1
   },
   {
     "tier": 16,
@@ -607,7 +623,8 @@
       "+300% item quantity"
     ],
     "lootMultiplier": 7.5,
-    "xpMultiplier": 5
+    "xpMultiplier": 5,
+    "chapter": 1
   },
   {
     "tier": 17,
@@ -648,7 +665,8 @@
       "+350% item quantity"
     ],
     "lootMultiplier": 8,
-    "xpMultiplier": 5.4
+    "xpMultiplier": 5.4,
+    "chapter": 1
   },
   {
     "tier": 18,
@@ -689,7 +707,8 @@
       "Monsters immune to Burn"
     ],
     "lootMultiplier": 8.5,
-    "xpMultiplier": 5.8
+    "xpMultiplier": 5.8,
+    "chapter": 1
   },
   {
     "tier": 19,
@@ -730,7 +749,8 @@
       "All elemental resistances at max"
     ],
     "lootMultiplier": 9,
-    "xpMultiplier": 6.2
+    "xpMultiplier": 6.2,
+    "chapter": 1
   },
   {
     "tier": 20,
@@ -774,6 +794,780 @@
       "All status effects deal 50% reduced damage"
     ],
     "lootMultiplier": 10,
-    "xpMultiplier": 7
+    "xpMultiplier": 7,
+    "chapter": 1
+  },
+  {
+    "tier": 21,
+    "chapter": 2,
+    "name": "Tier 21 — Shattered Realm Gates",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "shadow_stalker",
+          "elite_champion",
+          "void_herald"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "blood_revenant",
+          "storm_caller",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "rune_golem",
+          "shadow_stalker",
+          "shadow_stalker"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 100% increased HP",
+      "Monsters deal 50% increased damage",
+      "Chapter 2 begins"
+    ],
+    "lootMultiplier": 11,
+    "xpMultiplier": 8
+  },
+  {
+    "tier": 22,
+    "chapter": 2,
+    "name": "Tier 22 — Bloodmire Wastes",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "blood_revenant",
+          "blood_revenant",
+          "plague_rat"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "infernal_knight",
+          "blood_revenant",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "rune_golem",
+          "blood_revenant",
+          "blood_revenant"
+        ]
+      }
+    ],
+    "modifiers": [
+      "All monsters apply Bleed on hit",
+      "Monsters have 120% increased HP"
+    ],
+    "lootMultiplier": 11.5,
+    "xpMultiplier": 8.3
+  },
+  {
+    "tier": 23,
+    "chapter": 2,
+    "name": "Tier 23 — Storm Citadel",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "storm_caller",
+          "storm_caller",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "storm_caller",
+          "elite_champion",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "rune_golem",
+          "storm_caller",
+          "storm_caller"
+        ]
+      }
+    ],
+    "modifiers": [
+      "All monsters apply Shock on hit",
+      "Monsters deal 70% increased damage"
+    ],
+    "lootMultiplier": 12,
+    "xpMultiplier": 8.6
+  },
+  {
+    "tier": 24,
+    "chapter": 2,
+    "name": "Tier 24 — Infernal Throne",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "infernal_knight",
+          "infernal_knight",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "infernal_knight",
+          "blood_revenant",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "chaos_drake",
+          "infernal_knight"
+        ]
+      }
+    ],
+    "modifiers": [
+      "All monsters apply Burn on hit",
+      "Monsters have 150% increased HP"
+    ],
+    "lootMultiplier": 12.5,
+    "xpMultiplier": 9
+  },
+  {
+    "tier": 25,
+    "chapter": 2,
+    "name": "Tier 25 — Glacial Fortress",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "glacial_sentinel",
+          "shadow_stalker",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "glacial_sentinel",
+          "storm_caller",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "glacial_sentinel",
+          "glacial_sentinel"
+        ]
+      }
+    ],
+    "modifiers": [
+      "All monsters apply Chill on hit",
+      "+200% item quantity",
+      "Monsters have 180% increased HP"
+    ],
+    "lootMultiplier": 13,
+    "xpMultiplier": 9.5
+  },
+  {
+    "tier": 26,
+    "chapter": 2,
+    "name": "Tier 26 — Void Abyss",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "shadow_stalker",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "void_herald",
+          "blood_revenant"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "void_tyrant",
+          "void_tyrant"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Chaos damage cannot be resisted",
+      "Monsters have 200% increased HP",
+      "+250% item quantity"
+    ],
+    "lootMultiplier": 13.5,
+    "xpMultiplier": 10
+  },
+  {
+    "tier": 27,
+    "chapter": 2,
+    "name": "Tier 27 — Runic Wastelands",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "rune_golem",
+          "shadow_stalker",
+          "blood_revenant"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "rune_golem",
+          "infernal_knight",
+          "storm_caller"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "rune_golem",
+          "rune_golem"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 230% increased HP",
+      "Monsters deal 120% increased damage"
+    ],
+    "lootMultiplier": 14,
+    "xpMultiplier": 10.5
+  },
+  {
+    "tier": 28,
+    "chapter": 2,
+    "name": "Tier 28 — Phantom Archives",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "arcane_phantom",
+          "arcane_phantom",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "arcane_phantom",
+          "void_tyrant",
+          "storm_caller"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "chaos_drake",
+          "arcane_phantom",
+          "arcane_phantom"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters immune to status effects",
+      "Monsters deal 130% increased damage",
+      "+300% item quantity"
+    ],
+    "lootMultiplier": 14.5,
+    "xpMultiplier": 11
+  },
+  {
+    "tier": 29,
+    "chapter": 2,
+    "name": "Tier 29 — Dread Coliseum",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "infernal_knight",
+          "glacial_sentinel"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "chaos_drake",
+          "blood_revenant",
+          "storm_caller"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "chaos_drake",
+          "void_tyrant",
+          "void_tyrant"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 260% increased HP",
+      "Monsters deal 140% increased damage",
+      "Elite monsters present"
+    ],
+    "lootMultiplier": 15,
+    "xpMultiplier": 11.5
+  },
+  {
+    "tier": 30,
+    "chapter": 2,
+    "name": "Tier 30 — Abyssal Sanctum",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "chaos_drake",
+          "chaos_drake",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "void_tyrant",
+          "rune_golem"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "chaos_drake",
+          "chaos_drake",
+          "void_tyrant"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 300% increased HP",
+      "+400% item quantity",
+      "All resistances at max",
+      "Elites enrage at 40% HP"
+    ],
+    "lootMultiplier": 16,
+    "xpMultiplier": 12
+  },
+  {
+    "tier": 31,
+    "chapter": 2,
+    "name": "Tier 31 — Obsidian Peaks",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "the_runebreaker",
+          "shadow_stalker",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "rune_golem",
+          "infernal_knight"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "chaos_drake",
+          "void_tyrant",
+          "rune_golem"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 320% increased HP",
+      "Monsters deal 160% increased damage"
+    ],
+    "lootMultiplier": 17,
+    "xpMultiplier": 12.5
+  },
+  {
+    "tier": 32,
+    "chapter": 2,
+    "name": "Tier 32 — Crimson Void",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "blood_revenant",
+          "blood_revenant",
+          "void_tyrant",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "infernal_knight",
+          "infernal_knight",
+          "chaos_drake"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "the_runebreaker",
+          "blood_revenant",
+          "blood_revenant"
+        ]
+      }
+    ],
+    "modifiers": [
+      "All monsters apply Bleed on hit",
+      "Monsters have 340% increased HP",
+      "+350% item quantity"
+    ],
+    "lootMultiplier": 18,
+    "xpMultiplier": 13
+  },
+  {
+    "tier": 33,
+    "chapter": 2,
+    "name": "Tier 33 — Glacial Abyss",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "glacial_sentinel",
+          "glacial_sentinel",
+          "storm_caller"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "glacial_sentinel",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "the_runebreaker",
+          "glacial_sentinel",
+          "glacial_sentinel"
+        ]
+      }
+    ],
+    "modifiers": [
+      "All monsters apply Chill on hit",
+      "Monsters immune to Burn",
+      "Monsters have 360% increased HP"
+    ],
+    "lootMultiplier": 19,
+    "xpMultiplier": 13.5
+  },
+  {
+    "tier": 34,
+    "chapter": 2,
+    "name": "Tier 34 — Storm Nexus",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "storm_caller",
+          "storm_caller",
+          "storm_caller",
+          "rune_golem"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "chaos_drake",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "the_runebreaker",
+          "storm_caller",
+          "storm_caller",
+          "rune_golem"
+        ]
+      }
+    ],
+    "modifiers": [
+      "All monsters apply Shock on hit",
+      "Monsters immune to Chill",
+      "Monsters deal 180% increased damage"
+    ],
+    "lootMultiplier": 20,
+    "xpMultiplier": 14
+  },
+  {
+    "tier": 35,
+    "chapter": 2,
+    "name": "Tier 35 — Infernal Core",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "infernal_knight",
+          "infernal_knight",
+          "chaos_drake",
+          "void_tyrant"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "the_runebreaker",
+          "infernal_knight",
+          "infernal_knight"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "chaos_drake",
+          "chaos_drake",
+          "the_runebreaker"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 400% increased HP",
+      "+450% item quantity",
+      "All monsters apply Burn on hit",
+      "Monsters immune to Freeze"
+    ],
+    "lootMultiplier": 21,
+    "xpMultiplier": 14.5
+  },
+  {
+    "tier": 36,
+    "chapter": 2,
+    "name": "Tier 36 — Void Ascendant",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "void_tyrant",
+          "void_tyrant",
+          "arcane_phantom",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "chaos_drake",
+          "the_runebreaker",
+          "void_tyrant"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "void_tyrant",
+          "void_tyrant",
+          "void_tyrant",
+          "the_runebreaker"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Chaos damage cannot be resisted",
+      "Monsters have 450% increased HP",
+      "Monsters deal 200% increased damage"
+    ],
+    "lootMultiplier": 22,
+    "xpMultiplier": 15
+  },
+  {
+    "tier": 37,
+    "chapter": 2,
+    "name": "Tier 37 — Runic Colosseum",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "rune_golem",
+          "rune_golem",
+          "infernal_knight",
+          "shadow_stalker"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "chaos_drake",
+          "void_tyrant",
+          "the_runebreaker"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "rune_golem",
+          "rune_golem",
+          "chaos_drake",
+          "void_tyrant"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 500% increased HP",
+      "Monsters deal 220% increased damage",
+      "+500% item quantity"
+    ],
+    "lootMultiplier": 23,
+    "xpMultiplier": 15.5
+  },
+  {
+    "tier": 38,
+    "chapter": 2,
+    "name": "Tier 38 — The Endless Dark",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "the_runebreaker",
+          "arcane_phantom",
+          "arcane_phantom",
+          "void_tyrant"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "chaos_drake",
+          "chaos_drake",
+          "rune_golem",
+          "infernal_knight"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "the_runebreaker",
+          "chaos_drake",
+          "chaos_drake"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters immune to all status effects",
+      "Monsters have 550% increased HP",
+      "Monsters deal 240% increased damage"
+    ],
+    "lootMultiplier": 24,
+    "xpMultiplier": 16
+  },
+  {
+    "tier": 39,
+    "chapter": 2,
+    "name": "Tier 39 — Throne of Chaos",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "the_runebreaker",
+          "the_runebreaker",
+          "void_tyrant",
+          "arcane_phantom"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "chaos_drake",
+          "chaos_drake",
+          "void_tyrant",
+          "void_tyrant"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "the_runebreaker",
+          "the_runebreaker",
+          "chaos_drake"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 600% increased HP",
+      "+600% item quantity",
+      "All elemental resistances at max",
+      "Monsters deal 260% increased damage"
+    ],
+    "lootMultiplier": 25,
+    "xpMultiplier": 16.5
+  },
+  {
+    "tier": 40,
+    "chapter": 2,
+    "name": "Tier 40 — The Runefall Endgame",
+    "rooms": [
+      {
+        "type": "combat",
+        "enemies": [
+          "the_runebreaker",
+          "the_runebreaker",
+          "void_tyrant",
+          "void_tyrant",
+          "chaos_drake"
+        ]
+      },
+      {
+        "type": "combat",
+        "enemies": [
+          "chaos_drake",
+          "chaos_drake",
+          "the_runebreaker",
+          "glacial_sentinel"
+        ]
+      },
+      {
+        "type": "boss",
+        "enemies": [
+          "the_runebreaker",
+          "the_runebreaker",
+          "chaos_drake",
+          "void_tyrant",
+          "void_tyrant"
+        ]
+      }
+    ],
+    "modifiers": [
+      "Monsters have 700% increased HP",
+      "Monsters deal 300% increased damage",
+      "+750% item quantity",
+      "Monsters immune to all status effects",
+      "All damage to monsters reduced by 20%"
+    ],
+    "lootMultiplier": 30,
+    "xpMultiplier": 20
   }
 ]

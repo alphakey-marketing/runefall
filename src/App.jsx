@@ -12,7 +12,7 @@ import SimulatorScreen from './screens/SimulatorScreen.jsx';
 import SettingsScreen from './screens/SettingsScreen.jsx';
 import AscendancyModal from './screens/AscendancyModal.jsx';
 import TrialResultScreen from './screens/TrialResultScreen.jsx';
-import { decodeBuild } from './utils/BuildCodec.js';
+import { xpRequired } from './utils/FormulaHelpers.js';
 import './App.css';
 
 function ScreenRouter() {
@@ -32,7 +32,7 @@ function ScreenRouter() {
 }
 
 function XPBar({ xp, level }) {
-  const xpReq = Math.floor(100 * Math.pow(level, 1.5));
+  const xpReq = xpRequired(level);
   const pct = Math.min(100, Math.round((xp / xpReq) * 100));
   return (
     <div className="xp-bar-wrapper" title={`${xp} / ${xpReq} XP`}>
@@ -43,9 +43,11 @@ function XPBar({ xp, level }) {
 
 function LevelUpPopup() {
   const { state: playerState, dispatch: playerDispatch } = usePlayer();
-  const { dispatch: gameDispatch } = useGame();
+  const { state: gameState, dispatch: gameDispatch } = useGame();
 
   if (!playerState.levelUpPending) return null;
+
+  const onBattleScreen = gameState.currentScreen === 'battle';
 
   return (
     <div className="level-up-popup-overlay" onClick={() => playerDispatch({ type: 'DISMISS_LEVEL_UP' })}>
@@ -55,9 +57,13 @@ function LevelUpPopup() {
         <div className="level-up-popup-msg">You are now Level {playerState.level}!</div>
         <div className="level-up-popup-sub">+1 Zodiac Point earned</div>
         <div className="level-up-popup-btns">
-          <button className="level-up-goto-zodiac" onClick={() => { playerDispatch({ type: 'DISMISS_LEVEL_UP' }); gameDispatch({ type: 'NAVIGATE', screen: 'zodiac' }); }}>
-            Open Zodiac ⭐
-          </button>
+          {onBattleScreen ? (
+            <div className="level-up-battle-note">Finish collecting loot, then visit the Zodiac screen to spend your point.</div>
+          ) : (
+            <button className="level-up-goto-zodiac" onClick={() => { playerDispatch({ type: 'DISMISS_LEVEL_UP' }); gameDispatch({ type: 'NAVIGATE', screen: 'zodiac' }); }}>
+              Open Zodiac ⭐
+            </button>
+          )}
           <button className="level-up-dismiss-btn" onClick={() => playerDispatch({ type: 'DISMISS_LEVEL_UP' })}>
             Dismiss
           </button>
@@ -68,21 +74,18 @@ function LevelUpPopup() {
 }
 
 export default function App() {
-  const { state: gameState } = useGame();
+  const { state: gameState, dispatch: gameDispatch } = useGame();
   const { state: playerState, dispatch: playerDispatch } = usePlayer();
   const importRef = useRef(null);
 
-  React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const buildCode = params.get('build');
-    if (buildCode) {
-      const decoded = decodeBuild(buildCode);
-      if (decoded) console.log('Imported build from URL:', decoded);
-    }
-  }, []);
-
   const handleExport = () => {
-    const json = JSON.stringify(playerState, null, 2);
+    // Bundle both player data and dungeon progress so the save is complete
+    const saveBundle = {
+      player: playerState,
+      game: { unlockedTiers: gameState.unlockedTiers },
+      version: 1,
+    };
+    const json = JSON.stringify(saveBundle, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -98,8 +101,13 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const savedState = JSON.parse(evt.target.result);
-        playerDispatch({ type: 'LOAD_SAVE', savedState });
+        const parsed = JSON.parse(evt.target.result);
+        // Support both new bundle format { player, game } and legacy flat playerState
+        const playerData = parsed.player ?? parsed;
+        playerDispatch({ type: 'LOAD_SAVE', savedState: playerData });
+        if (parsed.game?.unlockedTiers) {
+          gameDispatch({ type: 'LOAD_GAME_PROGRESS', unlockedTiers: parsed.game.unlockedTiers });
+        }
       } catch {
         alert('Invalid save file.');
       }
@@ -116,6 +124,8 @@ export default function App() {
           <span className="header-level">Lv.{playerState.level}</span>
           <XPBar xp={playerState.xp} level={playerState.level} />
           <span className="header-dust">🔮 {playerState.runeDust}</span>
+          <span className="header-dust">✨ {playerState.refinedDust}</span>
+          <span className="header-dust">💠 {playerState.voidDust}</span>
           <button className="save-btn" onClick={handleExport} title="Export save">💾</button>
           <button className="save-btn" onClick={() => importRef.current?.click()} title="Import save">📂</button>
           <input ref={importRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />

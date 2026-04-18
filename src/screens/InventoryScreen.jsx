@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import { generateItem } from '../engine/LootSystem.js';
-import ItemTooltip from '../components/ItemTooltip.jsx';
+import ItemTooltip, { RarityBadge } from '../components/ItemTooltip.jsx';
 import './InventoryScreen.css';
 
 const SLOTS = ['weapon', 'helmet', 'chest', 'gloves', 'boots'];
-const RARITY_COLORS = { normal: '#aaa', magic: '#4fc3f7', rare: '#ffd700', legendary: '#ff9800' };
+const RARITY_COLORS = { normal: '#aaa', magic: '#4fc3f7', rare: '#ffd700', legendary: '#ff9800', unique: '#c084fc' };
 
 export default function InventoryScreen() {
   const { state, dispatch } = usePlayer();
@@ -51,7 +51,10 @@ export default function InventoryScreen() {
                   className="item-card equipped"
                   style={{ borderColor: RARITY_COLORS[item.rarity] }}
                 >
-                  <div className="item-name" style={{ color: RARITY_COLORS[item.rarity] }}>{item.name}</div>
+                  <div className="item-name" style={{ color: RARITY_COLORS[item.rarity] }}>
+                    <RarityBadge rarity={item.rarity} />
+                    {item.name}
+                  </div>
                   <div className="item-gs">GS: {item.gearScore}</div>
                   <button className="unequip-btn" onClick={() => handleUnequip(slot)}>Unequip</button>
                 </div>
@@ -73,7 +76,10 @@ export default function InventoryScreen() {
             onMouseEnter={() => setHoveredItem(item)}
             onMouseLeave={() => setHoveredItem(null)}
           >
-            <div className="item-name" style={{ color: RARITY_COLORS[item.rarity] }}>{item.name}</div>
+            <div className="item-name" style={{ color: RARITY_COLORS[item.rarity] }}>
+              <RarityBadge rarity={item.rarity} />
+              {item.name}
+            </div>
             <div className="item-gs">GS: {item.gearScore}</div>
             <div className="item-actions">
               <button className="equip-btn" onClick={() => handleEquip(item)}>Equip</button>

@@ -32,8 +32,10 @@ function formatBonus(key, val) {
   return `+${val}${unit} ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`;
 }
 
+const TOUCH_TOOLTIP_DURATION = 1200; // ms to keep tooltip visible after touch ends
+
 /** Single node circle button — tooltip is lifted to parent via onShowTip/onHideTip */
-function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onShowTip, onHideTip }) {
+function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onShowTip, onHideTip, onRequestRespec }) {
   const isKeystone = node.type === 'keystone';
   const isGateway = node.type === 'gateway';
   const isAllocated = nodeState === 'allocated';
@@ -46,12 +48,22 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onSh
     onShowTip(node, nodeState, color, canRespec, e.clientX, e.clientY);
   };
 
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    onShowTip(node, nodeState, color, canRespec, touch.clientX, touch.clientY);
+  };
+  const handleTouchEnd = () => {
+    setTimeout(() => onHideTip(), TOUCH_TOOLTIP_DURATION);
+  };
+
   return (
     <div
       className="zn-wrapper"
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={onHideTip}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <button
         className={`zn-btn zn-${nodeState}${isKeystone ? ' zn-keystone' : ''}${isGateway ? ' zn-gateway' : ''}`}
@@ -64,14 +76,19 @@ function ZodiacNode({ node, nodeState, color, onClick, onRespec, canRespec, onSh
       </button>
 
       {isAllocated && node.type !== 'origin' && canRespec && (
-        <button className="zn-respec-btn" onClick={onRespec} title="Respec (50 🔮)">↩</button>
+        <button
+          className="zn-respec-btn"
+          onClick={onRespec}
+          onTouchEnd={(e) => { e.stopPropagation(); onRequestRespec(node, color); }}
+          title="Respec (50 🔮)"
+        >↩</button>
       )}
     </div>
   );
 }
 
 /** One constellation card showing its linear chain */
-function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch, onShowTip, onHideTip }) {
+function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDust, dispatch, onShowTip, onHideTip, onRequestAlloc, onRequestRespec }) {
   const chain = buildChain(constellation);
   const allocatedCount = chain.filter(n => allocatedNodes.includes(n.id)).length;
   const keystoneNode = chain.find(n => n.type === 'keystone');
@@ -86,8 +103,12 @@ function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDu
   const handleClick = (node) => {
     const ns = getNodeState(node);
     if (ns === 'allocatable' && zodiacPoints > 0) {
-      dispatch({ type: 'ALLOCATE_NODE', nodeId: node.id });
-      AudioManager.play(node.type === 'keystone' ? 'keystoneAlloc' : 'nodeAlloc');
+      onRequestAlloc(node, constellation.color);
+    }
+    // On desktop, allocated nodes show the ↩ respec button overlay.
+    // On touch, tapping an allocated node opens the respec modal.
+    if (ns === 'allocated' && node.type !== 'origin') {
+      onRequestRespec(node, constellation.color);
     }
   };
 
@@ -123,6 +144,7 @@ function ConstellationCard({ constellation, allocatedNodes, zodiacPoints, runeDu
               canRespec={runeDust >= 50}
               onShowTip={onShowTip}
               onHideTip={onHideTip}
+              onRequestRespec={onRequestRespec}
             />
           </React.Fragment>
         ))}
@@ -177,9 +199,11 @@ function ZodiacTooltip({ tip }) {
 
 export default function ZodiacScreen() {
   const { state: playerState, dispatch } = usePlayer();
-  const { allocatedNodes, zodiacPoints, runeDust, level, levelUpPending } = playerState;
+  const { allocatedNodes, zodiacPoints, runeDust } = playerState;
 
   const [tip, setTip] = useState({ visible: false, x: 0, y: 0, node: null, nodeState: '', color: '', canRespec: false });
+  const [pendingAlloc, setPendingAlloc] = useState(null); // { node, color }
+  const [pendingRespec, setPendingRespec] = useState(null); // { node, color }
 
   const handleShowTip = useCallback((node, nodeState, color, canRespec, x, y) => {
     setTip({ visible: true, node, nodeState, color, canRespec, x, y });
@@ -188,6 +212,40 @@ export default function ZodiacScreen() {
   const handleHideTip = useCallback(() => {
     setTip(t => ({ ...t, visible: false }));
   }, []);
+
+  const handleRequestAlloc = useCallback((node, color) => {
+    setPendingAlloc({ node, color });
+    setTip(t => ({ ...t, visible: false }));
+  }, []);
+
+  const handleConfirmAlloc = () => {
+    if (!pendingAlloc) return;
+    dispatch({ type: 'ALLOCATE_NODE', nodeId: pendingAlloc.node.id });
+    AudioManager.play(pendingAlloc.node.type === 'keystone' ? 'keystoneAlloc' : 'nodeAlloc');
+    setPendingAlloc(null);
+  };
+
+  const handleCancelAlloc = () => {
+    setPendingAlloc(null);
+  };
+
+  const handleRequestRespec = useCallback((node, color) => {
+    setPendingRespec({ node, color });
+    setTip(t => ({ ...t, visible: false }));
+  }, []);
+
+  const handleConfirmRespec = () => {
+    if (!pendingRespec) return;
+    if (runeDust < 50) return;
+    if (isNodeRemovable(pendingRespec.node.id, allocatedNodes)) {
+      dispatch({ type: 'RESPEC_NODE', nodeId: pendingRespec.node.id });
+    }
+    setPendingRespec(null);
+  };
+
+  const handleCancelRespec = () => {
+    setPendingRespec(null);
+  };
 
   // Compute active bonuses summary
   const activeBonuses = {};
@@ -203,15 +261,50 @@ export default function ZodiacScreen() {
 
   return (
     <div className="zodiac-screen">
-      {levelUpPending && (
-        <div className="level-up-overlay">
-          <div className="level-up-box">
-            <span className="level-up-emoji">⬆️</span>
-            <div className="level-up-title">LEVEL UP!</div>
-            <div className="level-up-msg">You are now Level {level}! +1 Zodiac Point</div>
-            <button className="level-up-dismiss" onClick={() => dispatch({ type: 'DISMISS_LEVEL_UP' })}>
-              Dismiss
-            </button>
+      {/* Confirm allocation modal */}
+      {pendingAlloc && (
+        <div className="zn-confirm-overlay" onClick={handleCancelAlloc}>
+          <div className="zn-confirm-modal" style={{ '--tip-color': pendingAlloc.color }} onClick={e => e.stopPropagation()}>
+            <div className="zn-confirm-title" style={{ color: pendingAlloc.color }}>Allocate Node?</div>
+            <div className="zn-confirm-name">{pendingAlloc.node.name}</div>
+            {pendingAlloc.node.description && (
+              <div className="zn-confirm-desc">{pendingAlloc.node.description}</div>
+            )}
+            {pendingAlloc.node.bonuses && (
+              <div className="zn-confirm-bonuses">
+                {Object.entries(pendingAlloc.node.bonuses).map(([k, v]) => (
+                  <div key={k} className="zn-confirm-bonus">{formatBonus(k, v)}</div>
+                ))}
+              </div>
+            )}
+            <div className="zn-confirm-cost">Cost: 1 Zodiac Point (you have {zodiacPoints})</div>
+            <div className="zn-confirm-btns">
+              <button className="zn-confirm-btn-ok" onClick={handleConfirmAlloc}>✔ Confirm</button>
+              <button className="zn-confirm-btn-cancel" onClick={handleCancelAlloc}>✕ Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Respec confirm modal */}
+      {pendingRespec && (
+        <div className="zn-confirm-overlay" onClick={handleCancelRespec}>
+          <div className="zn-confirm-modal" style={{ '--tip-color': pendingRespec.color }} onClick={e => e.stopPropagation()}>
+            <div className="zn-confirm-title" style={{ color: pendingRespec.color }}>Respec Node?</div>
+            <div className="zn-confirm-name">{pendingRespec.node.name}</div>
+            {pendingRespec.node.description && (
+              <div className="zn-confirm-desc">{pendingRespec.node.description}</div>
+            )}
+            <div className="zn-confirm-cost">Cost: 50 🔮 Rune Dust (you have {runeDust})</div>
+            {runeDust < 50 && (
+              <div className="zn-confirm-desc" style={{ color: '#ff7777' }}>Not enough Rune Dust</div>
+            )}
+            <div className="zn-confirm-btns">
+              <button className="zn-confirm-btn-ok" onClick={handleConfirmRespec} disabled={runeDust < 50}>
+                ↩ Confirm Respec
+              </button>
+              <button className="zn-confirm-btn-cancel" onClick={handleCancelRespec}>✕ Cancel</button>
+            </div>
           </div>
         </div>
       )}
@@ -221,7 +314,7 @@ export default function ZodiacScreen() {
         <div className="zodiac-info-left">
           <span className="zodiac-points-badge">⭐ {zodiacPoints} {zodiacPoints === 1 ? 'Point' : 'Points'}</span>
           <span className="zodiac-dust-badge">🔮 {runeDust} Dust</span>
-          <span className="zodiac-nodes-badge">🌟 {allocatedNodes.length - 1} nodes</span>
+          <span className="zodiac-nodes-badge">🌟 {allocatedNodes.filter(id => id !== 'origin').length} nodes</span>
         </div>
         <div className="zodiac-info-hint">
           {zodiacPoints > 0
@@ -254,6 +347,8 @@ export default function ZodiacScreen() {
             dispatch={dispatch}
             onShowTip={handleShowTip}
             onHideTip={handleHideTip}
+            onRequestAlloc={handleRequestAlloc}
+            onRequestRespec={handleRequestRespec}
           />
         ))}
       </div>
