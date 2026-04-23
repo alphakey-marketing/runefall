@@ -58,6 +58,25 @@ export default function BuildScreen() {
   const unlockedLinkRunes = linkRunesData.filter(r => (r.unlockLevel || 1) <= playerLevel);
   const lockedLinkRunes = linkRunesData.filter(r => (r.unlockLevel || 1) > playerLevel);
 
+  // Compute already-used IDs to enforce uniqueness constraints
+  const usedSkillRuneIds = picker?.type === 'skill'
+    ? state.skillSlots.filter((_, si) => si !== picker.slotIndex).map(s => s.skillRune?.id).filter(Boolean)
+    : [];
+
+  const usedLinkRuneIds = picker?.type === 'link'
+    ? state.skillSlots[picker.slotIndex]?.links
+        .filter((_, li) => li !== picker.linkIndex)
+        .filter(Boolean)
+        .map(l => l.id)
+    : [];
+
+  const availableSkillRunes = unlockedSkillRunes.filter(r => !usedSkillRuneIds.includes(r.id));
+  const duplicateSkillRunes = unlockedSkillRunes.filter(r => usedSkillRuneIds.includes(r.id));
+
+  const availableLinkRunes = unlockedLinkRunes.filter(r => !usedLinkRuneIds.includes(r.id));
+  const duplicateLinkRunes = unlockedLinkRunes.filter(r => usedLinkRuneIds.includes(r.id));
+  const alreadyUsedLinkDisplay = duplicateLinkRunes.map(r => ({ ...r, _alreadyUsed: true }));
+
   return (
     <div className="build-screen">
       <h2 className="screen-title">⚔️ Build</h2>
@@ -134,8 +153,8 @@ export default function BuildScreen() {
       {picker?.type === 'skill' && (
         <RunePicker
           title="Select Skill Rune"
-          runes={unlockedSkillRunes}
-          lockedRunes={lockedSkillRunes}
+          runes={availableSkillRunes}
+          lockedRunes={[...lockedSkillRunes, ...duplicateSkillRunes.map(r => ({ ...r, _alreadyUsed: true }))]}
           onSelect={handleSelectSkillRune}
           onClose={() => setPicker(null)}
         />
@@ -143,8 +162,8 @@ export default function BuildScreen() {
       {picker?.type === 'link' && (
         <RunePicker
           title="Select Link Rune"
-          runes={unlockedLinkRunes}
-          lockedRunes={lockedLinkRunes}
+          runes={availableLinkRunes}
+          lockedRunes={[...lockedLinkRunes, ...alreadyUsedLinkDisplay]}
           onSelect={handleSelectLinkRune}
           onClose={() => setPicker(null)}
         />

@@ -26,10 +26,13 @@ export default function RunePicker({ runes, lockedRunes = [], onSelect, onClose,
             </div>
           ))}
           {lockedRunes.map(rune => (
-            <div key={rune.id} className="rune-item rune-locked">
+            <div key={rune.id} className={`rune-item rune-locked${rune._alreadyUsed ? ' rune-duplicate' : ''}`}>
               <div className="rune-name">{rune.name}</div>
               <div className="rune-desc">{rune.description}</div>
-              <div className="rune-unlock-label">🔒 Unlocks at Lv. {rune.unlockLevel}</div>
+              {rune._alreadyUsed
+                ? <div className="rune-unlock-label">⚠ Already equipped in this skill</div>
+                : <div className="rune-unlock-label">🔒 Unlocks at Lv. {rune.unlockLevel}</div>
+              }
             </div>
           ))}
         </div>

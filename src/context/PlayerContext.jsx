@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 import { getBaseStats, calculatePlayerStats } from '../utils/StatsCalculator.js';
 import { computeZodiacBonuses, isNodeAllocatable, isNodeRemovable } from '../engine/ZodiacSystem.js';
 import challengesData from '../data/challenges.json';
+import { xpRequired, calcSalvageDust } from '../utils/FormulaHelpers.js';
 
 const STARTER_SKILL_RUNE = { id: "frost_arrow", name: "Frost Arrow", type: "ranged", element: "ice", baseDamage: 45, baseManaCost: 20, baseCooldown: 1, baseHits: 1, statusEffect: "chill", unlockLevel: 1, description: "Fires a frost-tipped projectile that chills enemies" };
 const STARTER_LINK_RUNE = { id: "more_damage", name: "More Damage", effect: "damage", value: 1.45, unlockLevel: 1, description: "+45% flat damage multiplier", manaCostMultiplier: 1.2, cooldownMultiplier: 1 };
@@ -14,6 +15,8 @@ const initialState = {
   level: 1,
   xp: 0,
   runeDust: 50,
+  refinedDust: 0,
+  voidDust: 0,
   skillSlots: [
     { skillRune: STARTER_SKILL_RUNE, links: [STARTER_LINK_RUNE, null, null, null, null, null] },
     { skillRune: null, links: [null, null, null, null, null, null] },
@@ -83,7 +86,8 @@ function playerReducer(state, action) {
       return { ...state, bagFullNotification: false };
     }
     case 'SALVAGE_ITEM': {
-      const dustGain = action.item.gearScore + 5;
+      // Dust formula centralised in calcSalvageDust (FormulaHelpers.js)
+      const dustGain = calcSalvageDust(action.item);
       const equippedGear = { ...state.equippedGear };
       Object.keys(equippedGear).forEach(slot => {
         if (equippedGear[slot]?.id === action.item.id) equippedGear[slot] = null;
@@ -102,8 +106,8 @@ function playerReducer(state, action) {
       let { xp, level, zodiacPoints } = state;
       const oldLevel = level;
       xp += action.amount;
-      while (xp >= Math.floor(100 * Math.pow(level, 1.5))) {
-        xp -= Math.floor(100 * Math.pow(level, 1.5));
+      while (xp >= xpRequired(level)) {
+        xp -= xpRequired(level);
         level++;
         zodiacPoints++;
       }
@@ -142,54 +146,90 @@ function playerReducer(state, action) {
       };
     }
     case 'CRAFT_REROLL': {
-      if (state.runeDust < 50) return state;
-      const allItems = [...state.inventory, ...Object.values(state.equippedGear).filter(Boolean)];
-      const item = allItems.find(i => i.id === action.itemId);
-      if (!item || item.rarity !== 'rare') return state;
-      const inventory = state.inventory.map(i => i.id === action.itemId ? action.newItem : i);
-      const equippedGear = { ...state.equippedGear };
-      Object.keys(equippedGear).forEach(slot => {
-        if (equippedGear[slot]?.id === action.itemId) equippedGear[slot] = action.newItem;
+      const REROLL_COST = 3; // ✨ Refined Dust
+      if (state.refinedDust < REROLL_COST) return state;
+      const allItemsReroll = [...state.inventory, ...Object.values(state.equippedGear).filter(Boolean)];
+      const itemReroll = allItemsReroll.find(i => i.id === action.itemId);
+      if (!itemReroll || itemReroll.rarity !== 'rare') return state;
+      const inventoryReroll = state.inventory.map(i => i.id === action.itemId ? action.newItem : i);
+      const equippedGearReroll = { ...state.equippedGear };
+      Object.keys(equippedGearReroll).forEach(slot => {
+        if (equippedGearReroll[slot]?.id === action.itemId) equippedGearReroll[slot] = action.newItem;
       });
-      return { ...state, inventory, equippedGear, runeDust: state.runeDust - 50 };
+      return { ...state, inventory: inventoryReroll, equippedGear: equippedGearReroll, refinedDust: state.refinedDust - REROLL_COST };
     }
     case 'CRAFT_AUGMENT': {
-      if (state.runeDust < 30) return state;
-      const inventory = state.inventory.map(i => i.id === action.itemId ? action.newItem : i);
-      const equippedGear = { ...state.equippedGear };
-      Object.keys(equippedGear).forEach(slot => {
-        if (equippedGear[slot]?.id === action.itemId) equippedGear[slot] = action.newItem;
+      const MAX_AFFIXES = { magic: 2, rare: 6, legendary: 8 };
+      const AUGMENT_COST_RUNE = { magic: 30, rare: 30 };
+      const AUGMENT_COST_REFINED_LEG = 8; // ✨ Refined Dust for legendary
+      const allItemsAug = [...state.inventory, ...Object.values(state.equippedGear).filter(Boolean)];
+      const itemAug = allItemsAug.find(i => i.id === action.itemId);
+      if (!itemAug || itemAug.rarity === 'unique') return state;
+      const cap = MAX_AFFIXES[itemAug.rarity] || 6;
+      if ((itemAug.affixes || []).length >= cap) return state;
+      const inventoryAug = state.inventory.map(i => i.id === action.itemId ? action.newItem : i);
+      const equippedGearAug = { ...state.equippedGear };
+      Object.keys(equippedGearAug).forEach(slot => {
+        if (equippedGearAug[slot]?.id === action.itemId) equippedGearAug[slot] = action.newItem;
       });
-      return { ...state, inventory, equippedGear, runeDust: state.runeDust - 30 };
+      if (itemAug.rarity === 'legendary') {
+        if (state.refinedDust < AUGMENT_COST_REFINED_LEG) return state;
+        return { ...state, inventory: inventoryAug, equippedGear: equippedGearAug, refinedDust: state.refinedDust - AUGMENT_COST_REFINED_LEG };
+      }
+      const cost = AUGMENT_COST_RUNE[itemAug.rarity] || 30;
+      if (state.runeDust < cost) return state;
+      return { ...state, inventory: inventoryAug, equippedGear: equippedGearAug, runeDust: state.runeDust - cost };
     }
     case 'CRAFT_CORRUPT': {
-      if (state.runeDust < 100) return state;
-      const inventory = state.inventory.map(i => i.id === action.itemId ? action.newItem : i);
-      const equippedGear = { ...state.equippedGear };
-      Object.keys(equippedGear).forEach(slot => {
-        if (equippedGear[slot]?.id === action.itemId) equippedGear[slot] = action.newItem;
+      const CORRUPT_COST = 2; // 💠 Void Dust
+      if (state.voidDust < CORRUPT_COST) return state;
+      const allItemsCorrupt = [...state.inventory, ...Object.values(state.equippedGear).filter(Boolean)];
+      const itemCorrupt = allItemsCorrupt.find(i => i.id === action.itemId);
+      if (!itemCorrupt || itemCorrupt.rarity === 'unique') return state;
+      const inventoryCorrupt = state.inventory.map(i => i.id === action.itemId ? action.newItem : i);
+      const equippedGearCorrupt = { ...state.equippedGear };
+      Object.keys(equippedGearCorrupt).forEach(slot => {
+        if (equippedGearCorrupt[slot]?.id === action.itemId) equippedGearCorrupt[slot] = action.newItem;
       });
-      return { ...state, inventory, equippedGear, runeDust: state.runeDust - 100 };
+      return { ...state, inventory: inventoryCorrupt, equippedGear: equippedGearCorrupt, voidDust: state.voidDust - CORRUPT_COST };
     }
     case 'CRAFT_LEGENDARY_RESULT': {
+      const LEG_CRAFT_COST = 5; // 💠 Void Dust
+      if (state.voidDust < LEG_CRAFT_COST) return state;
       const filteredInv = state.inventory.filter(i => !(action.itemIds || []).includes(i.id));
       if (action.newItem) filteredInv.push(action.newItem);
-      return { ...state, inventory: filteredInv };
+      return { ...state, inventory: filteredInv, voidDust: state.voidDust - LEG_CRAFT_COST };
     }
     case 'UPGRADE_RUNE': {
-      if (state.runeDust < 200) return state;
-      const slots = [...state.skillSlots];
-      const slot = slots[action.slotIndex];
-      if (!slot?.skillRune) return state;
+      const MAX_RUNE_TIER = 10;
+      const slotToUpgrade = state.skillSlots[action.slotIndex];
+      if (!slotToUpgrade?.skillRune) return state;
+      const currentTier = slotToUpgrade.skillRune.tier || 1;
+      if (currentTier >= MAX_RUNE_TIER) return state;
+      const upgradeCost = 200 * currentTier;
+      if (state.runeDust < upgradeCost) return state;
       const upgradedRune = {
-        ...slot.skillRune,
-        tier: (slot.skillRune.tier || 1) + 1,
-        baseDamage: Math.round(slot.skillRune.baseDamage * 1.1),
+        ...slotToUpgrade.skillRune,
+        tier: currentTier + 1,
+        baseDamage: Math.round(slotToUpgrade.skillRune.baseDamage * 1.1),
       };
-      slots[action.slotIndex] = { ...slot, skillRune: upgradedRune };
-      return { ...state, skillSlots: slots, runeDust: state.runeDust - 200 };
+      const slotsUpgraded = [...state.skillSlots];
+      slotsUpgraded[action.slotIndex] = { ...slotToUpgrade, skillRune: upgradedRune };
+      return { ...state, skillSlots: slotsUpgraded, runeDust: state.runeDust - upgradeCost };
     }
     case 'ADD_RUNE_DUST': return { ...state, runeDust: state.runeDust + action.amount };
+    case 'ADD_REFINED_DUST': return { ...state, refinedDust: state.refinedDust + action.amount };
+    case 'ADD_VOID_DUST': return { ...state, voidDust: state.voidDust + action.amount };
+    case 'REFINE_DUST': {
+      // 5 🔮 Rune Dust → 1 ✨ Refined Dust (batch by action.amount)
+      if (state.runeDust < action.amount * 5) return state;
+      return { ...state, runeDust: state.runeDust - action.amount * 5, refinedDust: state.refinedDust + action.amount };
+    }
+    case 'CONDENSE_DUST': {
+      // 10 ✨ Refined Dust → 1 💠 Void Dust (batch by action.amount)
+      if (state.refinedDust < action.amount * 10) return state;
+      return { ...state, refinedDust: state.refinedDust - action.amount * 10, voidDust: state.voidDust + action.amount };
+    }
     case 'SET_ASCENDANCY': return { ...state, ascendancy: action.path };
     case 'UPDATE_RECORDS': {
       const r = { ...state.records };
@@ -216,11 +256,33 @@ function playerReducer(state, action) {
       };
     }
     case 'UPDATE_CHALLENGE_PROGRESS': {
+      const targetChallenge = challengesData.find(d => d.id === action.challengeId);
+      const cap = targetChallenge?.target ?? Infinity;
+
       const challenges = state.challenges.map(c =>
         c.id === action.challengeId
-          ? { ...c, progress: Math.min(c.progress + (action.amount || 1), challengesData.find(d => d.id === c.id)?.target || c.progress) }
+          ? { ...c, progress: Math.min(c.progress + (action.amount || 1), cap) }
           : c
       );
+
+      // Auto-complete inside the reducer — no stale-closure issue
+      const updatedChallenge = challenges.find(c => c.id === action.challengeId);
+      if (
+        targetChallenge &&
+        updatedChallenge &&
+        updatedChallenge.progress >= cap &&
+        !state.completedChallenges.includes(action.challengeId)
+      ) {
+        return {
+          ...state,
+          challenges: challenges.map(c =>
+            c.id === action.challengeId ? { ...c, completed: true } : c
+          ),
+          completedChallenges: [...state.completedChallenges, action.challengeId],
+          runeDust: state.runeDust + (targetChallenge.reward || 0),
+        };
+      }
+
       return { ...state, challenges };
     }
     case 'ADD_TIER_KEY': return { ...state, tierKeys: [...state.tierKeys, action.key] };
@@ -251,6 +313,9 @@ function playerReducer(state, action) {
       return {
         ...initialState,
         ...s,
+        runeDust: typeof s.runeDust === 'number' ? s.runeDust : 0,
+        refinedDust: typeof s.refinedDust === 'number' ? s.refinedDust : 0,
+        voidDust: typeof s.voidDust === 'number' ? s.voidDust : 0,
         allocatedNodes: s.allocatedNodes.includes('origin') ? s.allocatedNodes : ['origin', ...s.allocatedNodes],
         records: { ...initialState.records, ...(s.records || {}) },
         challenges: s.challenges || initialState.challenges,

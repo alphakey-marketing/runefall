@@ -1,0 +1,323 @@
+/* src/components/BattleArena.css */
+
+/* ── Layout ──────────────────────────────────── */
+.battle-arena {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #2a2a4a;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.arena-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #0d0d1a 60%, #1a1a3a);
+  z-index: 0;
+}
+
+.arena-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: #1e1e3a;
+  border-top: 2px solid #2a2a5a;
+  z-index: 1;
+}
+
+.arena-side {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 38%;
+  padding: 8px 8px 10px;
+}
+
+.arena-center {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;   /* fills full arena height so justify-content: center works */
+  padding-bottom: 10px;
+  min-width: 56px;
+}
+
+.arena-vs {
+  font-size: 28px;
+  filter: drop-shadow(0 0 8px #c4a3ff);
+}
+
+/* ── HP Bars ─────────────────────────────────── */
+.avatar-hp-bar-wrap {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.avatar-hp-label {
+  font-size: 11px;
+  color: #ccc;
+  text-align: center;
+  margin-bottom: 2px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-hp-track {
+  height: 8px;
+  background: #1a1a2e;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.avatar-hp-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease, background-color 0.3s;
+}
+
+@keyframes hp-critical-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+.hp-critical {
+  animation: hp-critical-pulse 0.75s ease-in-out infinite;
+}
+
+/* ── Avatar Base ─────────────────────────────── */
+.avatar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.avatar-body {
+  font-size: 40px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.1));
+}
+
+.avatar-shadow {
+  width: 42px;
+  height: 10px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 50%;
+  margin-top: -4px;
+}
+
+/* Enemy faces the player (mirrors horizontally) */
+.avatar-enemy .avatar-body {
+  transform: scaleX(-1);
+}
+
+/* ── Avatar Animations ───────────────────────── */
+
+/* Idle breathing */
+@keyframes idle-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-5px) scale(1.04); }
+}
+
+/* Player attacks → lunges right */
+@keyframes player-lunge {
+  0%   { transform: translateX(0) scale(1); }
+  30%  { transform: translateX(50px) scale(1.2); }
+  60%  { transform: translateX(32px) scale(1.05); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+/* Enemy attacks → lunges left */
+@keyframes enemy-lunge {
+  0%   { transform: scaleX(-1) translateX(0)    scale(1); }
+  30%  { transform: scaleX(-1) translateX(-50px) scale(1.2); }
+  60%  { transform: scaleX(-1) translateX(-32px) scale(1.05); }
+  100% { transform: scaleX(-1) translateX(0)    scale(1); }
+}
+
+/* Player takes damage — red shake */
+@keyframes player-hurt {
+  0%   { filter: brightness(1);    transform: translateX(0); }
+  15%  { filter: brightness(3.5) sepia(1) saturate(8) hue-rotate(-30deg); transform: translateX(-10px); }
+  35%  { transform: translateX(7px); }
+  55%  { transform: translateX(-4px); }
+  100% { filter: brightness(1);    transform: translateX(0); }
+}
+
+/* Enemy takes damage — mirror of player-hurt */
+@keyframes enemy-hurt {
+  0%   { filter: brightness(1);    transform: scaleX(-1) translateX(0); }
+  15%  { filter: brightness(3.5) sepia(1) saturate(8) hue-rotate(-30deg); transform: scaleX(-1) translateX(10px); }
+  35%  { transform: scaleX(-1) translateX(-7px); }
+  55%  { transform: scaleX(-1) translateX(4px); }
+  100% { filter: brightness(1);    transform: scaleX(-1) translateX(0); }
+}
+
+/* Death — slump & fade */
+@keyframes death-slump {
+  0%   { transform: rotate(0deg)  translateY(0);   opacity: 1; }
+  40%  { transform: rotate(40deg) translateY(8px);  opacity: 0.6; }
+  100% { transform: rotate(90deg) translateY(18px); opacity: 0.1; }
+}
+
+/* State application */
+.avatar-idle .avatar-body {
+  animation: idle-breathe 2.6s ease-in-out infinite;
+}
+
+.avatar-player.avatar-attacking .avatar-body {
+  animation: player-lunge 0.45s ease-out forwards;
+}
+.avatar-player.avatar-hurt .avatar-body {
+  animation: player-hurt 0.35s ease-in-out forwards;
+}
+.avatar-player.avatar-dead .avatar-body {
+  animation: death-slump 0.9s ease-in forwards;
+}
+
+.avatar-enemy.avatar-attacking .avatar-body {
+  animation: enemy-lunge 0.45s ease-out forwards;
+}
+.avatar-enemy.avatar-hurt .avatar-body {
+  animation: enemy-hurt 0.35s ease-in-out forwards;
+}
+.avatar-enemy.avatar-dead .avatar-body {
+  animation: death-slump 0.9s ease-in forwards;
+}
+
+/* ── Floating Damage Numbers ─────────────────── */
+@keyframes float-up-fade {
+  0%   { transform: translateX(-50%) translateY(0);      opacity: 1;   }
+  80%  { transform: translateX(-50%) translateY(-48px);  opacity: 0.8; }
+  100% { transform: translateX(-50%) translateY(-65px);  opacity: 0;   }
+}
+
+.float-dmg {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+  pointer-events: none;
+  text-shadow: 0 0 6px rgba(0,0,0,0.9);
+  animation: float-up-fade 1.1s ease-out forwards;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.float-dmg-crit {
+  color: #ffd700;
+  font-size: 26px;
+  text-shadow: 0 0 12px #ffd700, 0 0 6px rgba(0,0,0,0.9);
+}
+
+.float-dmg-player {
+  color: #ff7777;
+}
+
+/* ── Skill FX (element burst) ────────────────── */
+@keyframes skill-burst {
+  0%   { transform: scale(0.2); opacity: 1;   }
+  55%  { transform: scale(1.5); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0;   }
+}
+
+/* Per-skill FX for unique skill animations */
+@keyframes skill-burst-lightning {
+  0%   { transform: scale(0.2) rotate(0deg);   opacity: 1; }
+  40%  { transform: scale(1.6) rotate(90deg);  opacity: 0.9; }
+  100% { transform: scale(2.4) rotate(180deg); opacity: 0; }
+}
+
+@keyframes skill-burst-ice {
+  0%   { transform: scale(0.2) rotate(0deg);  opacity: 1; border-radius: 50%; }
+  50%  { transform: scale(1.4) rotate(45deg); opacity: 0.85; border-radius: 20%; }
+  100% { transform: scale(2.2) rotate(90deg); opacity: 0;    border-radius: 10%; }
+}
+
+@keyframes skill-burst-chaos {
+  0%   { transform: scale(0.2) rotate(0deg);   opacity: 1; filter: hue-rotate(0deg); }
+  50%  { transform: scale(1.5) rotate(120deg); opacity: 0.9; filter: hue-rotate(180deg); }
+  100% { transform: scale(2.4) rotate(240deg); opacity: 0;   filter: hue-rotate(360deg); }
+}
+
+.skill-fx {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -26px 0 0 -26px;
+  z-index: 5;
+}
+
+.skill-fx-fire      {
+  background: radial-gradient(circle, #ff8800, #ff000055);
+  box-shadow: 0 0 22px #ff6600;
+  animation: skill-burst 0.65s ease-out forwards;
+}
+.skill-fx-ice       {
+  background: radial-gradient(circle, #88ddff, #00aaff44);
+  box-shadow: 0 0 22px #88ddff;
+  animation: skill-burst-ice 0.65s ease-out forwards;
+}
+.skill-fx-lightning {
+  background: radial-gradient(circle, #ffff44, #ffaa0044);
+  box-shadow: 0 0 22px #ffff00;
+  animation: skill-burst-lightning 0.65s ease-out forwards;
+}
+.skill-fx-physical  {
+  background: radial-gradient(circle, #cccccc, #88888844);
+  box-shadow: 0 0 16px #aaaaaa;
+  animation: skill-burst 0.65s ease-out forwards;
+}
+.skill-fx-poison    {
+  background: radial-gradient(circle, #66ff44, #44cc0044);
+  box-shadow: 0 0 22px #66ff44;
+  animation: skill-burst 0.65s ease-out forwards;
+}
+.skill-fx-chaos     {
+  background: radial-gradient(circle, #cc44ff, #8800ff44);
+  box-shadow: 0 0 22px #cc44ff;
+  animation: skill-burst-chaos 0.65s ease-out forwards;
+}
+
+/* ── Skill emoji indicator in arena center ────── */
+@keyframes skill-emoji-pop {
+  0%   { transform: scale(0.5) translateX(-50%); opacity: 0; }
+  25%  { transform: scale(1.3) translateX(-50%); opacity: 1; }
+  75%  { transform: scale(1.0) translateX(-50%); opacity: 1; }
+  100% { transform: scale(0.8) translateX(-50%); opacity: 0; }
+}
+
+.arena-skill-emoji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32px;
+  pointer-events: none;
+  z-index: 6;
+  animation: skill-emoji-pop 0.65s ease-out forwards;
+  margin-top: -16px;
+}

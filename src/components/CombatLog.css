@@ -12,16 +12,40 @@
 .log-entry {
   padding: 2px 4px;
   border-bottom: 1px solid #1a1a2e;
+  border-radius: 3px;
+  line-height: 1.5;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
 
+.log-text {
+  flex: 1;
+}
+
+.log-phase-sep {
+  text-align: center;
+  color: #555;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 4px 0;
+  border-top: 1px solid #222;
+  margin: 2px 0;
+}
+
+.log-crit-badge {
+  display: inline-block;
+  flex-shrink: 0;
+  font-size: 9px;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: #ffd700;
+  border-radius: 3px;
+  padding: 0 4px;
+  vertical-align: middle;
+}
+
+/* Legacy class names kept for backward compatibility */
 .log-normal { color: #ddd; }
-.log-crit { color: #ffd700; font-weight: bold; }
 .log-kill { color: #ff4444; font-weight: bold; }
-.log-defeat { color: #ff0000; font-weight: bold; font-size: 14px; }
-.log-victory { color: #00ff88; font-weight: bold; font-size: 14px; }
-.log-status { color: #00ddff; }
-.log-enemy { color: #ff8888; }
-.log-echo { color: #bb88ff; }
-.log-totem { color: #88ffbb; }
-.log-no-mana { color: #888; font-style: italic; }
 .log-room-clear { color: #c4a3ff; font-weight: bold; text-align: center; border-bottom: 1px solid #4a3f8a; margin: 2px 0; }
